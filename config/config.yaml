@@ -1,1 +1,9 @@
 input_file: data/grid-puzzles-sample.csv
+
+solution:
+  brute_force: 
+    enable: true
+    save_results: true
+  llm_force:
+    enable: false
+    save_results: false
