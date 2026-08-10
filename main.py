@@ -1,8 +1,7 @@
 import hydra
 import pandas as pd
-from pprint import pprint
-from utils import parse_puzzle
 from my_soln import my_sol_main
+from llm_soln import llm_sol_main
 from omegaconf import DictConfig
 
 
@@ -19,7 +18,13 @@ def main(cfg: DictConfig):
                     df.at[indx, 'Solution'] = result['solution']
                 return
             elif cfg['solution']['llm_force']['enable']:
-                print(f"TBD: Solving puzzle {indx + 1} using LLM force...")
+                print(f"Solving puzzle {indx + 1} using LLM...")
+                result = llm_sol_main(row)
+                if cfg['solution']['llm_force']['save_results']:
+                    if cfg['solution']['llm_force']['verification']:
+                        df.at[indx, 'Verifier'] = result['verifier_code']
+                    # df.at[indx, 'Solution'] = result['solution']
+                return
             else:
                 print("No solution method specified in the configuration.")
                 return
