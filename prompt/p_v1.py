@@ -13,7 +13,6 @@ Hard output constraints:
 - Return only Python code (no markdown, no prose, no backticks).
 - Keep verify(grid) as the callable entry point.
 - Do not import external libraries.
-- Do not use randomness, network, file I/O, or global mutable state.
 
 Implementation requirements:
 - Parse grid rows into useful structures (maps by entity/category).
@@ -26,7 +25,6 @@ Implementation requirements:
 Quality requirements:
 - Clue checks must reflect puzzle text exactly.
 - Use clear variable names and straightforward logic.
-- Keep code concise and readable.
 
 Reference example (style and contract):
 [EXAMPLE PUZZLE]
@@ -131,7 +129,7 @@ def verify(grid):
     failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
     return float(sum(clue_results)) / len(clue_results), failed_clues
 
-Now generate code for the target puzzle provided by the user.\no_think
+Now generate code for the target puzzle provided by the user.
 """
 
 
@@ -191,5 +189,23 @@ Officers: Daugherty, Lyons, Quinn, Salinas
     ["June", "Hercules", "Salinas"]
 ]
 
-Now generate code for the target puzzle provided by the user.\no_think
+Now generate code for the target puzzle provided by the user.
+"""
+
+
+code_prompt = """
+You are a Python code sanitizer.
+
+Your task is to clean the provided LLM-generated verifier code so that the output is directly executable as a Python source file.
+
+Rules:
+1. Output ONLY valid, executable Python code.
+2. Do NOT include Markdown code fences such as ```python or ```.
+3. Do NOT include explanations, comments about the cleaning process, introductions, conclusions, or any other natural-language text outside the Python code.
+4. Remove any Markdown formatting, special delimiters, or surrounding text that is not valid Python syntax.
+5. Preserve the original Python code and its logic as much as possible. Only remove or fix content that prevents the code from being directly executable.
+6. If the code is already valid Python, return it unchanged.
+7. The final response must be suitable for saving directly to a `.py` file and executing with Python.
+
+Return ONLY the cleaned Python source code.
 """
