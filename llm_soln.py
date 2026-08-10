@@ -1,103 +1,53 @@
 import ast
-import os
-import uuid
+import traceback
 import pandas as pd
 from prompt import p_v1
-from langfuse import Langfuse
+from prompt import no_llm_v1
+from pprint import pprint
+from langfuse_local import (
+    _log_generation,
+    _start_trace,
+    _finish_trace,
+)
 from llms.openai import OpenAILLM
+from typing import Any, Literal, TypedDict
 from puzzle_verifier import run_verify_from_code
 from langgraph.graph import END, START, StateGraph
-from typing import Any, Literal, Mapping, TypedDict
 
 
 graph = None
 LLM = OpenAILLM()
 MAX_ATTEMPTS = 3
-TRACE_REGISTRY: dict[str, Any] = {}
-
-_LANGFUSE = None
-if Langfuse is not None:
-    try:
-        _LANGFUSE = Langfuse()
-    except Exception:
-        _LANGFUSE = None
-
 
 class VerifierRunResult(TypedDict):
     puzzle: str
     verifier_code: str
     example_solution: str
+    chat_history: list[str]
     execution_feedback: str
     reward: float
     failed_clues: list[int]
     attempts: int
     trace_id: str
-
-
-def _is_langfuse_enabled() -> bool:
-    return _LANGFUSE is not None and bool(os.environ.get("LANGFUSE_PUBLIC_KEY"))
-
-
-def _log_generation(
-    state: Mapping[str, Any],
-    name: str,
-    model: str,
-    input_payload: Any,
-    output_payload: Any,
-    metadata: Mapping[str, Any] | None = None,
-) -> None:
-    if not _is_langfuse_enabled():
-        return
-    trace = TRACE_REGISTRY.get(state.get("trace_id", ""))
-    if trace is None:
-        return
-    try:
-        generation = trace.generation(
-            name=name,
-            model=model,
-            input=input_payload,
-            metadata=dict(metadata or {}),
-        )
-        generation.end(output=output_payload)
-    except Exception:
-        # Never let observability break the solver path.
-        return
-
-
-def _start_trace(puzzle: str) -> str:
-    trace_id = str(uuid.uuid4())
-    if not _is_langfuse_enabled():
-        return trace_id
-    try:
-        trace = _LANGFUSE.trace(
-            id=trace_id,
-            name="grid-puzzle-solver",
-            input={"puzzle": puzzle},
-            metadata={"component": "llm_soln"},
-        )
-        TRACE_REGISTRY[trace_id] = trace
-    except Exception:
-        return trace_id
-    return trace_id
-
-
-def _finish_trace(trace_id: str, output: Mapping[str, Any]) -> None:
-    if not _is_langfuse_enabled():
-        return
-    trace = TRACE_REGISTRY.get(trace_id)
-    if trace is None:
-        return
-    try:
-        trace.update(output=dict(output))
-    except Exception:
-        pass
-    finally:
-        TRACE_REGISTRY.pop(trace_id, None)
+    no_llm: bool
+    terminal_error: str
 
 
 def get_verifier_code(state: VerifierRunResult) -> VerifierRunResult:
-    prompt = f"{p_v1.verifier_code_prompt}\n\n{state['puzzle']}"
-    verifier_code = LLM.get_response(prompt)
+    chat_history = state.get("chat_history", [])
+    if chat_history:
+        history_block = "\n\n".join(chat_history)
+        prompt = (
+            f"{p_v1.verifier_code_prompt}\n\n{state['puzzle']}"
+            f"\n\nPrevious attempts and errors:\n{history_block}\n"
+            "Regenerate verifier code that fixes the previous issues."
+        )
+    else:
+        prompt = f"{p_v1.verifier_code_prompt}\n\n{state['puzzle']}"
+    if state.get("no_llm", False):
+        verifier_code = no_llm_v1.verifier_code_response
+    else:
+        verifier_code = LLM.get_response(prompt)
     _log_generation(
         state,
         name="generate_verifier_code",
@@ -108,9 +58,12 @@ def get_verifier_code(state: VerifierRunResult) -> VerifierRunResult:
     return {"verifier_code": verifier_code}
 
 
-def get_example_sol(state: VerifierRunResult) -> VerifierRunResult:
+def get_example_sol(state: VerifierRunResult) -> VerifierRunResult:    
     prompt = f"{p_v1.example_prompt}\n\n{state['puzzle']}"
-    example_solution = LLM.get_response(prompt)
+    if state.get("no_llm", False):
+        example_solution = no_llm_v1.example_solution_response
+    else:
+        example_solution = LLM.get_response(prompt)
     _log_generation(
         state,
         name="generate_example_solution",
@@ -121,17 +74,17 @@ def get_example_sol(state: VerifierRunResult) -> VerifierRunResult:
     return {"example_solution": example_solution}
 
 
-def _parse_solution(solution_text: str) -> list[list[Any]]:
-    parsed = ast.literal_eval(solution_text)
-    if not isinstance(parsed, list) or any(not isinstance(row, list) for row in parsed):
-        raise ValueError("Generated solution is not a 2D list.")
-    return parsed
-
-
 def get_execution_feedback(state: VerifierRunResult) -> VerifierRunResult:
+    def _parse_solution(solution_text: str) -> list[list[Any]]:
+        parsed = ast.literal_eval(solution_text)
+        if not isinstance(parsed, list) or any(not isinstance(row, list) for row in parsed):
+            raise ValueError("Generated solution is not a 2D list.")
+        return parsed
     attempts = state.get("attempts", 0) + 1
     verifier_code = state.get("verifier_code", "")
     example_solution = state.get("example_solution", "")
+    chat_history = list(state.get("chat_history", []))
+    terminal_error = ""
     try:
         filled_grid = _parse_solution(example_solution)
         reward, failed_clues = run_verify_from_code(verifier_code, filled_grid)
@@ -142,8 +95,20 @@ def get_execution_feedback(state: VerifierRunResult) -> VerifierRunResult:
         )
     except Exception as exc:
         reward, failed_clues = 0.0, []
+        terminal_error = traceback.format_exc()
         feedback = f"execution_error: {exc}"
 
+    short_verifier = verifier_code[:800]
+    chat_history.append(
+        "\n".join(
+            [
+                f"Attempt: {attempts}",
+                f"Execution feedback: {feedback}",
+                f"Verifier code:\n{short_verifier}",
+                f"Example solution:\n{example_solution}"
+            ]
+        )
+    )
     _log_generation(
         state,
         name="verify_solution",
@@ -165,6 +130,8 @@ def get_execution_feedback(state: VerifierRunResult) -> VerifierRunResult:
         "reward": float(reward),
         "failed_clues": failed_clues,
         "attempts": attempts,
+        "terminal_error": terminal_error,
+        "chat_history": chat_history,
     }
 
 
@@ -201,7 +168,7 @@ def build_graph():
     return grid_graph
 
 
-def llm_sol_main(row: pd.Series):
+def llm_sol_main(row: pd.Series, no_llm: bool = False) -> dict[str, Any]:
     global graph
     if graph is None:
         graph = build_graph().compile()
@@ -211,14 +178,16 @@ def llm_sol_main(row: pd.Series):
         "puzzle": row["Puzzle"],
         "verifier_code": "",
         "example_solution": "",
+        "chat_history": [],
         "execution_feedback": "",
         "reward": 0.0,
         "failed_clues": [],
         "attempts": 0,
         "trace_id": trace_id,
+        "no_llm": no_llm,
+        "terminal_error": "",
     }
     state = graph.invoke(initial_state)
-
     result = {
         "reward": state["reward"],
         "solution": state["example_solution"],
@@ -226,6 +195,7 @@ def llm_sol_main(row: pd.Series):
         "verifier_code": state["verifier_code"],
         "attempts": state["attempts"],
         "execution_feedback": state["execution_feedback"],
+        "terminal_error": state.get("terminal_error", ""),
     }
     _finish_trace(trace_id, result)
     return result
@@ -233,6 +203,7 @@ def llm_sol_main(row: pd.Series):
 
 if __name__ == "__main__":
     df = pd.read_csv("data/grid-puzzles-sample.csv")
-    row = df.iloc[0]
-    result = llm_sol_main(row)
-    print(result)
+    row = df.iloc[1]
+    with open('logs.txt', 'w') as f:
+        result = llm_sol_main(row, False)
+        pprint(result, stream=f)

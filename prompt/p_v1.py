@@ -131,7 +131,7 @@ def verify(grid):
     failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
     return float(sum(clue_results)) / len(clue_results), failed_clues
 
-Now generate code for the target puzzle provided by the user.
+Now generate code for the target puzzle provided by the user.\no_think
 """
 
 
@@ -191,5 +191,5 @@ Officers: Daugherty, Lyons, Quinn, Salinas
     ["June", "Hercules", "Salinas"]
 ]
 
-Now generate code for the target puzzle provided by the user.
+Now generate code for the target puzzle provided by the user.\no_think
 """
