@@ -23,12 +23,11 @@ def getGraph(puzzle: str):
 def getOptions(puzzle: str, graph):
     def getEachOption(puzzle: str, prefix: str):
         for line in puzzle.split('\n'):
-            sol, words = None, line.split(' ')
-            for word in words:
-                if word == prefix:
-                    sol = words[1:]
-                    return [x.strip().translate(str.maketrans('', '', string.punctuation)) for x in sol] \
-                        if sol is not None else []
+            stripped = line.strip()
+            if stripped.startswith(prefix):
+                sol = stripped[len(prefix):].strip().split(' ')
+                return [x.strip().translate(str.maketrans('', '', string.punctuation)) for x in sol if x.strip() != '']
+        return []
     options = {}
     for k, v in graph.items():
         if len(v) == 0:

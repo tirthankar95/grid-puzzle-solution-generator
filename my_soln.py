@@ -36,7 +36,10 @@ def _iter(puzzle, dim, d_indx):
         yield new_grid
         return
     curr_dim = dim[d_indx]
-    for value in permutations(puzzle["Options"][curr_dim]):
+    curr_options = puzzle["Options"].get(curr_dim) or []
+    if len(curr_options) == 0:
+        return
+    for value in permutations(curr_options):
         new_puzzle = puzzle.copy()
         new_puzzle["Grid"] = grid.copy()
         new_puzzle["Grid"][curr_dim] = value
@@ -60,7 +63,7 @@ def my_sol_main(row: pd.Series):
                 "failed_clues": f_clues,
             }
     return {
-        "reward": reward,
+        "reward": -1,
         "solution": "Incorrect verification code",
-        "failed_clues": f_clues
+        "failed_clues": None
     }
