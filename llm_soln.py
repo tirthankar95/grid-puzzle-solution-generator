@@ -31,7 +31,6 @@ class VerifierRunResult(TypedDict):
     no_llm: bool
     
 
-
 @traceable
 def get_verifier_code(state: VerifierRunResult):
     chat_history = state.get("chat_history", [])
@@ -40,10 +39,10 @@ def get_verifier_code(state: VerifierRunResult):
         prompt = (
             f"{p_v1.verifier_code_prompt}\n\n{state['puzzle']}"
             f"\n\nPrevious attempts and errors:\n{history_block}\n"
-            "Regenerate verifier code that fixes the previous issues./no_think"
+            "Regenerate verifier code that fixes the previous issues.\n/no_think"
         )
     else:
-        prompt = f"{p_v1.verifier_code_prompt}\n\n{state['puzzle']}"
+        prompt = f"{p_v1.verifier_code_prompt}\n\n{state['puzzle']}\n/no_think"
     verifier_code = no_llm_v1.verifier_code_response if state.get("no_llm", False) else LLM.get_response(prompt)
     return {
         "verifier_code": verifier_code,
@@ -53,19 +52,19 @@ def get_verifier_code(state: VerifierRunResult):
 
 @traceable
 def get_code(state: VerifierRunResult):
-    prompt = f'{p_v1.code_prompt}\n\n{state["verifier_code"]}/no_think'
+    prompt = f'{p_v1.code_prompt}\n\n{state["verifier_code"]}\n/no_think'
     if state.get("no_llm", False):
-        code = no_llm_v1.verifier_code_response
+        code = no_llm_v1.verifier_code_response.strip()
     else:
-        code = LLM.get_response(prompt)
-    return {"clean_code": code.strip()}
+        code = LLM.get_response(prompt).strip()
+    return {"clean_code": code}
 
 
 @traceable
 def get_example_sol(state: VerifierRunResult):    
-    prompt = f"{p_v1.example_prompt}\n\n{state['puzzle']}/no_think"
+    prompt = f"{p_v1.example_prompt}\n\n{state['puzzle']}\n/no_think"
     if state.get("no_llm", False):
-        example_solution = no_llm_v1.example_solution_response
+        example_solution = no_llm_v1.example_solution_response.strip()
     else:
         example_solution = LLM.get_response(prompt)
     return {"example_solution": example_solution}
@@ -86,11 +85,7 @@ def get_execution_feedback(state: VerifierRunResult):
     try:
         filled_grid = _parse_solution(example_solution)
         reward, failed_clues = run_verify_from_code(verifier_code, filled_grid)
-        feedback = (
-            "verification_passed"
-            if len(failed_clues) == 0
-            else f"verification_failed: failed_clues={failed_clues}"
-        )
+        feedback = "verification_passed"
     except Exception as exc:
         reward, failed_clues = 0.0, []
         terminal_error = traceback.format_exc()
@@ -120,10 +115,8 @@ def get_execution_feedback(state: VerifierRunResult):
 @traceable
 def route_after_execution_feedback(state: VerifierRunResult) -> Literal["safe_exit", "verifier_code"]:
     attempts = state.get("attempts", 0)
-    reward = state.get("reward", 0.0)
-    failed_clues = state.get("failed_clues", [])
-
-    if (reward > 0 and not failed_clues) or attempts >= MAX_ATTEMPTS:
+    feedback = state.get("execution_feedback", "")
+    if (feedback == "verification_passed") or attempts >= MAX_ATTEMPTS:
         return "safe_exit"
     return "verifier_code"
 

@@ -2,9 +2,9 @@ input_file: data/grid-puzzles-sample.csv
 
 solution:
   brute_force: 
-    enable: false
+    enable: true
     save_results: true
   llm_force:
-    enable: true
+    enable: false
     verification: true
     save_results: true

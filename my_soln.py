@@ -59,3 +59,8 @@ def my_sol_main(row: pd.Series):
                 "solution": pretty_print(filled_grid, console = True),
                 "failed_clues": f_clues,
             }
+    return {
+        "reward": reward,
+        "solution": "Incorrect verification code",
+        "failed_clues": f_clues
+    }
