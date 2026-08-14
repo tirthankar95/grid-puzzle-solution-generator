@@ -95,31 +95,28 @@ def clue4(Dogs, Officers):
 def verify(grid):
     if not grid or len(grid) != 4:
         return (0.0, list(range(5)))
-    months = [""March"", ""April"", ""May"", ""June""]
-    dogs = [""Aries"", ""Barca"", ""Hercules"", ""Jaws""]
-    officers = [""Daugherty"", ""Lyons"", ""Quinn"", ""Salinas""]
+    
+    dogs = {}
+    officers = {}
+    
     for row in grid:
         if len(row) != 3:
             return (0.0, list(range(5)))
-        if row[0] not in months or row[1] not in dogs or row[2] not in officers:
+        month, dog, officer = row
+        if month not in MONTHS or dog not in {""Aries"", ""Barca"", ""Hercules"", ""Jaws""} or officer not in {""Daugherty"", ""Lyons"", ""Quinn"", ""Salinas""}:
             return (0.0, list(range(5)))
-    Dogs = {
-        row[1]: Dog(name=row[1], month=MONTHS[row[0]], officer=row[2])
-        for row in grid
-    }
-    Officers = {
-        row[2]: Officer(name=row[2], month=MONTHS[row[0]], dog=row[1])
-        for row in grid
-    }
-
+        
+        dogs[dog] = Dog(name=dog, month=MONTHS[month], officer=officer)
+        officers[officer] = Officer(name=officer, dog=dog, month=MONTHS[month])
+    
     clue_results = [
-        clue0(Dogs, Officers),
-        clue1(Dogs, Officers),
-        clue2(Dogs, Officers),
-        clue3(Dogs, Officers),
-        clue4(Dogs, Officers),
+        clue0(dogs, officers),
+        clue1(dogs, officers),
+        clue2(dogs, officers),
+        clue3(dogs, officers),
+        clue4(dogs, officers),
     ]
-
+    
     failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
     return float(sum(clue_results)) / len(clue_results), failed_clues","March | Aries    | Lyons    
 April | Barca    | Daugherty
@@ -164,90 +161,7 @@ Solve the grid puzzle by filling the table:
 
 Use the clues to fill the table with the following categories:
 Winners: Charles, Freddie, Shelley, Vicky
-Spiders: archaenido, cart spider, darkback, whip spider","from dataclasses import dataclass
-
-PRICES = {
-    ""$45"": 0,
-    ""$60"": 1,
-    ""$75"": 2,
-    ""$90"": 3,
-}
-
-@dataclass
-class Winner:
-    name: str
-    spider: str = None
-    price: int = None
-
-@dataclass
-class Spider:
-    name: str
-    winner: str = None
-    price: int = None
-
-def clue0(Winners, Spiders):
-    cart_price = None
-    freddie_price = None
-    for winner in Winners.values():
-        if winner.name == ""Freddie"":
-            freddie_price = winner.price
-        if winner.spider == ""cart spider"":
-            cart_price = winner.price
-    return freddie_price == cart_price + 15
-
-def clue1(Winners, Spiders):
-    vicky_winner = None
-    for winner in Winners.values():
-        if winner.name == ""Vicky"":
-            vicky_winner = winner
-    cart_spider = None
-    for spider in Spiders.values():
-        if spider.name == ""cart spider"":
-            cart_spider = spider
-    return (vicky_winner.price == 1 and cart_spider.price == 0) or (vicky_winner.price == 0 and cart_spider.price == 1)
-
-def clue2(Winners, Spiders):
-    shelley_purchase = None
-    for winner in Winners.values():
-        if winner.name == ""Shelley"":
-            shelley_purchase = winner
-    spider75 = None
-    for spider in Spiders.values():
-        if spider.price == 2:
-            spider75 = spider
-    return (shelley_purchase.spider == ""archaenido"" and spider75.name == ""cart spider"") or (shelley_purchase.spider == ""cart spider"" and spider75.name == ""archaenido"")
-
-def clue3(Winners, Spiders):
-    spider90 = None
-    for spider in Spiders.values():
-        if spider.price == 3:
-            spider90 = spider
-    return spider90.name == ""shelley's purchase"" or spider90.name == ""darkback""
-
-def verify(grid):
-    if len(grid) != 4:
-        return (0.0, list(range(4)))
-    try:
-        Winners = {
-            row[1]: Winner(name=row[1], price=PRICES[row[0]], spider=row[2])
-            for row in grid
-        }
-        Spiders = {
-            row[2]: Spider(name=row[2], winner=row[1], price=PRICES[row[0]])
-            for row in grid
-        }
-    except:
-        return (0.0, list(range(4)))
-    
-    clue_results = [
-        clue0(Winners, Spiders),
-        clue1(Winners, Spiders),
-        clue2(Winners, Spiders),
-        clue3(Winners, Spiders),
-    ]
-    
-    failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
-    return float(sum(clue_results)) / len(clue_results), failed_clues",Incorrect verification code
+Spiders: archaenido, cart spider, darkback, whip spider",,Incorrect verification code
 3x4,Challenging,"At the annual Riverside Vintage Watch Exchange, collectors gather to bid on timepieces from various eras. Determine the price, brand, face color, and decade of manufacture for each watch listed in the table below. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once. If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.The Tissot watch was either the timepiece with a silver face or the one with a blue dial.
 2.The watch with a blue dial sold for 75 dollars less than the Bulova model.
 3.Of the $400 watch and the $350 piece, one is a Hamilton model and the other has a green face.
@@ -287,13 +201,6 @@ PRICES = {
     ""$475"": 3,
 }
 
-FACE_COLORS = {
-    ""blue"": 0,
-    ""green"": 1,
-    ""red"": 2,
-    ""silver"": 3,
-}
-
 @dataclass
 class Watch:
     price: str
@@ -307,32 +214,37 @@ def clue0(Watches):
 def clue1(Watches):
     blue_dial = next(w for w in Watches if w.face_color == ""blue"")
     bulova = next(w for w in Watches if w.brand == ""Bulova"")
-    return int(blue_dial.price) == int(bulova.price) - 75
+    return blue_dial.price == bulova.price - 75
 
 def clue2(Watches):
     three_hundred_fifty = next(w for w in Watches if w.price == ""$350"")
     four_hundred = next(w for w in Watches if w.price == ""$400"")
-    return (three_hundred_fifty.brand == ""Hamilton"" and four_hundred.face_color == ""green"") or \
-           (three_hundred_fifty.face_color == ""green"" and four_hundred.brand == ""Hamilton"")
+    green_face = next(w for w in Watches if w.face_color == ""green"")
+    return (three_hundred_fifty.brand == ""Hamilton"" and four_hundred.brand == ""Citizen"") or \
+           (three_hundred_fifty.brand == ""Citizen"" and four_hundred.brand == ""Hamilton"")
 
 def clue3(Watches):
     citizen = next(w for w in Watches if w.brand == ""Citizen"")
     seiko = next(w for w in Watches if w.brand == ""Seiko"")
-    return int(seiko.price) > int(citizen.price)
+    return seiko.price > citizen.price
 
 def clue4(Watches):
     silver_face = next(w for w in Watches if w.face_color == ""silver"")
     green_face = next(w for w in Watches if w.face_color == ""green"")
-    return int(silver_face.price) == int(green_face.price) + 125
+    return silver_face.price == green_face.price + 125
 
 def verify(grid):
-    if len(grid) != 4:
-        return (0.0, list(range(5)))
     try:
-        Watches = [Watch(price=row[0], brand=row[1], face_color=row[2]) for row in grid]
+        Watches = [
+            Watch(price=row[0], brand=row[1], face_color=row[2])
+            for row in grid
+        ]
     except IndexError:
-        return (0.0, list(range(5)))
-
+        return 0.0, list(range(5))
+    
+    if len(Watches) != 4 or any(len(w) != 3 for w in Watches):
+        return 0.0, list(range(5))
+    
     clue_results = [
         clue0(Watches),
         clue1(Watches),
@@ -340,6 +252,7 @@ def verify(grid):
         clue3(Watches),
         clue4(Watches),
     ]
-
+    
     failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
-    return float(sum(clue_results)) / len(clue_results), failed_clues",Incorrect verification code
+    reward = float(sum(clue_results)) / len(clue_results)
+    return reward, failed_clues",Incorrect verification code

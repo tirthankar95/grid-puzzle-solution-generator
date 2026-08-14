@@ -1,0 +1,321 @@
+Grid,Difficulty,Story,Clues,Table,Options,Puzzle,Verifier,Solution
+3x4,Easy,"The Abbeville K-9 Academy trains dogs for use by a number of different county police forces.  Using only the clues below, match each of their most recent ""students"" to the month in which they graduated and the name of the officer and county to which they were assigned. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.  If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.The canine that graduated in May was either the dog assigned to Officer Salinas or the dog assigned to Officer Quinn.
+2.Barca graduated in April.
+3.The K-9 unit assigned to Officer Lyons graduated 1 month before the K-9 unit assigned to Officer Daugherty.
+4.The four dogs were the K-9 unit assigned to Officer Lyons, the dog that graduated in June, Jaws and the K-9 unit that graduated in April.
+5.The canine assigned to Officer Salinas was either Hercules or Barca.","+----------+--------+------------+
+| Months   | Dogs   | Officers   |
++==========+========+============+
+| March    |        |            |
++----------+--------+------------+
+| April    |        |            |
++----------+--------+------------+
+| May      |        |            |
++----------+--------+------------+
+| June     |        |            |
++----------+--------+------------+","Officers: Daugherty, Lyons, Quinn, Salinas
+Dogs: Aries, Barca, Hercules, Jaws","
+Story:
+The Abbeville K-9 Academy trains dogs for use by a number of different county police forces.  Using only the clues below, match each of their most recent ""students"" to the month in which they graduated and the name of the officer and county to which they were assigned. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.  If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.
+
+Clues:
+1.The canine that graduated in May was either the dog assigned to Officer Salinas or the dog assigned to Officer Quinn.
+2.Barca graduated in April.
+3.The K-9 unit assigned to Officer Lyons graduated 1 month before the K-9 unit assigned to Officer Daugherty.
+4.The four dogs were the K-9 unit assigned to Officer Lyons, the dog that graduated in June, Jaws and the K-9 unit that graduated in April.
+5.The canine assigned to Officer Salinas was either Hercules or Barca.
+
+Solve the grid puzzle by filling the table:
++----------+--------+------------+
+| Months   | Dogs   | Officers   |
++==========+========+============+
+| March    |        |            |
++----------+--------+------------+
+| April    |        |            |
++----------+--------+------------+
+| May      |        |            |
++----------+--------+------------+
+| June     |        |            |
++----------+--------+------------+
+
+Use the clues to fill the table with the following categories:
+Dogs: Aries, Barca, Hercules, Jaws
+Officers: Daugherty, Lyons, Quinn, Salinas","from dataclasses import dataclass
+
+MONTHS = {
+    ""March"": 0,
+    ""April"": 1,
+    ""May"": 2,
+    ""June"": 3,
+}
+
+@dataclass
+class Officer:
+    name: str
+    dog: str = None
+    month: int = None
+
+@dataclass
+class Dog:
+    name: str
+    officer: str = None
+    month: int = None
+
+def clue0(Dogs, Officers):
+    return (
+        Officers[""Salinas""].month == MONTHS[""May""]
+        or Officers[""Quinn""].month == MONTHS[""May""]
+    )
+
+def clue1(Dogs, Officers):
+    return Dogs[""Barca""].month == MONTHS[""April""]
+
+def clue2(Dogs, Officers):
+    return Officers[""Daugherty""].month == Officers[""Lyons""].month + 1
+
+def clue3(Dogs, Officers):
+    june_dog = None
+    april_dog = None
+    for dog in Dogs.values():
+        if dog.month == MONTHS[""June""]:
+            june_dog = dog.name
+        if dog.month == MONTHS[""April""]:
+            april_dog = dog.name
+    values = {
+        Officers[""Lyons""].dog,
+        june_dog,
+        ""Jaws"",
+        april_dog,
+    }
+    return len(values) == 4
+
+def clue4(Dogs, Officers):
+    return Officers[""Salinas""].dog in {""Hercules"", ""Barca""}
+
+def verify(grid):
+    if not grid or len(grid) != 4:
+        return (0.0, list(range(5)))
+    
+    dogs = {}
+    officers = {}
+    
+    for row in grid:
+        if len(row) != 3:
+            return (0.0, list(range(5)))
+        month, dog, officer = row
+        if month not in MONTHS or dog not in {""Aries"", ""Barca"", ""Hercules"", ""Jaws""} or officer not in {""Daugherty"", ""Lyons"", ""Quinn"", ""Salinas""}:
+            return (0.0, list(range(5)))
+        
+        dogs[dog] = Dog(name=dog, month=MONTHS[month], officer=officer)
+        officers[officer] = Officer(name=officer, dog=dog, month=MONTHS[month])
+    
+    clue_results = [
+        clue0(dogs, officers),
+        clue1(dogs, officers),
+        clue2(dogs, officers),
+        clue3(dogs, officers),
+        clue4(dogs, officers),
+    ]
+    
+    failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
+    return float(sum(clue_results)) / len(clue_results), failed_clues","March | Aries    | Lyons    
+April | Barca    | Daugherty
+May   | Jaws     | Quinn    
+June  | Hercules | Salinas  "
+3x4,Challenging,"Match each auctioned spider specimen to its owner and country of origin, and determine the final price paid for each. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.  If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.Freddie's purchase cost 15 dollars more than the cart spider.
+2.Of the darkback and the cart spider, one sold for $60 and the other was won by Vicky.
+3.Of the spider that sold for $75 and Shelley's purchase, one was the archaenido and the other was the cart spider.
+4.The arachnid that sold for $90 was either Shelley's purchase or the darkback.","+----------+-----------+-----------+
+| Prices   | Winners   | Spiders   |
++==========+===========+===========+
+| $45      |           |           |
++----------+-----------+-----------+
+| $60      |           |           |
++----------+-----------+-----------+
+| $75      |           |           |
++----------+-----------+-----------+
+| $90      |           |           |
++----------+-----------+-----------+","Spiders: archaenido, cart spider, darkback, whip spider
+Winners: Charles, Freddie, Shelley, Vicky","
+Story:
+Match each auctioned spider specimen to its owner and country of origin, and determine the final price paid for each. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.  If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.
+
+Clues:
+1.Freddie's purchase cost 15 dollars more than the cart spider.
+2.Of the darkback and the cart spider, one sold for $60 and the other was won by Vicky.
+3.Of the spider that sold for $75 and Shelley's purchase, one was the archaenido and the other was the cart spider.
+4.The arachnid that sold for $90 was either Shelley's purchase or the darkback.
+
+Solve the grid puzzle by filling the table:
++----------+-----------+-----------+
+| Prices   | Winners   | Spiders   |
++==========+===========+===========+
+| $45      |           |           |
++----------+-----------+-----------+
+| $60      |           |           |
++----------+-----------+-----------+
+| $75      |           |           |
++----------+-----------+-----------+
+| $90      |           |           |
++----------+-----------+-----------+
+
+Use the clues to fill the table with the following categories:
+Winners: Charles, Freddie, Shelley, Vicky
+Spiders: archaenido, cart spider, darkback, whip spider","from dataclasses import dataclass
+
+PRICES = {
+    ""$45"": 0,
+    ""$60"": 1,
+    ""$75"": 2,
+    ""$90"": 3,
+}
+
+@dataclass
+class Winner:
+    name: str
+    spider: str = None
+    price: int = None
+
+@dataclass
+class Spider:
+    name: str
+    winner: str = None
+    price: int = None
+
+def clue0(Winners, Spiders):
+    return Winners[""Freddie""].price == Spiders[""cart spider""].price + 15
+
+def clue1(Winners, Spiders):
+    cart_price = Spiders[""cart spider""].price
+    vicky_winner = Winners[""Vicky""]
+    return (vicky_winner.price == 60 or vicky_winner.price == cart_price) and \
+           (vicky_winner.price == 60 or vicky_winner.price == cart_price)
+
+def clue2(Winners, Spiders):
+    seventyfive_winner = Winners[""Shelley""]
+    spider75 = Spiders[""archaenido""] if seventyfive_winner.price == 75 else Spiders[""cart spider""]
+    return (spider75.price == 75 or spider75.price == 60) and \
+           (spider75.name in [""archaenido"", ""cart spider""])
+
+def clue3(Winners, Spiders):
+    ninety_winner = Winners[""Vicky""]
+    darkback_spider = Spiders[""darkback""]
+    return (ninety_winner.price == 90 or darkback_spider.price == 90) and \
+           (ninety_winner.name in [""Shelley"", ""Vicky""] or darkback_spider.name == ""darkback"")
+
+def verify(grid):
+    Winners = {
+        row[1]: Winner(name=row[1], price=PRICES[row[0]], spider=row[2])
+        for row in grid
+    }
+    Spiders = {
+        row[2]: Spider(name=row[2], winner=row[1], price=PRICES[row[0]])
+        for row in grid
+    }
+
+    if len(Winners) != 4 or len(Spiders) != 4:
+        return (0.0, list(range(4)))
+
+    clue_results = [
+        clue0(Winners, Spiders),
+        clue1(Winners, Spiders),
+        clue2(Winners, Spiders),
+        clue3(Winners, Spiders),
+    ]
+
+    failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
+    return float(sum(clue_results)) / len(clue_results), failed_clues",Incorrect verification code
+3x4,Challenging,"At the annual Riverside Vintage Watch Exchange, collectors gather to bid on timepieces from various eras. Determine the price, brand, face color, and decade of manufacture for each watch listed in the table below. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once. If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.The Tissot watch was either the timepiece with a silver face or the one with a blue dial.
+2.The watch with a blue dial sold for 75 dollars less than the Bulova model.
+3.Of the $400 watch and the $350 piece, one is a Hamilton model and the other has a green face.
+4.The Seiko model sold for somewhat more than the Citizen model.
+5.The watch with a silver face sold for 125 dollars more than the timepiece with a green face.",,"Face Colors: blue, green, red, silver
+Brands: Bulova, Citizen, Hamilton, Seiko","Story:
+At the annual Riverside Vintage Watch Exchange, collectors gather to bid on timepieces from various eras. Determine the price, brand, face color, and decade of manufacture for each watch listed in the table below. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once. If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.
+
+Clues:
+1.The Tissot watch was either the timepiece with a silver face or the one with a blue dial.
+2.The watch with a blue dial sold for 75 dollars less than the Bulova model.
+3.Of the $400 watch and the $350 piece, one is a Hamilton model and the other has a green face.
+4.The Seiko model sold for somewhat more than the Citizen model.
+5.The watch with a silver face sold for 125 dollars more than the timepiece with a green face.
+
+Solve the grid puzzle by filling the table:
++----------+----------+--------------+
+| Prices   | Brands   | Face Colors   |
++==========+==========+==============+
+| $300     |          |              |
++----------++/----------+--------------+
+| $350     |          |              |
++----------+----------+--------------+
+| $400     |          |              |
++----------+----------+--------------+
+| $475     |          |              |
++----------+----------+--------------+
+
+Use the clues to fill the table with the following categories:
+Brands: Bulova, Citizen, Hamilton, Seiko
+Face Colors: blue, green, red, silver","from dataclasses import dataclass
+
+PRICES = {
+    ""$300"": 0,
+    ""$350"": 1,
+    ""$400"": 2,
+    ""$475"": 3,
+}
+
+@dataclass
+class Watch:
+    price: str
+    brand: str = None
+    face_color: str = None
+
+def clue0(Watches):
+    tissot = next(w for w in Watches if w.brand == ""Tissot"")
+    return tissot.face_color in [""silver"", ""blue""]
+
+def clue1(Watches):
+    blue_dial = next(w for w in Watches if w.face_color == ""blue"")
+    bulova = next(w for w in Watches if w.brand == ""Bulova"")
+    return blue_dial.price == bulova.price - 75
+
+def clue2(Watches):
+    three_hundred_fifty = next(w for w in Watches if w.price == ""$350"")
+    four_hundred = next(w for w in Watches if w.price == ""$400"")
+    green_face = next(w for w in Watches if w.face_color == ""green"")
+    return (three_hundred_fifty.brand == ""Hamilton"" and four_hundred.brand == ""Citizen"") or \
+           (three_hundred_fifty.brand == ""Citizen"" and four_hundred.brand == ""Hamilton"")
+
+def clue3(Watches):
+    citizen = next(w for w in Watches if w.brand == ""Citizen"")
+    seiko = next(w for w in Watches if w.brand == ""Seiko"")
+    return seiko.price > citizen.price
+
+def clue4(Watches):
+    silver_face = next(w for w in Watches if w.face_color == ""silver"")
+    green_face = next(w for w in Watches if w.face_color == ""green"")
+    return silver_face.price == green_face.price + 125
+
+def verify(grid):
+    try:
+        Watches = [
+            Watch(price=row[0], brand=row[1], face_color=row[2])
+            for row in grid
+        ]
+    except IndexError:
+        return 0.0, list(range(5))
+    
+    if len(Watches) != 4 or any(len(w) != 3 for w in Watches):
+        return 0.0, list(range(5))
+    
+    clue_results = [
+        clue0(Watches),
+        clue1(Watches),
+        clue2(Watches),
+        clue3(Watches),
+        clue4(Watches),
+    ]
+    
+    failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
+    reward = float(sum(clue_results)) / len(clue_results)
+    return reward, failed_clues",Incorrect verification code

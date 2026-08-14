@@ -25,7 +25,7 @@ def getOptions(puzzle: str, graph):
         for line in puzzle.split('\n'):
             stripped = line.strip()
             if stripped.startswith(prefix):
-                sol = stripped[len(prefix):].strip().split(' ')
+                sol = stripped[len(prefix):].strip().split(',')
                 return [x.strip().translate(str.maketrans('', '', string.punctuation)) for x in sol if x.strip() != '']
         return []
     options = {}

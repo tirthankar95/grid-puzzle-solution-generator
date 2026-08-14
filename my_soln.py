@@ -1,7 +1,8 @@
+from puzzle_verifier import run_verify_from_code
 from itertools import permutations
 from utils import parse_puzzle
-from puzzle_verifier import run_verify_from_code
 import pandas as pd
+import traceback
 
 def pretty_print(grid, console=True):
     widths = [
@@ -54,8 +55,10 @@ def my_sol_main(row: pd.Series):
         try:
             reward, f_clues = run_verify_from_code(code, filled_grid)
         except Exception as e:
-            print(f"Error:\n{e}\n{filled_grid}")
-            continue
+            print(f"Error:\n{e}")
+            print(traceback.format_exc())
+            print(f"Filled grid candidate:\n{filled_grid}")
+            break
         if len(f_clues) == 0:
             return {
                 "reward": reward,

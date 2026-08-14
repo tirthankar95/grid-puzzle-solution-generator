@@ -72,12 +72,3 @@ def verify(grid):
     failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
     return float(sum(clue_results)) / len(clue_results), failed_clues
 '''
-
-example_solution_response = '''
-[
-    ["March", "Aries", "Lyons"],
-    ["April", "Barca", "Daugherty"],
-    ["May", "Jaws", "Quinn"],
-    ["June", "Hercules", "Salinas"]
-]
-'''

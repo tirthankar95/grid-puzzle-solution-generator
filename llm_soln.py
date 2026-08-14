@@ -1,11 +1,14 @@
 import ast
 import traceback
 import pandas as pd
+from pprint import pprint
+from my_soln import _iter
 from prompt import p_v1
 from prompt import no_llm_v1
-from pprint import pprint
+from typing import List
 from dotenv import load_dotenv
 from langsmith import traceable
+from utils import parse_puzzle
 from llms.openai import OpenAILLM
 from typing import Any, Literal, TypedDict
 from puzzle_verifier import run_verify_from_code
@@ -16,7 +19,6 @@ graph = None
 load_dotenv()
 LLM = OpenAILLM()
 MAX_ATTEMPTS = 3
-
 class VerifierRunResult(TypedDict):
     puzzle: str
     verifier_code: str
@@ -29,7 +31,7 @@ class VerifierRunResult(TypedDict):
     chat_history: list[str]
     attempts: int
     no_llm: bool
-    
+
 
 @traceable
 def get_verifier_code(state: VerifierRunResult):
@@ -42,7 +44,16 @@ def get_verifier_code(state: VerifierRunResult):
             "Regenerate verifier code that fixes the previous issues.\n/no_think"
         )
     else:
-        prompt = f"{p_v1.verifier_code_prompt}\n\n{state['puzzle']}\n/no_think"
+        prompt = f"""{p_v1.verifier_code_prompt}
+        
+[USER PUZZLE]
+{state['puzzle']}
+
+Note the code you generate much be able to process this grid solution correctly
+[GRID SOLUTION]
+{state['example_solution']}
+
+/no_think"""
     verifier_code = no_llm_v1.verifier_code_response if state.get("no_llm", False) else LLM.get_response(prompt)
     return {
         "verifier_code": verifier_code,
@@ -61,19 +72,9 @@ def get_code(state: VerifierRunResult):
 
 
 @traceable
-def get_example_sol(state: VerifierRunResult):    
-    prompt = f"{p_v1.example_prompt}\n\n{state['puzzle']}\n/no_think"
-    if state.get("no_llm", False):
-        example_solution = no_llm_v1.example_solution_response.strip()
-    else:
-        example_solution = LLM.get_response(prompt)
-    return {"example_solution": example_solution}
-
-
-@traceable
 def get_execution_feedback(state: VerifierRunResult):
-    def _parse_solution(solution_text: str) -> list[list[Any]]:
-        parsed = ast.literal_eval(solution_text)
+    def _parse_solution(solution_input: str | list[list[Any]]) -> list[list[Any]]:
+        parsed = ast.literal_eval(solution_input) if isinstance(solution_input, str) else solution_input
         if not isinstance(parsed, list) or any(not isinstance(row, list) for row in parsed):
             raise ValueError("Generated solution is not a 2D list.")
         return parsed
@@ -125,15 +126,11 @@ def build_graph():
     grid_graph = StateGraph(VerifierRunResult)
     grid_graph.add_node("verifier_code", get_verifier_code)
     grid_graph.add_node("extract_code", get_code)
-    grid_graph.add_node("example_solution", get_example_sol)
     grid_graph.add_node("execution_feedback", get_execution_feedback)
-
     # One attempt: generate verifier -> generate candidate solution -> verify it.
     grid_graph.add_edge(START, "verifier_code")
     grid_graph.add_edge("verifier_code", "extract_code")
-    grid_graph.add_edge("extract_code", "example_solution")
-    grid_graph.add_edge("example_solution", "execution_feedback")
-
+    grid_graph.add_edge("extract_code", "execution_feedback")
     # If verification is good then exit, else retry until max attempts.
     grid_graph.add_conditional_edges(
         "execution_feedback",
@@ -150,11 +147,17 @@ def llm_sol_main(row: pd.Series, no_llm: bool = False) -> dict[str, Any]:
     global graph
     if graph is None:
         graph = build_graph().compile()
+    puzzle, code = row['Puzzle'], row['Verifier']
+    puzzle = parse_puzzle(puzzle)
+    dimensions = list(puzzle["Options"].keys())
+    for filled_grid in _iter(puzzle, dimensions, 0):
+        example_solution = filled_grid
+        break
     initial_state: VerifierRunResult = {
         "puzzle": row["Puzzle"],
         "verifier_code": "",
         "clean_code": "",
-        "example_solution": "",
+        "example_solution": example_solution,
         "chat_history": [],
         "execution_feedback": "",
         "reward": 0.0,
@@ -179,7 +182,7 @@ def llm_sol_main(row: pd.Series, no_llm: bool = False) -> dict[str, Any]:
 
 if __name__ == "__main__":
     df = pd.read_csv("data/grid-puzzles-sample.csv")
-    row = df.iloc[1]
+    row = df.iloc[0]
     with open('logs.txt', 'w') as f:
-        result = llm_sol_main(row, no_llm = False)
+        result = llm_sol_main(row, no_llm = True)
         pprint(result, stream=f)

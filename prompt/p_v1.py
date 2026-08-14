@@ -1,35 +1,32 @@
 verifier_code_prompt = """
 You generate Python verifier code for logic-grid puzzles.
 
-Task:
-- Produce executable, deterministic, self-contained Python code.
-- The code must define a function: verify(grid).
-- Input: grid is a 2D list of strings, one row per solved table row.
-- Output: (reward, failed_clues)
-    - reward: float in [0, 1], computed as satisfied_clues / total_clues
-    - failed_clues: list[int], 0-based clue indices that failed
+Return executable, deterministic, self-contained Python code defining verify(grid).
 
-Hard output constraints:
-- Return only Python code (no markdown, no prose, no backticks).
-- Keep verify(grid) as the callable entry point.
-- Do not import external libraries.
+Contract:
+- grid is a 2D list of strings, one solved row per inner list.
+- Return (reward, failed_clues).
+- reward is a float in [0, 1] computed as satisfied_clues / total_clues.
+- failed_clues is a list[int] of 0-based clue indices that failed.
 
-Implementation requirements:
-- Parse grid rows into useful structures (maps by entity/category).
-- Encode each clue as a boolean check.
-- Treat malformed input defensively:
-  - if grid shape is invalid or required values are missing,
-    return (0.0, list(range(total_clues))).
-- Ensure reward is float, not int.
+Hard constraints:
+- Output only Python code: no markdown, prose, or backticks.
+- Keep verify(grid) as the entry point.
+- No external-library imports.
+- Do not print or read input.
 
-Quality requirements:
-- Clue checks must reflect puzzle text exactly.
-- Use clear variable names and straightforward logic.
+Implementation:
+- Parse rows into useful maps by entity/category instead of relying on row order.
+- Encode each clue as a boolean check that matches the clue text exactly.
+- Use clear helper variables and straightforward logic.
+- Handle malformed input defensively: if grid shape is invalid or required
+    values are missing, return (0.0, list(range(total_clues))).
+- Ensure reward is a float, not an int.
 
-Reference example (style and contract):
+Reference example (style + contract):
 [EXAMPLE PUZZLE]
 Story:
-The Abbeville K-9 Academy trains dogs for use by a number of different county police forces.  Using only the clues below, match each of their most recent ""students"" to the month in which they graduated and the name of the officer and county to which they were assigned. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.  If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.
+Abbeville K-9 Academy puzzle: match each dog to its graduation month and assigned officer.
 
 Clues:
 1.The canine that graduated in May was either the dog assigned to Officer Salinas or the dog assigned to Officer Quinn.
@@ -129,59 +126,8 @@ def verify(grid):
     failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
     return float(sum(clue_results)) / len(clue_results), failed_clues
 
-Now generate code for the target puzzle provided by the user.
-"""
-
-
-example_prompt = """
-You generate one candidate solution grid for a logic-grid puzzle.
-
-Task:
-- Return one 2D list of strings where each row is one complete assignment.
-- The row order should follow the first column's natural order when present (for months: March, April, May, June).
-- Every option in each category must appear exactly once.
-
-Hard output constraints:
-- Return only a valid Python list literal.
-- No markdown, no prose, no comments, no code fences.
-- Output must parse with ast.literal_eval.
-
-Schema constraints:
-- Number of columns must equal the number of categories.
-- Number of rows must equal the number of options in each category.
-- Each row must have unique entities across categories.
-- Keep exact spelling/casing from puzzle options.
-
-Reference example (style only):
-[EXAMPLE PUZZLE]
-Story:
-The Abbeville K-9 Academy trains dogs for use by a number of different county police forces.  Using only the clues below, match each of their most recent ""students"" to the month in which they graduated and the name of the officer and county to which they were assigned. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.  If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.
-
-Clues:
-1.The canine that graduated in May was either the dog assigned to Officer Salinas or the dog assigned to Officer Quinn.
-2.Barca graduated in April.
-3.The K-9 unit assigned to Officer Lyons graduated 1 month before the K-9 unit assigned to Officer Daugherty.
-4.The four dogs were the K-9 unit assigned to Officer Lyons, the dog that graduated in June, Jaws and the K-9 unit that graduated in April.
-5.The canine assigned to Officer Salinas was either Hercules or Barca.
-
-Solve the grid puzzle by filling the table:
-+----------+--------+------------+
-| Months   | Dogs   | Officers   |
-+==========+========+============+
-| March    |        |            |
-+----------+--------+------------+
-| April    |        |            |
-+----------+--------+------------+
-| May      |        |            |
-+----------+--------+------------+
-| June     |        |            |
-+----------+--------+------------+
-
-Use the clues to fill the table with the following categories:
-Dogs: Aries, Barca, Hercules, Jaws
-Officers: Daugherty, Lyons, Quinn, Salinas
-
-[EXAMPLE OUTPUT]
+[EXAMPLE SOLUTION]
+Example grid input the verifier should accept:
 [
     ["March", "Aries", "Lyons"],
     ["April", "Barca", "Daugherty"],
@@ -189,7 +135,8 @@ Officers: Daugherty, Lyons, Quinn, Salinas
     ["June", "Hercules", "Salinas"]
 ]
 
-Now generate code for the target puzzle provided by the user.
+The verifier code should process this grid correctly and satisfy all clues.
+Now generate the verifier code for the target puzzle provided by the user.
 """
 
 
