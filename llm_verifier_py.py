@@ -4,8 +4,7 @@ import pandas as pd
 from pprint import pprint
 from my_soln import _iter
 from prompt import p_v1
-from prompt import no_llm_v1
-from typing import List
+from prompt import p_no_llm_v1
 from dotenv import load_dotenv
 from langsmith import traceable
 from utils import parse_puzzle
@@ -54,7 +53,7 @@ Note the code you generate much be able to process this grid solution correctly
 {state['example_solution']}
 
 /no_think"""
-    verifier_code = no_llm_v1.verifier_code_response if state.get("no_llm", False) else LLM.get_response(prompt)
+    verifier_code = p_no_llm_v1.verifier_code_response if state.get("no_llm", False) else LLM.get_response(prompt)
     return {
         "verifier_code": verifier_code,
         "chat_history": chat_history
@@ -65,7 +64,7 @@ Note the code you generate much be able to process this grid solution correctly
 def get_code(state: VerifierRunResult):
     prompt = f'{p_v1.code_prompt}\n\n{state["verifier_code"]}\n/no_think'
     if state.get("no_llm", False):
-        code = no_llm_v1.verifier_code_response.strip()
+        code = p_no_llm_v1.verifier_code_response.strip()
     else:
         code = LLM.get_response(prompt).strip()
     return {"clean_code": code}

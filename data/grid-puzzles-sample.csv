@@ -1,4 +1,4 @@
-Grid,Difficulty,Story,Clues,Table,Options,Puzzle,key
+Grid,Difficulty,Story,Clues,Table,Options,Puzzle,Key
 3x4,Challenging,"Match each auctioned spider specimen to its owner and country of origin, and determine the final price paid for each. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.  If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.Freddie's purchase cost 15 dollars more than the cart spider.
 2.Of the darkback and the cart spider, one sold for $60 and the other was won by Vicky.
 3.Of the spider that sold for $75 and Shelley's purchase, one was the archaenido and the other was the cart spider.
@@ -38,7 +38,7 @@ Solve the grid puzzle by filling the table:
 
 Use the clues to fill the table with the following categories:
 Winners: Charles, Freddie, Shelley, Vicky
-Spiders: archaenido, cart spider, darkback, whip spider",518afe22-bb9d-4a60-97c0-49698ecde0f1
+Spiders: archaenido, cart spider, darkback, whip spider",2b616fcd-8af9-435b-9ca3-70dfe176bd7a
 3x4,Challenging,"At the annual Riverside Vintage Watch Exchange, collectors gather to bid on timepieces from various eras. Determine the price, brand, face color, and decade of manufacture for each watch listed in the table below. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once. If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.The Tissot watch was either the timepiece with a silver face or the one with a blue dial.
 2.The watch with a blue dial sold for 75 dollars less than the Bulova model.
 3.Of the $400 watch and the $350 piece, one is a Hamilton model and the other has a green face.
@@ -69,7 +69,7 @@ Solve the grid puzzle by filling the table:
 
 Use the clues to fill the table with the following categories:
 Brands: Bulova, Citizen, Hamilton, Seiko
-Face Colors: blue, green, red, silver",50faa4cf-9057-43c8-87dd-11ca1091327f
+Face Colors: blue, green, red, silver",ff2cda15-4085-4a35-a869-82aac3565713
 3x4,Easy,"Garrett County has set up a number of successful mobile libraries known as ""Bookmobiles"".  Using only the clues below, match each Bookmobile to its driver and vehicle type, and determine the told number of books in each. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.  If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.""Tiny Tomes"" has 350 books.
 2.The mobile library with 300 books is driven by Leroy.
 3.The four vehicles are the bookmobile with 400 books, the vehicle Gene drives, ""Explore More"" and ""Tiny Tomes"".
@@ -109,7 +109,7 @@ Solve the grid puzzle by filling the table:
 
 Use the clues to fill the table with the following categories:
 Bookmobiles: Books-4-U, Dream Machine, Explore More, Tiny Tomes
-Drivers: Antonio, Gene, Leroy, Patsy",4a1c0256-28fb-4ddf-94b6-8374fc8fa140
+Drivers: Antonio, Gene, Leroy, Patsy",25f9a633-8212-4985-9189-d7bc539d1621
 3x4,Easy,"The Appalachian Folk Art Festival's woodcarving competition attracted master carvers from throughout the mountain region. Judge Walter Oakes, himself a renowned wildlife sculptor, examined each entry's detail work and artistic interpretation. Determine the height of each carving, the type of wood used, the subject matter, and the carver who created it. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.  If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.The four carvings were the wolf piece, the 12 inch carving, the 8 inch piece and the 20 inch sculpture.
 2.The 20 inch piece is an eagle.
 3.The cherry piece is 8 inches taller than the mahogany sculpture.
@@ -149,7 +149,7 @@ Solve the grid puzzle by filling the table:
 
 Use the clues to fill the table with the following categories:
 Wood Types: butternut, cherry, mahogany, pine
-Subjects: deer, eagle, fish, wolf",9e0abe5f-0e70-467c-85a8-de2c044a84e8
+Subjects: deer, eagle, fish, wolf",e865fdab-32ec-4296-a266-34fbc10ff8e0
 3x4,Moderate,"Emma planned a week of healthy snack sessions for her friends. Using only the clues below, match each snack to the day it was given out, the number of calories it contained and the total amount of carbohydrates (in grams) in each serving. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once. If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.The almond energy bar contains somewhat fewer calories than the snack given out on Wednesday.
 2.The snack given out on Thursday contains 15 fewer calories than the oatmeal cookie.
 3.The recipe given out on Friday contains somewhat fewer calories than the granola mix.
@@ -180,7 +180,7 @@ Solve the grid puzzle by filling the table:
 
 Use the clues to fill the table with the following categories:
 Snacks: almond energy bar, oatmeal cookie, granola mix, trail mix
-Days: Wednesday, Thursday, Friday, Saturday",4a3e9fe0-0473-4542-85b9-37a554d5d7ec
+Days: Wednesday, Thursday, Friday, Saturday",e0ab2cf6-1886-49a9-b06d-696dabfc9db1
 3x4,Moderate,"Story:
 The annual Maplewood Artisan Fair turned the town square into a vibrant hub of creativity as participants showcased their handmade crafts. Festival organizer Marcus Lee assessed each entry based on originality, technique, and presentation while attendees gathered around tables to admire the displays. Determine the size, style, material, and creator of each craft. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once. If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.The abstract craft is somewhat smaller than the geometric craft.
 2.The 8 inch craft was either the floral design or the modern style.
@@ -213,7 +213,7 @@ Solve the grid puzzle by filling the table:
 
 Use the clues to fill the table with the following categories:
 Styles: abstract, floral, geometric, modern
-Materials: plastic, wood, metal, glass",0156d603-4431-4448-94b4-a4e5370a6b51
+Materials: plastic, wood, metal, glass",255b5850-4c3c-4ca4-866b-f37931d13c8e
 3x5,Challenging,"Mary has 42 different grandchildren, and it seems like barely a week goes by when she doesn't have to send out a birthday card!  Help her sort out this month's cards by matching each grandchild to his or her birthday, age and hometown. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.  If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.Guy isn't 9 years old.
 2.Johanna was born on April 11th.
 3.Kerry is 8 years old.
@@ -261,7 +261,7 @@ Solve the grid puzzle by filling the table:
 
 Use the clues to fill the table with the following categories:
 Grandchildren: Bryan, Guy, Johanna, Kerry, Nathaniel
-Ages: 5, 8, 9, 14, 18",fa22a969-94e7-417a-8c5f-34a5424c96c1
+Ages: 5, 8, 9, 14, 18",3134948d-bfd1-4e1b-beae-8b9a474e6ef0
 3x5,Challenging,"At a recent art fair in Venice, five sculptors unveiled their unique marble statues, each with distinct characteristics. Determine each statue's weight, color, shape, and the artist who created it. No option in any category will be used more than once.","1.The lion sculpture weighs 2 pounds more than the dolphin piece.  
 2.The emerald creation was either the piece that weighs 4 pounds or the one that weighs 6 pounds.  
 3.Of the sapphire piece and the vase, one weighs 5 pounds and the other weighs 7 pounds.  
@@ -297,7 +297,7 @@ Solve the grid puzzle by filling the table:
 
 Use the clues to fill the table with the following categories:  
 Colors: bronze, emerald, sapphire, marble, teal  
-Shapes: obelisk, vase, pedestal, lion, dolphin",a8a50c80-e686-4be4-8e31-2448a2d7736b
+Shapes: obelisk, vase, pedestal, lion, dolphin",4a4c5eb3-6e26-46a2-baed-e1e70fc348b1
 3x5,Easy,"Story:
 Emma curates a monthly column for her city's magazine featuring interviews with successful entrepreneurs from various regions. Using only the clues below, help Emma by matching each entrepreneur to their home state, total business value, and current industry. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once. If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.The entrepreneur from Texas had a business value somewhat less than Clara Chen.
 2.Robert Ross's business was worth 8 million more than the entrepreneur from Florida.
@@ -336,7 +336,7 @@ Solve the grid puzzle by filling the table:
 
 Use the clues to fill the table with the following categories:
 Entrepreneurs: Clara Chen, Betty Baker, James Lee, Robert Ross, Daniel Kim
-States: California, Nevada, Arizona, Florida, Texas",8f8359d2-dc90-4396-8f5f-36a08e396e79
+States: California, Nevada, Arizona, Florida, Texas",1704f0df-971b-47c2-91f4-36b5e622cf6d
 3x5,Easy,"The Greenwood Wildlife Sanctuary houses several preserved dinosaur fossils, each named by local college students. Using only the clues below, match each dinosaur to its estimated length and weight, and determine where its fossil was originally discovered. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once. If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.""Tyrone"" was either the dinosaur found in Alberta or the one believed to weigh 5,000 kg.
 2.""Rex"" wasn't discovered in Montana.
 3.""Rex"" is thought to be 18 meters long.
@@ -373,7 +373,7 @@ Solve the grid puzzle by filling the table:
 
 Use the clues to fill the table with the following categories:
 Names: Tyrone, Rex, Dino, Leo, Terry
-Locations: Alberta, Texas, Montana, Wyoming, Saskatchewan",2c1b148c-0d27-414d-b2e0-6c0665569678
+Locations: Alberta, Texas, Montana, Wyoming, Saskatchewan",44052505-013e-4891-9857-97de8fa438f5
 3x5,Moderate,"At a local coding competition, five participants decided to have dinner at ""CodeBite Café"" before the final round. Match each participant to their meal type, drink, and total price of their order. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once. If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1. Alex ordered a latte.
 2. Alex paid 2 dollars more than Chris.
 3. Of the competitor who ordered a cappuccino and the competitor who ordered an espresso, one paid $9.99 and the other was Dana.
@@ -408,7 +408,7 @@ Solve the grid puzzle by filling the table:
 
 Use the clues to fill the table with the following categories:
 Runners: Alex, Chris, Dana, Mark, Sam
-Drinks: cappuccino, espresso, latte, mocha, tea",5c7a54c4-7c47-48ca-9ae9-fd27ddc1ca6b
+Drinks: cappuccino, espresso, latte, mocha, tea",e8e84ef5-a950-4058-9087-6029798a7b65
 3x5,Moderate,"At ""TastyBites Café,"" there's a queue of customers waiting for their orders. Using only the clues below, match each customer to his or her order type and price. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once. If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1. James requested quinoa.
 2. The person who paid $7.50, the person who paid $9.50, the customer who ordered kale and the customer who ordered spinach are all different people.
 3. Olivia paid more than Sarah.
@@ -445,7 +445,7 @@ Solve the grid puzzle by filling the table:
 
 Use the clues to fill the table with the following categories:
 Customers: Emily, Michael, James, Olivia, Sarah
-Superfoods: quinoa, chia seeds, kale, spinach, flax seeds",2d19bd5c-5856-4b08-9ff5-33c15bc3d6b1
+Superfoods: quinoa, chia seeds, kale, spinach, flax seeds",5de0f864-7734-41f6-9b67-e05cfcf0327b
 4x4,Challenging,"""Green Leaf Crafts"" specializes in custom-designed ceramic planters sold at local markets. Each planter is crafted by a different artisan. Using only the clues that follow, match each planter to the artisan who made it, determine its size and the type of clay used. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once. If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.The large planter costs 30 dollars more than the one made of terracotta.
 2.Elizabeth's planter isn't the square-shaped one.
 3.The round planter is either the $150 item or the one made of porcelain.
@@ -483,7 +483,7 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:
 Artisans: Adam, Elizabeth, Olivia, William
 Clays: terracotta, porcelain, stoneware, clay
-Shapes: round, square, rectangular, oval",ad17dee2-9b9d-49ee-9b55-a8ce0b9d9532
+Shapes: round, square, rectangular, oval",d54a2063-8b84-4650-ba9e-da50056b1532
 4x4,Challenging,"Ernest, the curator at the Eastwick Historical Museum, is cataloging a newly acquired set of vintage postcards.  Each postcard depicts a famous city and was mailed to a different town.  Match each postcard to the city it depicts and the person it was addressed to, as well as the town it was mailed to, and determine the year it was sent. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.  If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.The postcard mailed in 1920 wasn't mailed to Dunmore.
 2.The postcard mailed in 1912 wasn't addressed to Ida Shaw.
 3.Of the postcard sent to Fay Morris and the postcard mailed to Fairhaven, one was from New York and the other was posted in 1920.
@@ -529,7 +529,7 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:
 Cities: Cairo, London, New York, Tokyo
 Addressees: Ada Bell, Fay Morris, Ida Shaw, Roy Grant
-Destinations: Ashton, Dunmore, Elkridge, Fairhaven",e3490e09-bd2a-4191-a161-31bcaef245d8
+Destinations: Ashton, Dunmore, Elkridge, Fairhaven",2d427a01-6fd1-468a-bbfa-a0d1f644629d
 4x4,Easy,"The local foodie club met at Chez Martin last night for their monthly meal.  Match each person to their choice of wine and entree, and determine how much each owed at the end of the night. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.  If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.Lynda paid 2 dollars more than the diner who ordered the beef stir-fry.
 2.The diner who ordered the beef stir-fry was either the one who had the merlot or the one who had the bordeaux.
 3.The person who paid $26.99 didn't have the zinfandel.
@@ -577,7 +577,7 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:
 Names: Frances, Genevieve, Lynda, Willie
 Wines: bordeaux, chianti, merlot, zinfandel
-Entrees: beef stir-fry, filet mignon, lobster tail, pork chops",77e3aaa8-151d-4842-9fd3-a0391a12a5e7
+Entrees: beef stir-fry, filet mignon, lobster tail, pork chops",c35f2460-5b2c-48d1-bce5-f39f3bab9dc7
 4x4,Easy,"The local book club gathered at The Page Turner Bookstore for their quarterly meeting. Match each member to their chosen genre and book, and determine how much each spent on their purchases. No option in any category will be used more than once.","1. Margaret spent 3 dollars more than the person who bought the mystery novel.  
 2. The person who bought the mystery novel was either the one who selected fantasy or the one who selected science fiction.  
 3. The individual who paid $28.99 did not choose the romance genre.  
@@ -613,7 +613,7 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:  
 Names: David, Emily, Margaret, Nathan  
 Genres: fantasy, mystery, romance, science fiction  
-Books: historical fiction, mystery novel, thriller, western",ce51d8f6-5078-4ff4-93da-3f1b4ee13d50
+Books: historical fiction, mystery novel, thriller, western",e78c8405-e44f-4ee0-a389-a6681a974349
 4x4,Moderate,"At Greenwood Middle School's annual science fair, students built model rockets and competed in a launch challenge. Using only the clues below, determine the color of each rocket, its maximum altitude reached, and the order in which each was launched. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.","1.The rocket that reached 50 feet wasn't red.  
 2.The rocket that reached 75 feet was black.  
 3.Adam's design was black.  
@@ -649,7 +649,7 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:  
 Students: Adam, Olivia, Sarah, Nathan  
 Colors: blue, red, black, white  
-Order: 1st, 2nd, 3rd, 6th",a31444df-b437-4f0c-aba1-2b5751fb6664
+Order: 1st, 2nd, 3rd, 6th",8168dc5e-3497-4588-90e0-93609aec540b
 4x4,Moderate,"Gil Glabbers has lived on the coast of Guernsey, in the English Channel, for more than a decade.  In that time he's found a number of difference ""messages in a bottle"" washed up on his beach.  Using only the clues below, match each bottle to its author, place of origin and the year in which it was written, and determine the year in which Gil discovered each one. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.  If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.Noel's letter, the letter found in 2015 and the message that was sent in 1983 are all different letters.
 2.Victor's letter, the message that was sent in 1983, and the bottle from Bournemouth are three different letters.
 3.Of the message that was sent in 1976 and the message found in 2011, one is Victor's and the other was from Le Havre.
@@ -695,7 +695,7 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:
 Writers: Bernadette, Karla, Noel, Victor
 Origins: Bournemouth, Brighton, Le Havre, Torquay
-Year Found: 2010, 2011, 2013, 2015",cfa768b5-76ed-484c-b44a-28dfb48b21c0
+Year Found: 2010, 2011, 2013, 2015",1a90154a-be5c-43bd-ab67-15b3c4d31cde
 4x5,Challenging,"At a high-stakes culinary competition in Paris, five chefs from different countries competed in a series of challenging cooking tasks. Determine how long each chef took to complete their task, the type of cuisine they specialized in, and their home country. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.","1.The chef from Italy finished 2 minutes slower than the one specializing in Italian cuisine.  
 2.The chef from France finished 3 minutes faster than the competitor specializing in French cuisine.  
 3.The chef from Spain finished 1 minute faster than the one specializing in tapas.  
@@ -737,7 +737,7 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:  
 Cuisine Types: Italian, French, Spanish, Japanese, Mexican  
 Countries: Italy, France, Spain, Germany, Portugal  
-Chefs: Marco, Ana, Luca, Sophie, Carlos",10e49b94-c7b0-442a-932e-61c57bcd3f79
+Chefs: Marco, Ana, Luca, Sophie, Carlos",06d29d9d-96f0-485e-bc4d-5fdf08990295
 4x5,Challenging,"Story:
 At Pineview High School, Coach Emily Thompson has mentored several athletes who have gone on to professional careers. Match each former athlete to their graduation year, hometown, and current team. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once. If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.Of the athlete who graduated in 2010 and the one who graduated in 2011, one is from Riverside and the other is now with the Giants.
 2.Marcus graduated after Sarah.
@@ -783,7 +783,7 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:
 Athletes: Adam, Jackie, Marcus, Taylor, Walter
 Teams: Phillies, Nationals, Rockies, Giants, Brewers
-Hometowns: Cedar Grove, Franklin, Lakeview, Riverside, Jacumba",1306bcad-d056-425a-8b8b-20ed4ef61c4e
+Hometowns: Cedar Grove, Franklin, Lakeview, Riverside, Jacumba",361864aa-1f5a-4046-a871-c951cba18e33
 4x5,Easy,"A group of coworkers has gathered for a team lunch and are sharing their professional social media stats. Using only the clues that follow, determine the number of Facebook friends, Twitter followers, and LinkedIn connections each person has. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.","1.The person with 200 Facebook friends is either the one with 85 LinkedIn connections or the one with 720 Twitter followers.  
 2.Charlie has 30 fewer Facebook friends than the one with 60 LinkedIn connections.  
 3.Mary doesn't have exactly 900 Twitter followers.  
@@ -829,7 +829,7 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:  
 Names: Adam, Charlie, Mary, Tom, Neil  
 LinkedIn: 40, 50, 60, 85, 95  
-Twitter: 600, 620, 720, 800, 900",c6377b50-ecda-4adc-9d3b-fb6b4e47109b
+Twitter: 600, 620, 720, 800, 900",8b5acd64-7906-4a01-b83f-c0c71b108a89
 4x5,Easy,"Mira has collected data on five different mountain peaks across various continents. Determine the elevation of each peak, the year Mira recorded it, as well as the continent where each is located. Keep in mind that no option in any category will be repeated.","1. Cerbel was not recorded in 2005.  
 2. Of the mountain Mira recorded in 2005 and Irskela, one is in Africa and the other is 3,000 meters high.  
 3. Garray is either the 3,000-meter peak or the mountain Mira recorded in 1998.  
@@ -869,7 +869,7 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:  
 Names: Sihat, Garray, Cerbel, Irskela, Inawatai  
 Continents: Asia, Europe, Africa, South America, Australia  
-Years: 1998, 2005, 2008, 2010, 2004",de6379a3-b2e4-460c-bb97-a38ae4d7affb
+Years: 1998, 2005, 2008, 2010, 2004",5c79a174-db0e-4de2-bd56-57c1437e8911
 4x5,Moderate,"A coastal tour company dispatched several boats for dolphin watching excursions. Using only the clues below, match each boat to its captain, determine the total number of dolphins seen by each, and identify each boat's destination. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once. If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.Of Captain Lee's vessel and the boat that went to Coral Cove, one saw 4 dolphins and the other was the Neptune.
 2.The vessel that went to Mariner's Point was led by Captain Morgan.
 3.The Dolphin Express, the boat that saw 5 dolphins and Captain Morgan's vessel are all different boats.
@@ -911,7 +911,7 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:
 Boats: Dolphin Express, Ocean Breeze, Tropic Star, Neptune, Sea Wolf
 Captains: Taylor, Morgan, Carter, Lee, Armstrong
-Locations: Mariner's Point, Coral Cove, Sandy Bay, Crystal Lake, Seabrook",85a7d50b-aa17-49d5-93be-dbfa94233411
+Locations: Mariner's Point, Coral Cove, Sandy Bay, Crystal Lake, Seabrook",4817196a-ef35-4151-8451-fde861e2250b
 4x5,Moderate,"Famous children's performer Carmike Cunningham recorded a special television program for the holiday season.  It aired a number of different times this week, each at a different time and on a different channel.  Using only the clues below, match each airing to its time, channel and day of the week, and determine how many TV viewers each airing pulled in. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.  If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.Of the show that aired on CBR and the show that aired at 11:30am, one brought in 500,000 viewers and the other aired on Monday.
 2.The program that aired on Monday had 750,000 more viewers than the program that aired at 8:30pm.
 3.The show that aired on FNX didn't air on Friday.
@@ -967,7 +967,7 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:
 Times: 11:30am, 1:00pm, 2:00pm, 4:30pm, 8:30pm
 Days: Monday, Wednesday, Thursday, Friday, Saturday
-Channels: CBR, FNX, PTR, SBC, WNW",77939196-9a14-43c0-b2e1-c11c6678f68d
+Channels: CBR, FNX, PTR, SBC, WNW",bcc5699a-411b-43a2-bfe1-a5169d927f88
 4x6,Challenging,"Story:
 Emma and Mark are planning a weekend trip and need to choose between different rental cars. Help them by matching each car to its price, fuel efficiency (in miles per gallon), and the type of transmission (automatic or manual). Determine the number of seats for each vehicle as well. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once. If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.The car with the 25 mpg fuel efficiency is either the $380 vehicle or the SolarMax.
 2.The EcoRide doesn't cost $420.
@@ -1024,7 +1024,7 @@ Use the clues to fill the table with the following categories:
 Car Types: AquaDrive, EcoRide, TurboX, SolarMax, Binson C40, Chiller Z
 Fuel Efficiencies: 15 mpg, 18 mpg, 20 mpg, 25 mpg, 28 mpg, 30 mpg
 Transmissions: 3-speed manual, 4-speed automatic, 5-speed automatic, 5-speed manual
-Seats: 3 seats, 4 seats, 5 seats, 6 seats, 7 seats, 8 seats",d646d2b7-6c90-4a17-97f1-21360da26d16
+Seats: 3 seats, 4 seats, 5 seats, 6 seats, 7 seats, 8 seats",2376337e-606f-4728-b685-cb20b89de8e3
 4x6,Challenging,"Master baker Eliza maintains a detailed inventory of every pastry item in her bakery, and this week six vintage dessert tarts await her attention. Match each tart to its age, the type of flour used, the dessert style, and the baking issue. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once. If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.Of the almond flour tart and the tart needing oven temperature adjustment, one is 150 years old and the other is a fluted style.
 2.The tart made with wheat flour is either the tart that is 100 years old or the tart needing crust repair.
 3.Of the tart made with wheat flour and the tart with baking issues, one is 150 years old and the other is a layered style.
@@ -1069,7 +1069,7 @@ Use the clues to fill the table with the following categories:
 Flour Types: almond, coconut, wheat, flourless, oat, rice
 Tart Styles: fluted, open-faced, roulade, layered, fruit, custard
 Issues: dough texture, sugar measurement, crust repair, filling consistency, oven temperature, weight pulley
-Try changing the wording, the problem setting, etc. Remember to output strictly the problem statement and nothing else.",bcc1d360-4a47-4bea-a659-34fefbce7426
+Try changing the wording, the problem setting, etc. Remember to output strictly the problem statement and nothing else.",fb2961df-2391-423b-ae7a-3128d4dcdc8d
 4x6,Easy,"The Pacific Coast Vintage Motorcycle Rally drew collectors from across the western states to the Oceanside Fairgrounds. Event organizer Hank Morrison walked among the gleaming chrome and polished paint, admiring machines that represented decades of motorcycle history. From British cafe racers to American cruisers, each bike told a story of careful restoration and passionate preservation. Determine the year each motorcycle was manufactured, its make, color, and owner. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.  If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.Mack's bike is 20 years older than the orange motorcycle.
 2.The burgundy motorcycle is 5 years newer than Rex's motorcycle.
 3.Of the 1950 motorcycle and the black motorcycle, one is owned by Rex and the other is a Harley.
@@ -1133,7 +1133,7 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:
 Makes: BMW, BSA, Harley, Honda, Indian, Triumph
 Colors: black, burgundy, green, orange, red, silver
-Owners: Buck, Chip, Dusty, Mack, Rex, Wyatt",1612c88e-5c13-4585-9c40-056403e5b756
+Owners: Buck, Chip, Dusty, Mack, Rex, Wyatt",c0fb918e-3ef7-46a3-a7e4-f86b4f9c36f0
 4x6,Easy,"The U.S. Air Force is currently testing a number of new experimental, supersonic aircraft, each built by a different aerospace company.  Using only the clues below, determine the maximum speed and price of each aircraft, as well as the name of the company that built it. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.  If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.The Dragon F-15 doesn't have a top speed of Mach 3.4.
 2.The six jets are the jet with a top speed of Mach 2.5, the Graywing VX, the $225 million aircraft, the Darkwing 6, the Vipertooth and the $150 million aircraft.
 3.Of the $100 million plane and the jet with a top speed of Mach 1.8, one is the Kesseling and the other is the Graywing VX.
@@ -1199,7 +1199,7 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:
 Aircraft: Darkwing 6, Dragon F-15, Falcon X-2, Graywing VX, Kesseling, Vipertooth
 Companies: Drummond, Forsyth, McConnell, Pittakan, Tenerife, Wiseman
-Top Speeds: Mach 1.8, Mach 2.3, Mach 2.5, Mach 2.9, Mach 3.2, Mach 3.4",28576d44-b95e-474e-abfd-dd5db71711cf
+Top Speeds: Mach 1.8, Mach 2.3, Mach 2.5, Mach 2.9, Mach 3.2, Mach 3.4",3b317882-2215-42a6-9443-18f1fc754f96
 4x6,Moderate,"Miravella is writing an article about some of the richest people in the world.  Using only the clues that follow, match each person to his or her country of origin, and determine their total wealth (in dollars) and the type of business they're involved in. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.  If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.Of the mogul from Ireland and Leonard Levy, one works in the biotech industry and the other is worth $30 billion.
 2.The tycoon from Argentina is worth 4 billion less than Leonard Levy.
 3.The person from Norway is worth 4 billion more than the mogul who works in the biotech industry.
@@ -1265,7 +1265,7 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:
 People: Betty Bush, Ida Ingram, Joseph Jakes, Kirk Kaplan, Leonard Levy, Tim Townsend
 Countries: Argentina, Denmark, Ireland, France, Germany, Norway
-Industries: aerospace, biotech, medical, retail, pharmaceutical, software",c4073b11-7083-4cc8-86ab-dfbc81cb6e96
+Industries: aerospace, biotech, medical, retail, pharmaceutical, software",cd802bf2-f630-4f06-9507-b3506ba21920
 4x6,Moderate,"At the annual Maplewood Festival, a ""perfume pavilion"" showcases six different local perfumers offering their signature scents. Using only the clues below, match each perfume's two scents to its price and perfumer. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once. If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.The $7.00 product contains lavender.
 2.The rose perfume, the jasmine product, and Clara's product are three different products.
 3.The vanilla perfume, the mint product, and Clara's perfume are three different products.
@@ -1315,7 +1315,7 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:
 Sellers: Dana, Clara, Greg, Henry, Mary, Victoria
 Fragrances: cedar, lavender, amber, freesia, rose, vanilla
-Fragrances: apple, oakmoss, bergamot, mint, jasmine, pear",188c8054-ebda-43a9-869c-6242575604bb
+Fragrances: apple, oakmoss, bergamot, mint, jasmine, pear",20bd99f4-60d7-49fb-9c89-13fb6af10cc3
 4x7,Challenging,"The Tybee Island Aquarium has opened a brand new exhibit featuring several different whale skeletons.  To promote the event, the aquarium asked local elementary school children to name each whale in the exhibition.  Using only the clues that follow, match each specimen to its species, length and the name it's been given, and determine the year in which each was donated to the aquarium. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.  If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.Of the 25 ft long whale and the 33 ft long specimen, one is the sei whale and the other was donated to the aquarium in 2004.
 2.The whale donated in 2013 is 6 feet longer than the exhibit donated in 1994.
 3.Brent is somewhat shorter than the beluga whale.
@@ -1389,7 +1389,7 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:
 Whale: beluga whale, bowhead whale, fin whale, gray whale, narwhal, right whale, sei whale
 Names: Adam, Brent, Curtis, Dennis, Evan, Gus, Herbert
-Years: 1994, 1996, 1999, 2004, 2007, 2013, 2015",53afc3f9-1165-4ddc-bf56-53c90e574cb8
+Years: 1994, 1996, 1999, 2004, 2007, 2013, 2015",7eb16f40-ac0d-4fcd-961b-7b17ce206965
 4x7,Challenging,"Sarah owns a small pet grooming business. Local pet owners from all over Greenfield County regularly bring their animals to her shop for grooming services. Using only the clues below, match each of Sarah's jobs this week to the correct pet owner and town, and determine the type of each animal brought in. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once. If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.The pet owner who brings a cat isn't from Milltown.
 2.The pet owner who brings a dog doesn't have a parrot.
 3.Of the one in Brookside and the one that has a rabbit, one will be groomed on Wednesday and the other is from Willow Creek.
@@ -1447,7 +1447,7 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:
 Pet Owners: Blackwater, Hazelwood, Iron Hill, Lone Oak, Meadowgrove, Lucky Star, Tall Pines
 Towns: Albion, Defiance, Eldon, Fremont, Hanford, Milbridge, Red Oak
-Animals: cat, dog, ferret, horse, parrot, snake, rabbit",9f46685a-e16d-4b22-a501-ebc6f7c81314
+Animals: cat, dog, ferret, horse, parrot, snake, rabbit",0c320aec-dc2b-4e29-a3b1-b5c5487d156b
 4x7,Easy,"Several die-hard ""Galaxy Trek"" fans, who also happen to be expert woodworkers, decided to hand-carve wooden figurines featuring a different character from their favorite show.  Match each person to the character they carved and the type of wood they used, and determine how much each is charging for their creations. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.  If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.The sci-fi fan who works with elm is either the woodworker who charges 13 dollars or Trevor.
 2.The woodworker who charges 15 dollars doesn't work with chestnut.
 3.The woodworker who sells Yamasawa figurines charges 6 dollars less than Cody.
@@ -1519,7 +1519,7 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:
 Woodworkers: Cody, Johnnie, Larry, Martin, Richard, Trevor, Wallace
 Woods: boxwood, chestnut, elm, hickory, oak, pine, spruce
-Characters: Guxuc, Ineoch, Kelher, Oseb, Poroth, Shyclye, Yamasawa",7a516308-2d1c-425b-906e-4f4533f4e888
+Characters: Guxuc, Ineoch, Kelher, Oseb, Poroth, Shyclye, Yamasawa",bda4801d-ca56-4b17-b855-b772b3a8175e
 4x7,Easy,"Vikram Allindra has set up a small orangutan sanctuary in the Borneo rainforest, where injured and abandoned orangutans can be cared for and eventually released back into the wild.  Using only the clues below, match each orangutan at the sanctuary with its age and handler, and determine where each animal originated from. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.  If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.Sergeant is 3 years younger than the ape that was found in Ambalat.
 2.The seven animals are the 4-year-old, the ape Francine works with, the ape that was found in Basahan, the orangutan Beatrice works with, the animal that was found in Puak, Pemson and the animal that was found in Sebulu.
 3.The orangutan that was found in Tarakan is  younger than the ape Aldo works with.
@@ -1593,7 +1593,7 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:
 Orangutans: Mairan, Nikatrice, Ofallo, Pemson, Quirrel, Ramoran, Sergeant
 Handlers: Aldo, Beatrice, Calliope, Dolly, Eva, Francine, Gracie
-Locations: Ambalat, Basahan, Kendisi, Melak, Puak, Sebulu, Tarakan",c76f09c3-d315-4025-8f8c-15ce4fdac1b4
+Locations: Ambalat, Basahan, Kendisi, Melak, Puak, Sebulu, Tarakan",207b36a0-5ede-43bd-81ec-96ba8ad02389
 4x7,Moderate,"Cafe Verve has allowed each of its baristas to create their own signature drink and have it featured at the café. Each drink has had its sweetness level professionally rated using a custom scale (Sweetness Units, or SU), and each uses a different type of sweetener in its recipe. Using only the clues below, match each drink to its Sweetness rating and the barista who developed it, and determine the specific type of sweetener used in its recipe. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once. If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.""Caramel Crisp"", Clara's drink, and the drink that uses the agave syrup are three different products.
 2.Nathan's product is 500 SU sweeter than ""Mocha Mist"".
 3.Elise's product is either the sweetened drink rated at 2,000 SU or the one rated at 3,000 SU.
@@ -1647,7 +1647,7 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:
 Baristas: Clara, Elise, James, Marcus, Nathan, Tyler
 Drinks: Caramel Crisp, Cinnamon Glow, Mocha Mist, Sweet Harmony, Vanilla Dream, Caramel Drizzle, Caramel Crisp
-Sweeteners: agave syrup, maple syrup, coconut nectar, raw sugar, brown rice syrup, honey, palm sugar",45e7e9c2-106a-423b-8f19-7ee9ff967c0a
+Sweeteners: agave syrup, maple syrup, coconut nectar, raw sugar, brown rice syrup, honey, palm sugar",54590e58-3a15-4987-9e70-0d652f711714
 4x7,Moderate,"Thaddeus has been blowing glass in his workshop since he was a boy, and seven clients have each commissioned a lamp.  Match each lamp to its shade shape and glass color, as well as who ordered it, and determine the height of each one. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once.  If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.","1.The bell lamp is 2 inches shorter than the amber lamp.
 2.The lamp standing 18 inches tall is blue.
 3.The dome lamp is somewhat shorter than the crimson lamp.
@@ -1723,4 +1723,4 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:
 Shades: bell, cone, cylinder, dome, flare, globe, tulip
 Glass Colors: amber, blue, crimson, emerald, purple, ruby, yellow
-Clients: Capt. Holt, Dr. Ashton, Miss Graves, Mr. Beckett, Mrs. Farley, Prof. Ives, Rev. Cole",d0527746-8db9-4381-958a-3e3dea8a3825
+Clients: Capt. Holt, Dr. Ashton, Miss Graves, Mr. Beckett, Mrs. Farley, Prof. Ives, Rev. Cole",0cf092cd-9c0b-4b19-a0f4-8364705cff31
