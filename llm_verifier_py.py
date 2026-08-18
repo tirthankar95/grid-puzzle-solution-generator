@@ -3,7 +3,7 @@ import traceback
 import pandas as pd
 from pprint import pprint
 from my_soln import _iter
-from prompt import p_v1
+from prompt import p_v1_py
 from prompt import p_no_llm_v1
 from dotenv import load_dotenv
 from langsmith import traceable
@@ -24,8 +24,6 @@ class VerifierRunResult(TypedDict):
     clean_code: str
     example_solution: str
     execution_feedback: str
-    reward: float
-    failed_clues: list[int]
     terminal_error: str
     chat_history: list[str]
     attempts: int
@@ -38,12 +36,12 @@ def get_verifier_code(state: VerifierRunResult):
     if chat_history:
         history_block = "\n\n".join(chat_history)
         prompt = (
-            f"{p_v1.verifier_code_prompt}\n\n{state['puzzle']}"
+            f"{p_v1_py.verifier_code_prompt}\n\n{state['puzzle']}"
             f"\n\nPrevious attempts and errors:\n{history_block}\n"
             "Regenerate verifier code that fixes the previous issues.\n/no_think"
         )
     else:
-        prompt = f"""{p_v1.verifier_code_prompt}
+        prompt = f"""{p_v1_py.verifier_code_prompt}
         
 [USER PUZZLE]
 {state['puzzle']}
@@ -62,7 +60,7 @@ Note the code you generate much be able to process this grid solution correctly
 
 @traceable
 def get_code(state: VerifierRunResult):
-    prompt = f'{p_v1.code_prompt}\n\n{state["verifier_code"]}\n/no_think'
+    prompt = f'{p_v1_py.code_prompt}\n\n{state["verifier_code"]}\n/no_think'
     if state.get("no_llm", False):
         code = p_no_llm_v1.verifier_code_response.strip()
     else:
@@ -104,8 +102,6 @@ def get_execution_feedback(state: VerifierRunResult):
     )
     return {
         "execution_feedback": feedback,
-        "reward": float(reward),
-        "failed_clues": failed_clues,
         "attempts": attempts,
         "terminal_error": terminal_error,
         "chat_history": chat_history,
@@ -159,17 +155,13 @@ def llm_sol_main(row: pd.Series, no_llm: bool = False) -> dict[str, Any]:
         "example_solution": example_solution,
         "chat_history": [],
         "execution_feedback": "",
-        "reward": 0.0,
-        "failed_clues": [],
         "attempts": 0,
         "no_llm": no_llm,
         "terminal_error": "",
     }
     state = graph.invoke(initial_state)
     result = {
-        "reward": state["reward"],
         "solution": state["example_solution"],
-        "failed_clues": state["failed_clues"],
         "verifier_code": state["verifier_code"],
         "clean_code": state["clean_code"],
         "attempts": state["attempts"],
