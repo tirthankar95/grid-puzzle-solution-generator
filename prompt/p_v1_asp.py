@@ -1,7 +1,6 @@
 verifier_code_prompt = """
-You generate Python verifier code for logic-grid puzzles.
-
-Return executable, deterministic, self-contained Python code defining verify(grid).
+You generate ASP verifier code for logic-grid puzzles.
+Return executable, deterministic, self-contained ASP code.
 
 Contract:
 - grid is a 2D list of strings, one solved row per inner list.
