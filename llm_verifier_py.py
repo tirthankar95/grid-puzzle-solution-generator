@@ -2,15 +2,15 @@ import ast
 import traceback
 import pandas as pd
 from pprint import pprint
-from my_soln import _iter
+from utils.py_soln import _iter
 from prompt import p_v1_py
 from prompt import p_no_llm_v1
 from dotenv import load_dotenv
 from langsmith import traceable
-from utils import parse_puzzle
+from utils.utils import parse_puzzle
 from llms.openai import OpenAILLM
 from typing import Any, Literal, TypedDict
-from puzzle_verifier import run_verify_from_code
+from utils.puzzle_verifier import run_verify_from_code
 from langgraph.graph import END, START, StateGraph
 
 
@@ -46,7 +46,7 @@ def get_verifier_code(state: VerifierRunResult):
 [USER PUZZLE]
 {state['puzzle']}
 
-Note the code you generate much be able to process this grid solution correctly
+Note the code you generate must be able to process this grid solution correctly
 [GRID SOLUTION]
 {state['example_solution']}
 
@@ -142,7 +142,7 @@ def llm_sol_main(row: pd.Series, no_llm: bool = False) -> dict[str, Any]:
     global graph
     if graph is None:
         graph = build_graph().compile()
-    puzzle, code = row['Puzzle'], row['Verifier']
+    puzzle = row['Puzzle']
     puzzle = parse_puzzle(puzzle)
     dimensions = list(puzzle["Options"].keys())
     for filled_grid in _iter(puzzle, dimensions, 0):

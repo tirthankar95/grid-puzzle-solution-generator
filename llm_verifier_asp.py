@@ -1,16 +1,13 @@
-import ast
 import traceback
 import pandas as pd
 from pprint import pprint
-from my_soln import _iter
+from utils.run_asp import solve
 from prompt import p_v1_asp
 from prompt import p_no_llm_v1
 from dotenv import load_dotenv
 from langsmith import traceable
-from utils import parse_puzzle
 from llms.openai import OpenAILLM
 from typing import Any, Literal, TypedDict
-from puzzle_verifier import run_verify_from_code
 from langgraph.graph import END, START, StateGraph
 
 
@@ -23,7 +20,6 @@ class VerifierRunResult(TypedDict):
     puzzle: str
     verifier_code: str
     clean_code: str
-    example_solution: str
     execution_feedback: str 
     terminal_error: str
     chat_history: list[str]
@@ -46,13 +42,8 @@ def get_verifier_code(state: VerifierRunResult):
         
 [USER PUZZLE]
 {state['puzzle']}
-
-Note the code you generate much be able to process this grid solution correctly
-[GRID SOLUTION]
-{state['example_solution']}
-
 /no_think"""
-    verifier_code = p_no_llm_v1.verifier_code_response if state.get("no_llm", False) else LLM.get_response(prompt)
+    verifier_code = p_no_llm_v1.verifier_asp if state.get("no_llm", False) else LLM.get_response(prompt)
     return {
         "verifier_code": verifier_code,
         "chat_history": chat_history
@@ -63,7 +54,7 @@ Note the code you generate much be able to process this grid solution correctly
 def get_code(state: VerifierRunResult):
     prompt = f'{p_v1_asp.code_prompt}\n\n{state["verifier_code"]}\n/no_think'
     if state.get("no_llm", False):
-        code = p_no_llm_v1.verifier_code_response.strip()
+        code = p_no_llm_v1.verifier_asp.strip()
     else:
         code = LLM.get_response(prompt).strip()
     return {"clean_code": code}
@@ -71,33 +62,26 @@ def get_code(state: VerifierRunResult):
 
 @traceable
 def get_execution_feedback(state: VerifierRunResult):
-    def _parse_solution(solution_input: str | list[list[Any]]) -> list[list[Any]]:
-        parsed = ast.literal_eval(solution_input) if isinstance(solution_input, str) else solution_input
-        if not isinstance(parsed, list) or any(not isinstance(row, list) for row in parsed):
-            raise ValueError("Generated solution is not a 2D list.")
-        return parsed
     attempts = state.get("attempts", 0) + 1
-    verifier_code = state.get("verifier_code", "")
-    example_solution = state.get("example_solution", "")
+    verifier_code = state.get("clean_code", "") or state.get("verifier_code", "")
     chat_history = list(state.get("chat_history", []))
     terminal_error = ""
     try:
-        filled_grid = _parse_solution(example_solution)
-        reward, failed_clues = run_verify_from_code(verifier_code, filled_grid)
+        candidate = verifier_code.strip()
+        if not candidate:
+            raise ValueError("Empty ASP code.")
+        solution = solve(candidate)
+        print(solution)
         feedback = "verification_passed"
     except Exception as exc:
-        reward, failed_clues = 0.0, []
         terminal_error = traceback.format_exc()
         feedback = f"execution_error: {exc}"
-
-    short_verifier = verifier_code[:800]
     chat_history.append(
         "\n".join(
             [
                 f"Attempt: {attempts}",
                 f"Execution feedback: {feedback}",
-                f"Verifier code:\n{short_verifier}",
-                f"Example solution:\n{example_solution}"
+                f"Verifier code:\n{verifier_code}"
             ]
         )
     )
@@ -143,17 +127,10 @@ def llm_sol_main(row: pd.Series, no_llm: bool = False) -> dict[str, Any]:
     global graph
     if graph is None:
         graph = build_graph().compile()
-    puzzle, code = row['Puzzle'], row['Verifier']
-    puzzle = parse_puzzle(puzzle)
-    dimensions = list(puzzle["Options"].keys())
-    for filled_grid in _iter(puzzle, dimensions, 0):
-        example_solution = filled_grid
-        break
     initial_state: VerifierRunResult = {
         "puzzle": row["Puzzle"],
         "verifier_code": "",
         "clean_code": "",
-        "example_solution": example_solution,
         "chat_history": [],
         "execution_feedback": "",
         "attempts": 0,
@@ -162,7 +139,7 @@ def llm_sol_main(row: pd.Series, no_llm: bool = False) -> dict[str, Any]:
     }
     state = graph.invoke(initial_state)
     result = {
-        "solution": state["example_solution"],
+        "solution": None,
         "verifier_code": state["verifier_code"],
         "clean_code": state["clean_code"],
         "attempts": state["attempts"],

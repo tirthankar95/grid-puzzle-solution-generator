@@ -1,6 +1,6 @@
-from puzzle_verifier import run_verify_from_code
+from utils.puzzle_verifier import run_verify_from_code
 from itertools import permutations
-from utils import parse_puzzle
+from utils.utils import parse_puzzle
 import pandas as pd
 import traceback
 
