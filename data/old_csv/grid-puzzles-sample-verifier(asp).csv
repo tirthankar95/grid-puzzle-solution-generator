@@ -1,4 +1,4 @@
-Key,Code
+Key,Code,Solution
 1xa,"% ============================================================
 % Abbeville K-9 Academy grid puzzle - ASP (clingo) encoding
 % ============================================================
@@ -56,51 +56,50 @@ order(may,june).
 % Output
 % ============================================================
 #show dog/2.
-#show officer/2."
-2xb,"% ============================================================
-% Spider Auction Puzzle - ASP (clingo) encoding
-% ============================================================
+#show officer/2.","[('march', 'aries'), ('april', 'barca'), ('june', 'hercules'), ('may', 'jaws'), ('april', 'daugherty'), ('march', 'lyons'), ('may', 'quinn'), ('june', 'salinas')]"
+2xb,"% --- Domains ---
+price(45; 60; 75; 90).
+winner(charles; freddie; shelley; vicky).
+spider(archaenido; cart_spider; darkback; whip_spider).
 
-% ---- Domains ----
-prices(45;60;75;90).
-winners(charles;freddie;shelley;vicky).
-spiders(arachnido;cart_spider;darkback;whip_spider).
+% --- Generating Assignments ---
+% Each price is paid by exactly one winner, and vice versa.
+1 { pays(W, P) : winner(W) } 1 :- price(P).
+1 { pays(W, P) : price(P)  } 1 :- winner(W).
 
-% ---- Assignment: each price gets exactly one winner and spider, and vice versa ----
-1 { winner(P,W) : winners(W) } 1 :- prices(P).
-1 { winner(P,W) : prices(P) } 1 :- winners(W).
+% Each price buys exactly one spider, and vice versa.
+1 { item(S, P) : spider(S) } 1 :- price(P).
+1 { item(S, P) : price(P)  } 1 :- spider(S).
 
-1 { spider(P,S) : spiders(S) } 1 :- prices(P).
-1 { spider(P,S) : prices(P) } 1 :- spiders(S).
+% --- Helper Definitions ---
+owner(W, S) :- pays(W, P), item(S, P).
 
-% ============================================================
-% Clues
-% ============================================================
+% --- Clue 1 ---
+% Freddie's purchase cost 15 dollars more than the cart spider.
+:- pays(freddie, PF), item(cart_spider, PC), PF != PC + 15.
 
-% Clue 1: Freddie's purchase cost 15 dollars more than the cart spider.
-:- winner(F, freddie), winner(C, _), C != F, price(C) = price(F) - 15.
+% --- Clue 2 ---
+% Of the darkback and the cart spider, one sold for $60 and the other was won by Vicky.
+:- item(darkback, 60), owner(vicky, darkback).
+:- item(cart_spider, 60), owner(vicky, cart_spider).
+:- not item(darkback, 60), not owner(vicky, darkback).
+:- not item(cart_spider, 60), not owner(vicky, cart_spider).
 
-% Clue 2: Of the darkback and the cart spider, one sold for $60 and the other was won by Vicky.
-:- spider(60, darkback), winner(_, vicky).
-:- spider(60, cart_spider), winner(_, vicky).
-:- winner(60, _), spider(60, darkback), winner(_, vicky).
-:- winner(60, _), spider(60, cart_spider), winner(_, vicky).
+% --- Clue 3 ---
+% Of the spider that sold for $75 and Shelley's purchase, one was the archaenido and the other was the cart spider.
+:- item(archaenido, 75), owner(shelley, archaenido).
+:- item(cart_spider, 75), owner(shelley, cart_spider).
+:- not item(archaenido, 75), not owner(shelley, archaenido).
+:- not item(cart_spider, 75), not owner(shelley, cart_spider).
 
-% Clue 3: Of the spider that sold for $75 and Shelley's purchase, one was the archaenido and the other was the cart spider.
-:- winner(75, _), spider(75, arachnido).
-:- winner(_, shelley), spider(_, cart_spider).
-:- winner(75, _), spider(_, cart_spider).
-:- winner(_, shelley), spider(75, arachnido).
+% --- Clue 4 ---
+% The arachnid that sold for $90 was either Shelley's purchase or the darkback.
+:- item(S, 90), not owner(shelley, S), S != darkback.
 
-% Clue 4: The arachnid that sold for $90 was either Shelley's purchase or the darkback.
-:- spider(90, arachnido), winner(90, _), winner(_, shelley).
-:- spider(90, arachnido), winner(90, _), spider(90, darkback).
-
-% ============================================================
-% Output
-% ============================================================
-#show winner/2.
-#show spider/2."
+% --- Output Formatting ---
+#show pays/2.
+#show item/2.
+","[('charles', '45'), ('freddie', '75'), ('shelley', '60'), ('vicky', '90'), ('archaenido', '75'), ('cart_spider', '60'), ('darkback', '90'), ('whip_spider', '45')]"
 3xc,"prices(300;350;400;475).
 brands(bulova;citizen;hamilton;seiko).
 face_colors(blue;green;red;silver).
@@ -130,4 +129,4 @@ face_colors(blue;green;red;silver).
 :- face_color(P1,silver), face_color(P2,green), P1 = P2 + 125.
 
 #show brand/2.
-#show face_color/2."
+#show face_color/2.",Incorrect verification code

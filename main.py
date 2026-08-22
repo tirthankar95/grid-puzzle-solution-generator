@@ -59,15 +59,7 @@ def main(cfg: DictConfig):
         main_file = cfg.run_llm_verifier.main_file
         df = pd.read_csv(in_file)
         df_main = pd.read_csv(main_file)
-
-        merged_df = df.merge(df_main, on="Key", how="left", suffixes=("", "_main"))
-        if "Puzzle" not in merged_df.columns and "Puzzle_main" in merged_df.columns:
-            merged_df["Puzzle"] = merged_df["Puzzle_main"]
-        if "Verifier" not in merged_df.columns and "Code" in merged_df.columns:
-            merged_df["Verifier"] = merged_df["Code"]
-        if "Puzzle" not in merged_df.columns or "Verifier" not in merged_df.columns:
-            raise ValueError("Merged data must contain 'Puzzle' and 'Verifier' columns.")
-
+        merged_df = df.merge(df_main, on="Key", how="inner")
         solutions_by_key = {}
         my_sol_main = verifier_runners.get(cfg.run_llm_verifier.type)
         if my_sol_main is None:

@@ -48,7 +48,7 @@ def _iter(puzzle, dim, d_indx):
 
 
 def my_sol_main(row: pd.Series):
-    puzzle, code = row['Puzzle'], row['Verifier']
+    puzzle, code = row['Puzzle'], row['Code']
     puzzle = parse_puzzle(puzzle)
     dimensions = list(puzzle["Options"].keys())
     for filled_grid in _iter(puzzle, dimensions, 0):

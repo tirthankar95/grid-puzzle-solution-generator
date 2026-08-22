@@ -1,10 +1,252 @@
-Key,Solution
-1xa,"March | Aries    | Lyons    
+Key,Code,Solution
+1xa,"from dataclasses import dataclass
+
+MONTHS = {
+    ""March"": 0,
+    ""April"": 1,
+    ""May"": 2,
+    ""June"": 3,
+}
+
+@dataclass
+class Officer:
+    name: str
+    dog: str = None
+    month: int = None
+
+@dataclass
+class Dog:
+    name: str
+    officer: str = None
+    month: int = None
+
+def clue0(Dogs, Officers):
+    return (
+        Officers[""Salinas""].month == MONTHS[""May""]
+        or Officers[""Quinn""].month == MONTHS[""May""]
+    )
+
+def clue1(Dogs, Officers):
+    return Dogs[""Barca""].month == MONTHS[""April""]
+
+def clue2(Dogs, Officers):
+    return Officers[""Daugherty""].month == Officers[""Lyons""].month + 1
+
+def clue3(Dogs, Officers):
+    june_dog = None
+    april_dog = None
+    for dog in Dogs.values():
+        if dog.month == MONTHS[""June""]:
+            june_dog = dog.name
+        if dog.month == MONTHS[""April""]:
+            april_dog = dog.name
+    values = {
+        Officers[""Lyons""].dog,
+        june_dog,
+        ""Jaws"",
+        april_dog,
+    }
+    return len(values) == 4
+
+def clue4(Dogs, Officers):
+    return Officers[""Salinas""].dog in {""Hercules"", ""Barca""}
+
+def verify(grid):
+    if not grid or len(grid) != 4:
+        return (0.0, list(range(5)))
+    
+    dogs = {}
+    officers = {}
+    
+    for row in grid:
+        if len(row) != 3:
+            return (0.0, list(range(5)))
+        month, dog, officer = row
+        if month not in MONTHS or dog not in {""Aries"", ""Barca"", ""Hercules"", ""Jaws""} or officer not in {""Daugherty"", ""Lyons"", ""Quinn"", ""Salinas""}:
+            return (0.0, list(range(5)))
+        
+        dogs[dog] = Dog(name=dog, month=MONTHS[month], officer=officer)
+        officers[officer] = Officer(name=officer, dog=dog, month=MONTHS[month])
+    
+    clue_results = [
+        clue0(dogs, officers),
+        clue1(dogs, officers),
+        clue2(dogs, officers),
+        clue3(dogs, officers),
+        clue4(dogs, officers),
+    ]
+    
+    failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
+    return float(sum(clue_results)) / len(clue_results), failed_clues","March | Aries    | Lyons    
 April | Barca    | Daugherty
 May   | Jaws     | Quinn    
 June  | Hercules | Salinas  "
-2xb,"$45 | Charles | whip spider
+2xb,"from dataclasses import dataclass
+
+PRICES = {
+    ""$45"": 45,
+    ""$60"": 60,
+    ""$75"": 75,
+    ""$90"": 90,
+}
+
+EXPECTED_PRICES = {""$45"", ""$60"", ""$75"", ""$90""}
+EXPECTED_WINNERS = {""Charles"", ""Freddie"", ""Shelley"", ""Vicky""}
+EXPECTED_SPIDERS = {""archaenido"", ""cart spider"", ""darkback"", ""whip spider""}
+
+@dataclass
+class Item:
+    price: int
+    price_str: str
+    winner: str
+    spider: str
+
+def clue0(items_by_winner, items_by_spider):
+    # Clue 1: Freddie's purchase cost 15 dollars more than the cart spider.
+    if ""Freddie"" not in items_by_winner or ""cart spider"" not in items_by_spider:
+        return False
+    return items_by_winner[""Freddie""].price == items_by_spider[""cart spider""].price + 15
+
+def clue1(items_by_winner, items_by_spider):
+    # Clue 2: Of the darkback and the cart spider, one sold for $60 and the other was won by Vicky.
+    if ""darkback"" not in items_by_spider or ""cart spider"" not in items_by_spider or ""Vicky"" not in items_by_winner:
+        return False
+    db = items_by_spider[""darkback""]
+    cs = items_by_spider[""cart spider""]
+
+    cond1 = (db.price == 60 and cs.winner == ""Vicky"")
+    cond2 = (cs.price == 60 and db.winner == ""Vicky"")
+    return cond1 or cond2
+
+def clue2(items_by_price, items_by_winner, items_by_spider):
+    # Clue 3: Of the spider that sold for $75 and Shelley's purchase, one was the archaenido and the other was the cart spider.
+    if ""$75"" not in items_by_price or ""Shelley"" not in items_by_winner:
+        return False
+    p75 = items_by_price[""$75""]
+    shelley = items_by_winner[""Shelley""]
+
+    cond1 = (p75.spider == ""archaenido"" and shelley.spider == ""cart spider"")
+    cond2 = (p75.spider == ""cart spider"" and shelley.spider == ""archaenido"")
+    return cond1 or cond2
+
+def clue3(items_by_price, items_by_winner, items_by_spider):
+    # Clue 4: The arachnid that sold for $90 was either Shelley's purchase or the darkback.
+    if ""$90"" not in items_by_price or ""Shelley"" not in items_by_winner or ""darkback"" not in items_by_spider:
+        return False
+    p90 = items_by_price[""$90""]
+    return (p90.winner == ""Shelley"") or (p90.spider == ""darkback"")
+
+def verify(grid):
+    TOTAL_CLUES = 4
+
+    # Defensive checks on grid shape and contents
+    if not isinstance(grid, list) or len(grid) != 4:
+        return (0.0, list(range(TOTAL_CLUES)))
+
+    prices_found = set()
+    winners_found = set()
+    spiders_found = set()
+
+    items_by_price = {}
+    items_by_winner = {}
+    items_by_spider = {}
+
+    for row in grid:
+        if not isinstance(row, list) or len(row) != 3:
+            return (0.0, list(range(TOTAL_CLUES)))
+
+        p_str, w, s = row[0], row[1], row[2]
+
+        if p_str not in PRICES:
+            return (0.0, list(range(TOTAL_CLUES)))
+
+        prices_found.add(p_str)
+        winners_found.add(w)
+        spiders_found.add(s)
+
+        item = Item(price=PRICES[p_str], price_str=p_str, winner=w, spider=s)
+        items_by_price[p_str] = item
+        items_by_winner[w] = item
+        items_by_spider[s] = item
+
+    if prices_found != EXPECTED_PRICES or winners_found != EXPECTED_WINNERS or spiders_found != EXPECTED_SPIDERS:
+        return (0.0, list(range(TOTAL_CLUES)))
+
+    clue_results = [
+        clue0(items_by_winner, items_by_spider),
+        clue1(items_by_winner, items_by_spider),
+        clue2(items_by_price, items_by_winner, items_by_spider),
+        clue3(items_by_price, items_by_winner, items_by_spider),
+    ]
+
+    failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
+    reward = float(sum(clue_results)) / TOTAL_CLUES
+    return reward, failed_clues
+","$45 | Charles | whip spider
 $60 | Shelley | cart spider
 $75 | Freddie | archaenido 
 $90 | Vicky   | darkback   "
-3xc,Incorrect verification code
+3xc,"from dataclasses import dataclass
+
+PRICES = {
+    ""$300"": 0,
+    ""$350"": 1,
+    ""$400"": 2,
+    ""$475"": 3,
+}
+
+@dataclass
+class Watch:
+    price: str
+    brand: str = None
+    face_color: str = None
+
+def clue0(Watches):
+    tissot = next(w for w in Watches if w.brand == ""Tissot"")
+    return tissot.face_color in [""silver"", ""blue""]
+
+def clue1(Watches):
+    blue_dial = next(w for w in Watches if w.face_color == ""blue"")
+    bulova = next(w for w in Watches if w.brand == ""Bulova"")
+    return blue_dial.price == bulova.price - 75
+
+def clue2(Watches):
+    three_hundred_fifty = next(w for w in Watches if w.price == ""$350"")
+    four_hundred = next(w for w in Watches if w.price == ""$400"")
+    green_face = next(w for w in Watches if w.face_color == ""green"")
+    return (three_hundred_fifty.brand == ""Hamilton"" and four_hundred.brand == ""Citizen"") or \
+           (three_hundred_fifty.brand == ""Citizen"" and four_hundred.brand == ""Hamilton"")
+
+def clue3(Watches):
+    citizen = next(w for w in Watches if w.brand == ""Citizen"")
+    seiko = next(w for w in Watches if w.brand == ""Seiko"")
+    return seiko.price > citizen.price
+
+def clue4(Watches):
+    silver_face = next(w for w in Watches if w.face_color == ""silver"")
+    green_face = next(w for w in Watches if w.face_color == ""green"")
+    return silver_face.price == green_face.price + 125
+
+def verify(grid):
+    try:
+        Watches = [
+            Watch(price=row[0], brand=row[1], face_color=row[2])
+            for row in grid
+        ]
+    except IndexError:
+        return 0.0, list(range(5))
+    
+    if len(Watches) != 4 or any(len(w) != 3 for w in Watches):
+        return 0.0, list(range(5))
+    
+    clue_results = [
+        clue0(Watches),
+        clue1(Watches),
+        clue2(Watches),
+        clue3(Watches),
+        clue4(Watches),
+    ]
+    
+    failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
+    reward = float(sum(clue_results)) / len(clue_results)
+    return reward, failed_clues",Incorrect verification code

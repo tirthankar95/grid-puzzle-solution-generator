@@ -1,6 +1,5 @@
 import clingo
 
-
 def solve(grid_puzzle: str):
     program = grid_puzzle
     ctl = clingo.Control()
