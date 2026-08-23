@@ -1,16 +1,21 @@
 import hydra
 import pandas as pd
+from omegaconf import DictConfig
+from dotenv import load_dotenv
+from llm_direct import llm_direct_main
 from utils.py_soln import my_sol_main as py_sol
 from utils.asp_soln import my_sol_main as asp_sol
-from omegaconf import DictConfig
-from llm_direct import llm_direct_main
 from llm_verifier_py import llm_sol_main as py_main
 from llm_verifier_asp import llm_sol_main as asp_main
 
+
+# Load environment variables from .env file for langsmith
+load_dotenv()  
 verifier_runners = {
     "py": py_sol,
     "asp": asp_sol,
 }
+
 
 @hydra.main(version_base=None, config_path="config", config_name="config")
 def main(cfg: DictConfig):

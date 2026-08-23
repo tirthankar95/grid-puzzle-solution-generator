@@ -2,22 +2,22 @@ import ast
 import traceback
 import pandas as pd
 from pprint import pprint
+import os
 from utils.py_soln import _iter
 from prompt import p_v1_py
 from prompt import p_no_llm_v1
-from dotenv import load_dotenv
 from langsmith import traceable
 from utils.utils import parse_puzzle
-from llms.openai import OpenAILLM
+from llms import create_llm
 from typing import Any, Literal, TypedDict
 from utils.puzzle_verifier import run_verify_from_code
 from langgraph.graph import END, START, StateGraph
 
 
 graph = None
-load_dotenv()
-LLM = OpenAILLM()
+LLM = create_llm()
 MAX_ATTEMPTS = 3
+
 class VerifierRunResult(TypedDict):
     puzzle: str
     verifier_code: str

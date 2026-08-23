@@ -1,28 +1,33 @@
+llm:
+  provider: gemini
+  model_name: gemini-2.5-flash
+
+
 llm_verifier_py:
-  input_file: data/grid-puzzles-sample.csv
-  output_file: data/run1/grid-puzzles-sample-verifier(py).csv
+  input_file: data/old/grid-puzzles-sample.csv
+  output_file: data/old/grid-puzzles-sample-verifier(py).csv
   enable: false
   save_results: true
 
 
 llm_verifier_asp:
-  input_file: data/grid-puzzles-sample.csv
-  output_file: data/run1/grid-puzzles-sample-verifier(asp).csv
-  enable: true
-  save_results: true
-
-
-llm_direct:
-  input_file: data/grid-puzzles-sample.csv
-  output_file: data/run1/grid-puzzles-sample-direct.csv
+  input_file: data/old/grid-puzzles-sample.csv
+  output_file: data/old/grid-puzzles-sample-verifier(asp).csv
   enable: false
   save_results: true
 
 
+llm_direct:
+  input_file: data/old/grid-puzzles-sample.csv
+  output_file: data/old/grid-puzzles-sample-direct-GFlash25.csv
+  enable: true
+  save_results: true
+
+
 run_llm_verifier:
-  type: py
-  main_file: data/grid-puzzles-sample.csv
-  input_file: data/run1/grid-puzzles-sample-verifier(py).csv
-  output_file: data/run1/grid-puzzles-sample-verifier(py).csv
+  type: asp
+  main_file: data/old/grid-puzzles-sample.csv
+  input_file: data/old/grid-puzzles-sample-verifier(asp).csv
+  output_file: data/old/grid-puzzles-sample-verifier(asp).csv
   enable: false
   save_results: true

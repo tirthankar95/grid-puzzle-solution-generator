@@ -1,18 +1,16 @@
 import pandas as pd
 from pprint import pprint
+import os
 from prompt import p_direct
 from prompt import p_no_llm_v1
-from dotenv import load_dotenv
 from langsmith import traceable
-from llms.openai import OpenAILLM
+from llms import create_llm
 from typing import Any, TypedDict
 from langgraph.graph import END, START, StateGraph
 
 
 graph = None
-load_dotenv()
-LLM = OpenAILLM()
-
+LLM = create_llm()
 
 class DirectSolution(TypedDict):
     puzzle: str
