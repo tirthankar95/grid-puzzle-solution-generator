@@ -1,20 +1,20 @@
 llm_verifier_py:
   input_file: data/grid-puzzles-sample.csv
-  output_file: data/grid-puzzles-sample-verifier(py).csv
+  output_file: data/run1/grid-puzzles-sample-verifier(py).csv
   enable: false
   save_results: true
 
 
 llm_verifier_asp:
   input_file: data/grid-puzzles-sample.csv
-  output_file: data/grid-puzzles-sample-verifier(asp).csv
-  enable: false
+  output_file: data/run1/grid-puzzles-sample-verifier(asp).csv
+  enable: true
   save_results: true
 
 
 llm_direct:
   input_file: data/grid-puzzles-sample.csv
-  output_file: data/grid-puzzles-sample-direct.csv
+  output_file: data/run1/grid-puzzles-sample-direct.csv
   enable: false
   save_results: true
 
@@ -22,7 +22,7 @@ llm_direct:
 run_llm_verifier:
   type: py
   main_file: data/grid-puzzles-sample.csv
-  input_file: data/grid-puzzles-sample-verifier(py).csv
-  output_file: data/grid-puzzles-sample-verifier(py).csv
+  input_file: data/run1/grid-puzzles-sample-verifier(py).csv
+  output_file: data/run1/grid-puzzles-sample-verifier(py).csv
   enable: false
   save_results: true
