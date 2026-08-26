@@ -1,8 +1,13 @@
 import importlib.util
+import multiprocessing as mp
 import tempfile
+import traceback
 from pathlib import Path
 from types import ModuleType
 from typing import Any, Callable, Tuple
+
+
+VERIFY_TIMEOUT_SECONDS = 120
 
 
 def _extract_python_source(code: str) -> str:
@@ -32,6 +37,18 @@ def _load_module_from_file(file_path: Path) -> ModuleType:
 	return module
 
 
+def _run_verify_worker(file_path: str, grid: list[list[Any]], result_queue: mp.Queue) -> None:
+	"""Load and run generated verifier code in an isolated process."""
+	try:
+		module = _load_module_from_file(Path(file_path))
+		verify_fn: Callable[..., Tuple[float, list[int]]] | None = getattr(module, "verify", None)
+		if verify_fn is None or not callable(verify_fn):
+			raise AttributeError("Generated module does not define a callable verify(grid).")
+		result_queue.put(("ok", verify_fn(grid)))
+	except Exception:
+		result_queue.put(("error", traceback.format_exc()))
+
+
 def run_verify_from_code(code: str, grid: list[list[Any]]) -> Tuple[float, list[int]]:
 	"""
 	Write verifier code to a temporary Python file, invoke verify(grid),
@@ -42,17 +59,34 @@ def run_verify_from_code(code: str, grid: list[list[Any]]) -> Tuple[float, list[
 		raise ValueError("Empty verifier code provided.")
 	temp_path: Path | None = None
 	pycache_path: Path | None = None
+	process: mp.Process | None = None
+	result_queue: mp.Queue | None = None
 	try:
 		with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as handle:
 			handle.write(source)
 			temp_path = Path(handle.name)
-		module = _load_module_from_file(temp_path)
-		verify_fn: Callable[..., Tuple[float, list[int]]] | None = getattr(module, "verify", None)
-		if verify_fn is None or not callable(verify_fn):
-			raise AttributeError("Generated module does not define a callable verify(grid).")
+		result_queue = mp.Queue()
+		process = mp.Process(target=_run_verify_worker, args=(str(temp_path), grid, result_queue))
+		process.start()
+		process.join(VERIFY_TIMEOUT_SECONDS)
+		if process.is_alive():
+			process.terminate()
+			process.join()
+			raise TimeoutError(f"Verifier execution exceeded {VERIFY_TIMEOUT_SECONDS} seconds.")
+		if result_queue.empty():
+			raise RuntimeError("Verifier process exited without returning a result.")
+		status, payload = result_queue.get()
+		if status == "error":
+			raise RuntimeError(payload)
 		pycache_path = temp_path.parent / "__pycache__"
-		return verify_fn(grid)
+		return payload
 	finally:
+		if process is not None and process.is_alive():
+			process.terminate()
+			process.join()
+		if result_queue is not None:
+			result_queue.close()
+			result_queue.join_thread()
 		if temp_path is not None and temp_path.exists():
 			temp_path.unlink()
 		if pycache_path is not None and pycache_path.exists():

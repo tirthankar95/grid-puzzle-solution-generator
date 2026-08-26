@@ -26,8 +26,7 @@ def _iter(puzzle, dim, d_indx):
     if d_indx == len(dim):
         keys = list(grid.keys())
         nrows = len(grid[keys[0]])
-        new_grid = []
-        indx = 0
+        new_grid, indx = [], 0
         while indx < nrows:
             row = []
             for key in keys:

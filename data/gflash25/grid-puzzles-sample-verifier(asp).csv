@@ -1,0 +1,3310 @@
+Key,Code
+2b616fcd-8af9-435b-9ca3-70dfe176bd7a,"% ============================================================
+% Spider Auction grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+prices(45;60;75;90).
+winners(charles;freddie;shelley;vicky).
+spiders(archaenido;cart_spider;darkback;whip_spider).
+
+% ---- Assignment: each price gets exactly one winner, and vice versa ----
+1 { assign_winner(P,W) : winners(W) } 1 :- prices(P).
+1 { assign_winner(P,W) : prices(P) } 1 :- winners(W).
+
+% ---- Assignment: each price gets exactly one spider, and vice versa ----
+1 { assign_spider(P,S) : spiders(S) } 1 :- prices(P).
+1 { assign_spider(P,S) : prices(P) } 1 :- spiders(S).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: Freddie's purchase cost 15 dollars more than the cart spider.
+% Find the price Freddie paid (P_freddie) and the price of the cart spider (P_cart).
+% Then P_freddie must be P_cart + 15.
+:- assign_winner(P_freddie, freddie),
+   assign_spider(P_cart, cart_spider),
+   P_freddie != P_cart + 15.
+
+% Clue 2: Of the darkback and the cart spider, one sold for $60 and the other was won by Vicky.
+% This means:
+% (darkback sold for $60 AND cart_spider was Vicky's purchase) OR
+% (cart_spider sold for $60 AND darkback was Vicky's purchase)
+% We need to ensure that at least one of these two scenarios is true.
+scenario2_option1 :- assign_spider(60, darkback), assign_winner(P_vicky, vicky), assign_spider(P_vicky, cart_spider).
+scenario2_option2 :- assign_spider(60, cart_spider), assign_winner(P_vicky, vicky), assign_spider(P_vicky, darkback).
+:- not scenario2_option1, not scenario2_option2.
+
+% Clue 3: Of the spider that sold for $75 and Shelley's purchase, one was the archaenido and the other was the cart spider.
+% This means:
+% (archaenido sold for $75 AND cart_spider was Shelley's purchase) OR
+% (cart_spider sold for $75 AND archaenido was Shelley's purchase)
+% We need to ensure that at least one of these two scenarios is true.
+scenario3_option1 :- assign_spider(75, archaenido), assign_winner(P_shelley, shelley), assign_spider(P_shelley, cart_spider).
+scenario3_option2 :- assign_spider(75, cart_spider), assign_winner(P_shelley, shelley), assign_spider(P_shelley, archaenido).
+:- not scenario3_option1, not scenario3_option2.
+
+% Clue 4: The arachnid that sold for $90 was either Shelley's purchase or the darkback.
+% Find the spider that sold for $90 (S_ninety) and the spider Shelley bought (S_shelley).
+% S_ninety must be equal to S_shelley OR S_ninety must be darkback.
+:- assign_spider(90, S_ninety),
+   assign_winner(P_shelley, shelley),
+   assign_spider(P_shelley, S_shelley),
+   S_ninety != S_shelley,
+   S_ninety != darkback.
+
+% ============================================================
+% Output
+% ============================================================
+#show assign_winner/2.
+#show assign_spider/2."
+ff2cda15-4085-4a35-a869-82aac3565713,"% ============================================================
+% Riverside Vintage Watch Exchange puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+prices(300;350;400;475).
+brands(bulova;citizen;hamilton;seiko).
+face_colors(blue;green;red;silver).
+
+% ---- Assignment: each price gets exactly one brand, and vice versa ----
+1 { brand(P,B) : brands(B) } 1 :- prices(P).
+1 { brand(P,B) : prices(P) } 1 :- brands(B).
+
+% ---- Assignment: each price gets exactly one face color, and vice versa ----
+1 { face_color(P,F) : face_colors(F) } 1 :- prices(P).
+1 { face_color(P,F) : prices(P) } 1 :- face_colors(F).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: The Tissot watch was either the timepiece with a silver face or the one with a blue dial.
+% 'tissot' is not listed in the 'brands' domain. According to the puzzle's explicit categories,
+% the brands are Bulova, Citizen, Hamilton, Seiko. Therefore, 'brand(P,tissot)' will never be true.
+% This constraint will thus never be violated and has no effect on the solution with the given domains.
+:- brand(P,tissot), face_color(P,F), F != silver, F != blue.
+
+% Clue 2: The watch with a blue dial sold for 75 dollars less than the Bulova model.
+% This means the Bulova model's price is 75 dollars more than the blue dial watch's price.
+% P_bulova = P_blue + 75
+:- face_color(P_blue, blue), brand(P_bulova, bulova), P_bulova - P_blue != 75.
+
+% Clue 3: Of the $400 watch and the $350 piece, one is a Hamilton model and the other has a green face.
+% This implies an exclusive OR condition:
+% (brand(400, hamilton) AND face_color(350, green)) OR (brand(350, hamilton) AND face_color(400, green))
+:- not ( (brand(400, hamilton), face_color(350, green)) ; (brand(350, hamilton), face_color(400, green)) ).
+
+% Clue 4: The Seiko model sold for somewhat more than the Citizen model.
+% P_seiko > P_citizen
+:- brand(P_seiko, seiko), brand(P_citizen, citizen), P_seiko <= P_citizen.
+
+% Clue 5: The watch with a silver face sold for 125 dollars more than the timepiece with a green face.
+% P_silver = P_green + 125
+:- face_color(P_silver, silver), face_color(P_green, green), P_silver - P_green != 125.
+
+% ============================================================
+% Output
+% ============================================================
+#show brand/2.
+#show face_color/2."
+25f9a633-8212-4985-9189-d7bc539d1621,"% ============================================================
+% Garrett County Bookmobiles grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+books(250;300;350;400).
+bookmobiles(books_4_u;dream_machine;explore_more;tiny_tomes).
+drivers(antonio;gene;leroy;patsy).
+
+% ---- Assignment: each books value gets exactly one bookmobile, and vice versa ----
+% bookmobile(Books, BookmobileName)
+1 { bookmobile(B, BM) : bookmobiles(BM) } 1 :- books(B).
+1 { bookmobile(B, BM) : books(B) } 1 :- bookmobiles(BM).
+
+% ---- Assignment: each books value gets exactly one driver, and vice versa ----
+% driver(Books, DriverName)
+1 { driver(B, D) : drivers(D) } 1 :- books(B).
+1 { driver(B, D) : books(B) } 1 :- drivers(D).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: ""Tiny Tomes"" has 350 books.
+:- bookmobile(B, tiny_tomes), B != 350.
+:- bookmobile(350, BM), BM != tiny_tomes.
+
+% Clue 2: The mobile library with 300 books is driven by Leroy.
+:- driver(B, leroy), B != 300.
+:- driver(300, D), D != leroy.
+
+% Clue 3: The four vehicles are the bookmobile with 400 books, the vehicle Gene drives, ""Explore More"" and ""Tiny Tomes"".
+% This implies that these four descriptions refer to four distinct bookmobiles.
+% Since there are exactly four bookmobiles in total, this means the set of all bookmobiles is precisely these four.
+%
+% 1. The bookmobile with 400 books is not ""Explore More"".
+:- bookmobile(400, explore_more).
+% 2. The bookmobile with 400 books is not ""Tiny Tomes"". (This is already implied by Clue 1, as Tiny Tomes has 350 books).
+%
+% 3. The bookmobile Gene drives is not ""Explore More"".
+:- driver(B, gene), bookmobile(B, explore_more).
+% 4. The bookmobile Gene drives is not ""Tiny Tomes"". (If Gene drives Tiny Tomes, then Tiny Tomes would be listed twice
+%    in the set of four distinct bookmobiles. Since Tiny Tomes has 350 books (Clue 1), Gene cannot drive the 350-book bookmobile).
+:- driver(350, gene).
+%
+% 5. The bookmobile with 400 books is not the bookmobile Gene drives.
+%    This means Gene does not drive the bookmobile with 400 books.
+:- driver(400, gene).
+
+% Clue 4: The mobile library Patsy drives is either the bookmobile with 300 books or ""Books-4-U"".
+% If Patsy drives a bookmobile with B books, then (B=300 OR that bookmobile is 'books_4_u').
+:- driver(B, patsy), B != 300, bookmobile(B, BM), BM != books_4_u.
+
+% ============================================================
+% Output
+% ============================================================
+#show bookmobile/2.
+#show driver/2."
+e865fdab-32ec-4296-a266-34fbc10ff8e0,"% ============================================================
+% Appalachian Folk Art Festival woodcarving competition - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+heights(8;12;16;20).
+wood_types(butternut;cherry;mahogany;pine).
+subjects(deer;eagle;fish;wolf).
+
+% ---- Assignment: each height gets exactly one wood type, and vice versa ----
+1 { wood(H,W) : wood_types(W) } 1 :- heights(H).
+1 { wood(H,W) : heights(H) } 1 :- wood_types(W).
+
+% ---- Assignment: each height gets exactly one subject, and vice versa ----
+1 { subject(H,S) : subjects(S) } 1 :- heights(H).
+1 { subject(H,S) : heights(H) } 1 :- subjects(S).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: The four carvings were the wolf piece, the 12 inch carving,
+%         the 8 inch piece and the 20 inch sculpture.
+% This implies that the wolf piece is distinct from the 8, 12, and 20 inch pieces.
+% Since the four carvings correspond to heights 8, 12, 16, and 20,
+% the wolf piece must be the 16 inch carving.
+:- not subject(16, wolf).
+
+% Clue 2: The 20 inch piece is an eagle.
+:- not subject(20, eagle).
+
+% Clue 3: The cherry piece is 8 inches taller than the mahogany sculpture.
+% This means if H1 is the height of the cherry piece and H2 is the height
+% of the mahogany piece, then H1 = H2 + 8.
+:- wood(H1, cherry), wood(H2, mahogany), H1 != H2 + 8.
+% And such a pair must exist.
+cherry_mahogany_8_taller :- wood(H1, cherry), wood(H2, mahogany), H1 = H2 + 8.
+:- not cherry_mahogany_8_taller.
+
+% Clue 4: The butternut piece is 4 inches shorter than the deer carving.
+% This means if H1 is the height of the butternut piece and H2 is the height
+% of the deer piece, then H1 = H2 - 4.
+:- wood(H1, butternut), subject(H2, deer), H1 != H2 - 4.
+% And such a pair must exist.
+butternut_deer_4_shorter :- wood(H1, butternut), subject(H2, deer), H1 = H2 - 4.
+:- not butternut_deer_4_shorter.
+
+% ============================================================
+% Output
+% ============================================================
+#show wood/2.
+#show subject/2."
+e0ab2cf6-1886-49a9-b06d-696dabfc9db1,"% ============================================================
+% Healthy Snack Sessions grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+calories(cal345;cal360;cal375;cal390).
+snacks(almond_energy_bar;oatmeal_cookie;granola_mix;trail_mix).
+days(wednesday;thursday;friday;saturday).
+
+% Map symbolic calorie names to their numerical values for comparisons
+cal_val(cal345, 345).
+cal_val(cal360, 360).
+cal_val(cal375, 375).
+cal_val(cal390, 390).
+
+% ---- Assignment: each calorie, snack, and day is uniquely linked ----
+% Use a single predicate assign(C,S,D) to link all three categories
+% C: calorie, S: snack, D: day
+
+% Each calorie value C is assigned to exactly one (S,D) pair
+1 { assign(C,S,D) : snacks(S), days(D) } 1 :- calories(C).
+% Each snack S is assigned to exactly one (C,D) pair
+1 { assign(C,S,D) : calories(C), days(D) } 1 :- snacks(S).
+% Each day D is assigned to exactly one (C,S) pair
+1 { assign(C,S,D) : calories(C), snacks(S) } 1 :- days(D).
+
+% Derived predicates for easier clue formulation and output
+assign_cal_snack(C,S) :- assign(C,S,D).
+assign_cal_day(C,D) :- assign(C,S,D).
+assign_snack_day(S,D) :- assign(C,S,D).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: The almond energy bar contains somewhat fewer calories than the snack given out on Wednesday.
+% C_almond < C_wednesday
+:- assign_cal_snack(C_almond, almond_energy_bar),
+   assign_cal_day(C_wednesday, wednesday),
+   cal_val(C_almond, V_almond),
+   cal_val(C_wednesday, V_wednesday),
+   V_almond >= V_wednesday.
+
+% Clue 2: The snack given out on Thursday contains 15 fewer calories than the oatmeal cookie.
+% C_thursday = C_oatmeal - 15
+:- assign_cal_day(C_thursday, thursday),
+   assign_cal_snack(C_oatmeal, oatmeal_cookie),
+   cal_val(C_thursday, V_thursday),
+   cal_val(C_oatmeal, V_oatmeal),
+   V_thursday != V_oatmeal - 15.
+
+% Clue 3: The recipe given out on Friday contains somewhat fewer calories than the granola mix.
+% C_friday < C_granola
+:- assign_cal_day(C_friday, friday),
+   assign_cal_snack(C_granola, granola_mix),
+   cal_val(C_friday, V_friday),
+   cal_val(C_granola, V_granola),
+   V_friday >= V_granola.
+
+% Clue 4: The snack given out on Saturday contains 15 more calories than the snack given out on Thursday.
+% C_saturday = C_thursday + 15
+:- assign_cal_day(C_saturday, saturday),
+   assign_cal_day(C_thursday, thursday),
+   cal_val(C_saturday, V_saturday),
+   cal_val(C_thursday, V_thursday),
+   V_saturday != V_thursday + 15.
+
+% Clue 5: The snack with 360 calories was either the one given out on Wednesday or the granola mix.
+% If S_360 is the snack with 360 calories, and S_wednesday is the snack on Wednesday,
+% then it must be that S_360 = S_wednesday OR S_360 = granola_mix.
+% This is enforced by forbidding the case where S_360 is neither S_wednesday nor granola_mix.
+:- assign_cal_snack(cal360, S_360),
+   assign_snack_day(S_wednesday, wednesday),
+   S_360 != S_wednesday,
+   S_360 != granola_mix.
+
+% ============================================================
+% Output
+% ============================================================
+#show assign/3.
+#show assign_cal_snack/2.
+#show assign_cal_day/2.
+#show assign_snack_day/2."
+255b5850-4c3c-4ca4-866b-f37931d13c8e,"% ============================================================
+% Maplewood Artisan Fair grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+sizes(5;6;7;9).
+styles(abstract;floral;geometric;modern).
+materials(plastic;wood;metal;glass).
+
+% ---- Assignment: each size gets exactly one style, and vice versa ----
+% Each size has one style
+1 { has_style(S, St) : styles(St) } 1 :- sizes(S).
+% Each style is assigned to one size
+1 { has_style(S, St) : sizes(S) } 1 :- styles(St).
+
+% ---- Assignment: each size gets exactly one material, and vice versa ----
+% Each size has one material
+1 { has_material(S, M) : materials(M) } 1 :- sizes(S).
+% Each material is assigned to one size
+1 { has_material(S, M) : sizes(S) } 1 :- materials(M).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: The abstract craft is somewhat smaller than the geometric craft.
+% If S1 is abstract and S2 is geometric, then S1 must be less than S2.
+:- has_style(S1, abstract), has_style(S2, geometric), S1 >= S2.
+
+% Clue 2: The 8 inch craft was either the floral design or the modern style.
+% (Assuming ""8 inch"" refers to ""9 inch"" based on available sizes)
+% The 9 inch craft's style must be floral or modern.
+:- has_style(9, St), St != floral, St != modern.
+
+% Clue 3: The wooden craft is 3 inches larger than the plastic one.
+% If S1 is wood and S2 is plastic, then S1 must be S2 + 3.
+:- has_material(S1, wood), has_material(S2, plastic), S1 != S2 + 3.
+
+% Clue 4: The modern style has a 6 inch size.
+% The 6 inch craft must have the modern style.
+:- not has_style(6, modern).
+
+% Clue 5: Of the 6 inch craft and the 8 inch item, one is a geometric design and the other is made of wood.
+% (Assuming ""8 inch"" refers to ""9 inch"" based on available sizes)
+% This means either (6 inch is geometric AND 9 inch is wood) OR (6 inch is wood AND 9 inch is geometric).
+:- not ( (has_style(6, geometric), has_material(9, wood)) ; (has_material(6, wood), has_style(9, geometric)) ).
+
+% ============================================================
+% Output
+% ============================================================
+#show has_style/2.
+#show has_material/2."
+3134948d-bfd1-4e1b-beae-8b9a474e6ef0,"% ============================================================
+% Mary's Grandchildren grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+birthdays(april_3rd;april_7th;april_11th;april_15th;april_19th).
+grandchildren(bryan;guy;johanna;kerry;nathaniel).
+ages(5;8;9;14;18).
+
+% ""X days after"" relation over the timeline
+% This is a bit tricky since the days are not consecutive.
+% We need to define the specific differences.
+% For 4 days after:
+days_after(april_3rd, april_7th, 4).
+days_after(april_7th, april_11th, 4).
+days_after(april_11th, april_15th, 4).
+days_after(april_15th, april_19th, 4).
+
+% ---- Assignment: each birthday gets exactly one grandchild, and vice versa ----
+1 { grandchild(B,G) : grandchildren(G) } 1 :- birthdays(B).
+1 { grandchild(B,G) : birthdays(B) } 1 :- grandchildren(G).
+
+% ---- Assignment: each birthday gets exactly one age, and vice versa ----
+1 { age(B,A) : ages(A) } 1 :- birthdays(B).
+1 { age(B,A) : birthdays(B) } 1 :- ages(A).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: Guy isn't 9 years old.
+:- grandchild(B,guy), age(B,9).
+
+% Clue 2: Johanna was born on April 11th.
+:- grandchild(B,johanna), B != april_11th.
+
+% Clue 3: Kerry is 8 years old.
+:- grandchild(B,kerry), age(B,A), A != 8.
+
+% Clue 4: The 14-year-old has a birthday 4 days after Nathaniel.
+:- age(B1,14), grandchild(B2,nathaniel), not days_after(B2,B1,4).
+
+% Clue 5: Nathaniel has a birthday 4 days before Bryan.
+% This means Bryan's birthday is 4 days after Nathaniel's.
+:- grandchild(B1,nathaniel), grandchild(B2,bryan), not days_after(B1,B2,4).
+
+% Clue 6: The five children are Kerry, the 5-year-old, the grandchild with the April 15th birthday,
+%         the grandchild with the April 11th birthday and the child with the April 7th birthday.
+% This clue lists all five grandchildren, implying they are distinct.
+% Since we already enforce one-to-one assignments, we just need to ensure consistency.
+% The main implication is that the grandchild who is Kerry, the grandchild who is 5 years old,
+% the grandchild with the April 15th birthday, the grandchild with the April 11th birthday,
+% and the grandchild with the April 7th birthday are all distinct individuals.
+% This is implicitly handled by the one-to-one constraints and the fact that there are 5 distinct categories.
+% We can add constraints to ensure that these descriptions refer to distinct entities if not already guaranteed.
+% For example, Kerry is not the 5-year-old, unless the puzzle allows for that.
+% Given ""no option in any category will ever be used more than once"", these must be distinct.
+
+% Kerry is not the 5-year-old.
+:- grandchild(B,kerry), age(B,5).
+% Kerry is not the grandchild with the April 15th birthday.
+:- grandchild(april_15th,kerry).
+% Kerry is not the grandchild with the April 11th birthday. (Already covered by Clue 2: Johanna is April 11th)
+:- grandchild(april_11th,kerry).
+% Kerry is not the grandchild with the April 7th birthday.
+:- grandchild(april_7th,kerry).
+
+% The 5-year-old is not the grandchild with the April 15th birthday.
+:- age(april_15th,5).
+% The 5-year-old is not the grandchild with the April 11th birthday.
+:- age(april_11th,5).
+% The 5-year-old is not the grandchild with the April 7th birthday.
+:- age(april_7th,5).
+
+% The grandchild with the April 15th birthday is not the grandchild with the April 11th birthday. (Implicitly true by distinct birthdays)
+% The grandchild with the April 15th birthday is not the grandchild with the April 7th birthday. (Implicitly true by distinct birthdays)
+% The grandchild with the April 11th birthday is not the grandchild with the April 7th birthday. (Implicitly true by distinct birthdays)
+
+% Clue 6 also implies that Johanna (April 11th) is not Kerry, not the 5-year-old, etc.
+% Johanna is not Kerry. (This is implicitly handled by the distinct names)
+% Johanna is not the 5-year-old.
+:- grandchild(april_11th,G), age(april_11th,5).
+
+% ============================================================
+% Output
+% ============================================================
+#show grandchild/2.
+#show age/2."
+4a4c5eb3-6e26-46a2-baed-e1e70fc348b1,"% ============================================================
+% Art Fair in Venice grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+weights(3;4;5;6;7).
+colors(bronze;emerald;sapphire;marble;teal).
+shapes(obelisk;vase;pedestal;lion;dolphin).
+
+% ---- Relations ----
+% W1 is strictly less than W2
+less_than(W1, W2) :- weights(W1), weights(W2), W1 < W2.
+
+% W1 is 1 pound more than W2
+plus_one(W1, W2) :- weights(W1), weights(W2), W1 = W2 + 1.
+
+% W1 is 2 pounds more than W2
+plus_two(W1, W2) :- weights(W1), weights(W2), W1 = W2 + 2.
+
+% ---- Assignment: each weight gets exactly one color, and vice versa ----
+1 { color(W,C) : colors(C) } 1 :- weights(W).
+1 { color(W,C) : weights(W) } 1 :- colors(C).
+
+% ---- Assignment: each weight gets exactly one shape, and vice versa ----
+1 { shape(W,S) : shapes(S) } 1 :- weights(W).
+1 { shape(W,S) : weights(W) } 1 :- shapes(S).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: The lion sculpture weighs 2 pounds more than the dolphin piece.
+:- shape(W_lion, lion), shape(W_dolphin, dolphin), not plus_two(W_lion, W_dolphin).
+
+% Clue 2: The emerald creation was either the piece that weighs 4 pounds or the one that weighs 6 pounds.
+:- color(W, emerald), W != 4, W != 6.
+
+% Clue 3: Of the sapphire piece and the vase, one weighs 5 pounds and the other weighs 7 pounds.
+:- not ( (color(5, sapphire), shape(7, vase)) ; (color(7, sapphire), shape(5, vase)) ).
+
+% Clue 4: The bronze piece weighs somewhat less than the emerald creation.
+:- color(W_bronze, bronze), color(W_emerald, emerald), not less_than(W_bronze, W_emerald).
+
+% Clue 5: The piece that weighs 3 pounds is the obelisk.
+:- shape(W, obelisk), W != 3.
+
+% Clue 6: The marble creation doesn't weigh 8 pounds.
+% This is implicitly true as 8 pounds is not in the domain of weights.
+% The constraint ensures that if 'marble' were ever assigned to 8 pounds, it would be invalid.
+:- color(8, marble).
+
+% Clue 7: The vase weighs 1 pound more than the pedestal.
+:- shape(W_vase, vase), shape(W_pedestal, pedestal), not plus_one(W_vase, W_pedestal).
+
+% ============================================================
+% Output
+% ============================================================
+#show color/2.
+#show shape/2."
+1704f0df-971b-47c2-91f4-36b5e622cf6d,"```asp
+% ============================================================
+% Entrepreneur Interviews grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+values(8;12;15;25;30). % in millions
+entrepreneurs(clarachen;bettybaker;jameslee;robertross;danielkim).
+states(california;nevada;arizona;florida;texas).
+
+% Define ""somewhat less than"" relation for values based on the sorted list.
+% This means V1 is directly preceding V2 in the ordered sequence of values.
+less_than(8,12).
+less_than(12,15).
+less_than(15,25).
+less_than(25,30).
+
+% ---- Assignment: each value gets exactly one entrepreneur, and vice versa ----
+% This ensures a one-to-one mapping between business values and entrepreneurs.
+1 { entrepreneur(V,E) : entrepreneurs(E) } 1 :- values(V).
+1 { entrepreneur(V,E) : values(V) } 1 :- entrepreneurs(E).
+
+% ---- Assignment: each value gets exactly one state, and vice versa ----
+% This ensures a one-to-one mapping between business values and states.
+1 { state(V,S) : states(S) } 1 :- values(V).
+1 { state(V,S) : values(V) } 1 :- states(S).
+
+% ---- Assignment: each entrepreneur gets exactly one state, and vice versa ----
+% This ensures a one-to-one mapping between entrepreneurs and states.
+1 { from_state(E,S) : states(S) } 1 :- entrepreneurs(E).
+1 { from_state(E,S) : entrepreneurs(E) } 1 :- states(S).
+
+% ---- Consistency rules to link the assignments ----
+% These rules ensure that the three assignment predicates (entrepreneur, state, from_state)
+% are consistent with each other. If an entrepreneur E has value V, and value V is from state S,
+% then entrepreneur E must be from state S.
+:- entrepreneur(V,E), state(V,S), not from_state(E,S).
+:- entrepreneur(V,E), from_state(E,S), not state(V,S).
+
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: The entrepreneur from Texas had a business value somewhat less than Clara Chen.
+% Find the value associated with Texas (V_texas).
+% Find the value associated with Clara Chen (V_clarachen).
+% V_texas must be ""somewhat less than"" V_clarachen.
+:- state(V_texas, texas), entrepreneur(V_clarachen, clarachen), not less_than(V_texas, V_clarachen).
+
+% Clue 2: Robert Ross's business was worth 8 million more than the entrepreneur from Florida.
+% Find Robert Ross's business value (V_robertross).
+% Find the business value of the entrepreneur from Florida (V_florida).
+% V_robertross must be equal to V_florida + 8.
+:- entrepreneur(V_robertross, robertross), state(V_florida, florida), V_robertross != V_florida + 8.
+
+% Clue 3: The entrepreneur who owned a business valued at $25 million is from Arizona.
+% The state associated with the $25 million value must be Arizona.
+:- state(25, S), S != arizona.
+
+% Clue 4: James Lee wasn't from California.
+% James Lee cannot be associated with California as his home state.
+:- from_state(jameslee, california).
+
+% Clue 5: James Lee's business was worth $12 million.
+% The entrepreneur associated with the $12 million value must be James Lee.
+:- entrepreneur(V, jameslee), V != 12.
+
+% Clue 6: James Lee's business value was somewhat less than the entrepreneur from Florida.
+% From Clue 5, James Lee's value is $12 million.
+% So, $12 million must be ""somewhat less than"" the value of the entrepreneur from Florida (V_florida).
+:- state(V_florida, florida), not less_than(12, V_florida).
+
+% Clue 7: The entrepreneur from Nevada was either the person with a business valued at $8 million or Betty Baker.
+% If the state of Nevada is linked to value V, and that value V is linked to entrepreneur E,
+% then it must be true that (V is 8) OR (E is Betty Baker).
+% This constraint forbids the case where V is NOT 8 AND E is NOT Betty Baker.
+:- state(V, nevada), entrepreneur(V, E), V != 8, E != bettybaker.
+
+
+% ============================================================
+% Output
+% ============================================================
+#show entrepreneur/2.
+#show state/2.
+#show from_state/2.
+```"
+44052505-013e-4891-9857-97de8fa438f5,"% ============================================================
+% Greenwood Wildlife Sanctuary grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+% Lengths as listed in the table.
+% Clue 3 mentions ""18 meters"", which is not in the listed lengths.
+% To enforce this clue exactly and include all mentioned domain facts,
+% '18' is added to the 'lengths' domain. This creates a mismatch in
+% the number of items (6 lengths vs 5 names), which will lead to an
+% UNSATISFIABLE program due to the one-to-one assignment constraints.
+lengths(8;10;12;14;16).
+lengths(18).
+
+names(tyrone;rex;dino;leo;terry).
+locations(alberta;texas;montana;wyoming;saskatchewan).
+
+% Weights are deduced from clues 1, 4, and 5, assuming a common pattern
+% for logic grid puzzles where values form a simple arithmetic sequence.
+% Clue 1: 5000 kg is one weight.
+% Clue 4: weight(Dino) = weight(Wyoming_dino) + 3000.
+% Clue 5: weight(Leo) = weight(Dino) - 2000.
+% From 4 & 5: weight(Leo) = weight(Wyoming_dino) + 1000.
+% This implies a sequence like X, X+1000, X+3000.
+% If 5000 is one of these, and assuming a set like {1000, 2000, 3000, 4000, 5000},
+% then X=2000 fits: weight(Wyoming_dino)=2000, weight(Leo)=3000, weight(Dino)=5000.
+% The remaining weights are 1000 and 4000.
+weights(1000;2000;3000;4000;5000).
+
+% ---- Relations ----
+% Order for lengths, used in Clue 6 (assuming ""sometime before"" refers to length).
+length_order(L1, L2) :- lengths(L1), lengths(L2), L1 < L2.
+
+% ---- Assignment: each name gets exactly one length, and vice versa ----
+% This will result in UNSATISFIABLE because there are 6 lengths but only 5 names.
+1 { name_length(N,L) : lengths(L) } 1 :- names(N).
+1 { name_length(N,L) : names(N) } 1 :- lengths(L).
+
+% ---- Assignment: each name gets exactly one location, and vice versa ----
+1 { name_location(N,LO) : locations(LO) } 1 :- names(N).
+1 { name_location(N,LO) : names(N) } 1 :- locations(LO).
+
+% ---- Assignment: each name gets exactly one weight, and vice versa ----
+1 { name_weight(N,W) : weights(W) } 1 :- names(N).
+1 { name_weight(N,W) : names(N) } 1 :- weights(W).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: ""Tyrone"" was either the dinosaur found in Alberta or the one believed to weigh 5,000 kg.
+% This is an XOR condition: must be one or the other, but not both.
+:- name_location(tyrone, alberta), name_weight(tyrone, 5000). % Cannot be both
+:- not name_location(tyrone, alberta), not name_weight(tyrone, 5000). % Must be one or the other
+
+% Clue 2: ""Rex"" wasn't discovered in Montana.
+:- name_location(rex, montana).
+
+% Clue 3: ""Rex"" is thought to be 18 meters long.
+% This clue directly assigns a length to Rex.
+:- not name_length(rex, 18).
+
+% Clue 4: ""Dino"" lived 3,000 kg more than the dinosaur found in Wyoming.
+:- name_weight(dino, WD),
+   name_location(N_Wyoming, wyoming),
+   name_weight(N_Wyoming, WW),
+   WD != WW + 3000.
+
+% Clue 5: ""Leo"" weighed 2,000 kg less than ""Dino"".
+:- name_weight(leo, WL),
+   name_weight(dino, WD),
+   WL != WD - 2000.
+
+% Clue 6: The dinosaur found in Alberta lived sometime before ""Terry"".
+% Assuming ""sometime before"" refers to length (shorter = lived earlier).
+:- name_location(N_Alberta, alberta),
+   name_length(N_Alberta, L_Alberta),
+   name_length(terry, L_Terry),
+   not length_order(L_Alberta, L_Terry). % L_Alberta must be less than L_Terry
+
+% Clue 7: ""Tyrone"" was unearthed in Texas.
+:- not name_location(tyrone, texas).
+
+% ============================================================
+% Output
+% ============================================================
+#show name_length/2.
+#show name_location/2.
+#show name_weight/2."
+e8e84ef5-a950-4058-9087-6029798a7b65,"% ============================================================
+% CodeBite Café grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+prices(p7_99; p8_99; p9_99; p10_99; p11_99).
+runners(alex; chris; dana; mark; sam).
+drinks(cappuccino; espresso; latte; mocha; tea).
+
+% ---- Relations ----
+% Order relation for prices (P1 is strictly less than P2)
+order(p7_99, p8_99).
+order(p8_99, p9_99).
+order(p9_99, p10_99).
+order(p10_99, p11_99).
+
+% Transitive closure for order (P1 is less than P2)
+order(P1, P3) :- order(P1, P2), order(P2, P3).
+order(P1, P3) :- order(P1, P2), order(P2, P3), prices(P1), prices(P2), prices(P3). % Ensure all variables are bound
+
+% Difference relation for prices (P2 - P1 = Value in dollars)
+% diff_val(P1, P2, V) means P2 - P1 = V
+diff_val(p7_99, p8_99, 1).
+diff_val(p8_99, p9_99, 1).
+diff_val(p9_99, p10_99, 1).
+diff_val(p10_99, p11_99, 1).
+
+diff_val(p7_99, p9_99, 2).
+diff_val(p8_99, p10_99, 2).
+diff_val(p9_99, p11_99, 2).
+
+diff_val(p7_99, p10_99, 3).
+diff_val(p8_99, p11_99, 3).
+
+diff_val(p7_99, p11_99, 4).
+
+% ---- Assignment: each price gets exactly one runner, and vice versa (bijection) ----
+1 { runner(P,R) : runners(R) } 1 :- prices(P).
+1 { runner(P,R) : prices(P) } 1 :- runners(R).
+
+% ---- Assignment: each price gets exactly one drink, and vice versa (bijection) ----
+1 { drink(P,D) : drinks(D) } 1 :- prices(P).
+1 { drink(P,D) : prices(P) } 1 :- drinks(D).
+
+% ---- Derived relation: link a runner to a drink if they share the same price ----
+link(R,D) :- runner(P,R), drink(P,D).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: Alex ordered a latte.
+% This means Alex and latte must be linked (share the same price).
+:- not link(alex, latte).
+
+% Clue 2: Alex paid 2 dollars more than Chris.
+% Find the prices P_alex and P_chris. P_alex must be 2 dollars more than P_chris.
+:- runner(P_alex, alex), runner(P_chris, chris), not diff_val(P_chris, P_alex, 2).
+
+% Clue 3: Of the competitor who ordered a cappuccino and the competitor who ordered an espresso,
+%         one paid $9.99 and the other was Dana.
+% Let P_cap be the price of cappuccino, P_esp the price of espresso.
+% Let R_cap be the runner who ordered cappuccino, R_esp the runner who ordered espresso.
+% The clue states: (P_cap = p9_99 AND R_esp = dana) OR (P_esp = p9_99 AND R_cap = dana).
+:- drink(P_cap, cappuccino), drink(P_esp, espresso),
+   runner(P_cap, R_cap), runner(P_esp, R_esp),
+   not ( (P_cap = p9_99, R_esp = dana) ; (P_esp = p9_99, R_cap = dana) ).
+
+% Clue 4: Dana paid 1 dollar more than Mark.
+% Find the prices P_dana and P_mark. P_dana must be 1 dollar more than P_mark.
+:- runner(P_dana, dana), runner(P_mark, mark), not diff_val(P_mark, P_dana, 1).
+
+% Clue 5: The participant who ordered a mocha paid more than Chris.
+% Let P_mocha be the price of mocha, P_chris the price Chris paid.
+% P_mocha must be strictly greater than P_chris.
+:- drink(P_mocha, mocha), runner(P_chris, chris), not order(P_chris, P_mocha).
+
+% Clue 6: The contestant who paid $9.99 was either the competitor who ordered a cappuccino
+%         or the runner who ordered an espresso.
+% This means the drink associated with the price p9_99 must be either cappuccino or espresso.
+:- drink(p9_99, D), D != cappuccino, D != espresso.
+
+% ============================================================
+% Output
+% ============================================================
+#show runner/2.
+#show drink/2.
+#show link/2."
+5de0f864-7734-41f6-9b67-e05cfcf0327b,"% ============================================================
+% TastyBites Café grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+prices(6.50; 7.50; 8.50; 9.50; 10.50).
+customers(emily; michael; james; olivia; sarah).
+superfoods(quinoa; chia_seeds; kale; spinach; flax_seeds).
+
+% ---- Assignment: each price gets exactly one customer, and vice versa ----
+1 { customer(P,C) : customers(C) } 1 :- prices(P).
+1 { customer(P,C) : prices(P) } 1 :- customers(C).
+
+% ---- Assignment: each price gets exactly one superfood, and vice versa ----
+1 { superfood(P,S) : superfoods(S) } 1 :- prices(P).
+1 { superfood(P,S) : prices(P) } 1 :- superfoods(S).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: James requested quinoa.
+% This means James and quinoa are associated with the same price.
+:- customer(P, james), not superfood(P, quinoa).
+:- superfood(P, quinoa), not customer(P, james).
+
+% Clue 2: The person who paid $7.50, the person who paid $9.50,
+%         the customer who ordered kale and the customer who ordered spinach
+%         are all different people.
+% This implies that the superfood at $7.50 cannot be kale or spinach.
+% And the superfood at $9.50 cannot be kale or spinach.
+:- superfood(7.50, kale).
+:- superfood(7.50, spinach).
+:- superfood(9.50, kale).
+:- superfood(9.50, spinach).
+
+% Clue 3: Olivia paid more than Sarah.
+:- customer(P1, olivia), customer(P2, sarah), P1 <= P2.
+
+% Clue 4: The customer who ordered spinach paid 3 dollars less than
+%         the person who ordered flax seeds.
+:- superfood(P1, spinach), superfood(P2, flax_seeds), not P1 = P2 - 3.
+
+% Clue 5: Michael paid 2 dollars less than the person who requested chia seeds.
+:- customer(P1, michael), superfood(P2, chia_seeds), not P1 = P2 - 2.
+
+% Clue 6: James paid $8.50.
+:- customer(P, james), P != 8.50.
+
+% Clue 7: Of the customer who paid $9.50 and the customer who paid $7.50,
+%         one asked for flax seeds and the other is Emily.
+% This means either:
+%   (superfood at 9.50 is flax_seeds AND customer at 7.50 is emily)
+% OR
+%   (superfood at 7.50 is flax_seeds AND customer at 9.50 is emily)
+:- not ( (superfood(9.50, flax_seeds), customer(7.50, emily)) ;
+         (superfood(7.50, flax_seeds), customer(9.50, emily)) ).
+
+% ============================================================
+% Output
+% ============================================================
+#show customer/2.
+#show superfood/2."
+d54a2063-8b84-4650-ba9e-da50056b1532,"% ============================================================
+% Green Leaf Crafts grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+dollars(120;150;180;210).
+artisans(adam;elizabeth;olivia;william).
+clays(terracotta;porcelain;stoneware;clay).
+shapes(round;square;rectangular;oval).
+
+% ---- Assignment: each dollar value gets exactly one item from each category, and vice versa ----
+% Each dollar value (representing a planter) is associated with exactly one artisan.
+1 { artisan(D,A) : artisans(A) } 1 :- dollars(D).
+% Each artisan is associated with exactly one dollar value.
+1 { artisan(D,A) : dollars(D) } 1 :- artisans(A).
+
+% Each dollar value (representing a planter) is associated with exactly one clay type.
+1 { clay(D,C) : clays(C) } 1 :- dollars(D).
+% Each clay type is associated with exactly one dollar value.
+1 { clay(D,C) : dollars(D) } 1 :- clays(C).
+
+% Each dollar value (representing a planter) is associated with exactly one shape.
+1 { shape(D,S) : shapes(S) } 1 :- dollars(D).
+% Each shape is associated with exactly one dollar value.
+1 { shape(D,S) : dollars(D) } 1 :- shapes(S).
+
+% ---- Helper predicates for specific planters mentioned as ""large"" or ""small"" ----
+% Exactly one planter is identified as ""large"".
+1 { large_planter(D) : dollars(D) } 1.
+% Exactly one planter is identified as ""small"".
+1 { small_planter(D) : dollars(D) } 1.
+% The large planter and the small planter must be distinct planters.
+:- large_planter(D), small_planter(D).
+
+% ---- Helper predicates for relative costs ----
+% Defines the difference between two dollar values.
+cost_diff(D1, D2, Diff) :- dollars(D1), dollars(D2), Diff = D1 - D2.
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: The large planter costs 30 dollars more than the one made of terracotta.
+% If D_large is the large planter and D_terr is the terracotta planter,
+% then D_large must be 30 more than D_terr.
+:- large_planter(D_large), clay(D_terr, terracotta), not cost_diff(D_large, D_terr, 30).
+
+% Clue 2: Elizabeth's planter isn't the square-shaped one.
+% If D is Elizabeth's planter, it cannot be square.
+:- artisan(D, elizabeth), shape(D, square).
+
+% Clue 3: The round planter is either the $150 item or the one made of porcelain.
+% If D is the round planter, then (D must be 150) OR (D must be made of porcelain).
+:- shape(D, round), not (D = 150 ; clay(D, porcelain)).
+
+% Clue 4: Adam's planter isn't the large one.
+% If D is Adam's planter, it cannot be the large planter.
+:- artisan(D, adam), large_planter(D).
+
+% Clue 5: The piece made of porcelain costs 50 dollars more than the rectangular planter.
+% If D_porcelain is the porcelain planter and D_rect is the rectangular planter,
+% then D_porcelain must be 50 more than D_rect.
+:- clay(D_porcelain, porcelain), shape(D_rect, rectangular), not cost_diff(D_porcelain, D_rect, 50).
+
+% Clue 6: Of the small and Olivia's planter, one costs $150 and the other was made of stoneware.
+% First, ensure the small planter and Olivia's planter are distinct.
+:- small_planter(D_small), artisan(D_olivia, olivia), D_small = D_olivia.
+% Then, apply the ""one costs $150 and the other is stoneware"" condition.
+% (D_small is 150 AND D_olivia is stoneware) OR (D_olivia is 150 AND D_small is stoneware).
+:- small_planter(D_small), artisan(D_olivia, olivia),
+   not ( (D_small = 150 and clay(D_olivia, stoneware)) or (D_olivia = 150 and clay(D_small, stoneware)) ).
+
+% Clue 7: Adam's planter is either the item made of terracotta or the item made of porcelain.
+% If D is Adam's planter, then (D must be terracotta) OR (D must be porcelain).
+:- artisan(D, adam), not (clay(D, terracotta) ; clay(D, porcelain)).
+
+% Clue 8: The item made of stoneware costs 50 dollars less than the oval planter.
+% If D_stone is the stoneware planter and D_oval is the oval planter,
+% then D_oval must be 50 more than D_stone (D_oval - D_stone = 50).
+:- clay(D_stone, stoneware), shape(D_oval, oval), not cost_diff(D_oval, D_stone, 50).
+
+% ============================================================
+% Output
+% ============================================================
+#show artisan/2.
+#show clay/2.
+#show shape/2.
+#show large_planter/1.
+#show small_planter/1."
+2d427a01-6fd1-468a-bbfa-a0d1f644629d,"% ============================================================
+% Eastwick Historical Museum postcard puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+years(1904;1912;1920;1928).
+cities(cairo;london;new_york;tokyo).
+addressees(ada_bell;fay_morris;ida_shaw;roy_grant).
+destinations(ashton;dunmore;elkridge;fairhaven).
+
+% ""sometime after"" relation over the timeline
+% order(Y1, Y2) means Y1 is before Y2
+order(1904,1912).
+order(1904,1920).
+order(1904,1928).
+order(1912,1920).
+order(1912,1928).
+order(1920,1928).
+
+% ---- Assignment: each year gets exactly one city, and vice versa ----
+1 { city(Y,C) : cities(C) } 1 :- years(Y).
+1 { city(Y,C) : years(Y) } 1 :- cities(C).
+
+% ---- Assignment: each year gets exactly one addressee, and vice versa ----
+1 { addressee(Y,A) : addressees(A) } 1 :- years(Y).
+1 { addressee(Y,A) : years(Y) } 1 :- addressees(A).
+
+% ---- Assignment: each year gets exactly one destination, and vice versa ----
+1 { destination(Y,D) : destinations(D) } 1 :- years(Y).
+1 { destination(Y,D) : years(Y) } 1 :- destinations(D).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: The postcard mailed in 1920 wasn't mailed to Dunmore.
+:- destination(1920, dunmore).
+
+% Clue 2: The postcard mailed in 1912 wasn't addressed to Ida Shaw.
+:- addressee(1912, ida_shaw).
+
+% Clue 3: Of the postcard sent to Fay Morris and the postcard mailed to Fairhaven,
+%         one was from New York and the other was posted in 1920.
+% Let Y1 be the year for Fay Morris, Y2 for Fairhaven. Y1 and Y2 must be distinct.
+% This means (city(Y1, new_york) AND Y2 = 1920) OR (city(Y2, new_york) AND Y1 = 1920).
+
+% First, ensure the two postcards are from different years.
+:- addressee(Y, fay_morris), destination(Y, fairhaven).
+
+% Define the two possible conditions for distinct years Y1, Y2
+clue3_cond1(Y1, Y2) :- addressee(Y1, fay_morris), destination(Y2, fairhaven), city(Y1, new_york), Y2 = 1920.
+clue3_cond2(Y1, Y2) :- addressee(Y1, fay_morris), destination(Y2, fairhaven), city(Y2, new_york), Y1 = 1920.
+
+% Enforce that for distinct Y1, Y2, exactly one of the conditions must be true.
+% It's forbidden if neither condition is true.
+:- addressee(Y1, fay_morris), destination(Y2, fairhaven), Y1 != Y2,
+   not clue3_cond1(Y1, Y2),
+   not clue3_cond2(Y1, Y2).
+% Note: It's impossible for both clue3_cond1 and clue3_cond2 to be true simultaneously
+% due to the unique assignment constraints (e.g., only one year can be 1920, only one year can be New York),
+% so no explicit constraint for ""not both"" is needed.
+
+% Clue 4: The postcard from New York was posted in 1928.
+:- city(Y, new_york), Y != 1928.
+
+% Clue 5: Of the postcard mailed to Ashton and the postcard from Cairo,
+%         one was addressed to Fay Morris and the other was addressed to Roy Grant.
+% Let Y1 be the year for Ashton, Y2 for Cairo. Y1 and Y2 must be distinct.
+% This means (addressee(Y1, fay_morris) AND addressee(Y2, roy_grant)) OR (addressee(Y1, roy_grant) AND addressee(Y2, fay_morris)).
+
+% First, ensure the two postcards are from different years.
+:- destination(Y, ashton), city(Y, cairo).
+
+% Define the two possible conditions for distinct years Y1, Y2
+clue5_cond1(Y1, Y2) :- destination(Y1, ashton), city(Y2, cairo), addressee(Y1, fay_morris), addressee(Y2, roy_grant).
+clue5_cond2(Y1, Y2) :- destination(Y1, ashton), city(Y2, cairo), addressee(Y1, roy_grant), addressee(Y2, fay_morris).
+
+% Enforce that for distinct Y1, Y2, exactly one of the conditions must be true.
+% It's forbidden if neither condition is true.
+:- destination(Y1, ashton), city(Y2, cairo), Y1 != Y2,
+   not clue5_cond1(Y1, Y2),
+   not clue5_cond2(Y1, Y2).
+% Note: Similar to Clue 3, it's impossible for both clue5_cond1 and clue5_cond2 to be true simultaneously
+% due to unique addressee assignments.
+
+% Clue 6: The postcard from London was mailed sometime after the card mailed to Ashton.
+% This means the year of the London postcard is after the year of the Ashton postcard.
+% So, year(Ashton) must be before year(London).
+:- city(Y_london, london), destination(Y_ashton, ashton), not order(Y_ashton, Y_london).
+
+% ============================================================
+% Output
+% ============================================================
+#show city/2.
+#show addressee/2.
+#show destination/2."
+c35f2460-5b2c-48d1-bce5-f39f3bab9dc7,"% ============================================================
+% Foodie Club logic grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+% Prices are represented as atoms with a 'p' prefix to avoid potential parsing issues with numbers containing underscores.
+prices(p24_99; p25_99; p26_99; p27_99).
+names(frances; genevieve; lynda; willie).
+wines(bordeaux; chianti; merlot; zinfandel).
+entrees(beef_stir_fry; filet_mignon; lobster_tail; pork_chops).
+
+% Define price differences for clues
+% price_diff(P1, P2, D) means P1 is D dollars more than P2
+price_diff(p25_99, p24_99, 1).
+price_diff(p26_99, p25_99, 1).
+price_diff(p27_99, p26_99, 1).
+
+price_diff(p26_99, p24_99, 2).
+price_diff(p27_99, p25_99, 2).
+
+% ---- Assignment: each price gets exactly one name, and vice versa ----
+1 { name(P,N) : names(N) } 1 :- prices(P).
+1 { name(P,N) : prices(P) } 1 :- names(N).
+
+% ---- Assignment: each price gets exactly one wine, and vice versa ----
+1 { wine(P,W) : wines(W) } 1 :- prices(P).
+1 { wine(P,W) : prices(P) } 1 :- wines(W).
+
+% ---- Assignment: each price gets exactly one entree, and vice versa ----
+1 { entree(P,E) : entrees(E) } 1 :- prices(P).
+1 { entree(P,E) : prices(P) } 1 :- entrees(E).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: Lynda paid 2 dollars more than the diner who ordered the beef stir-fry.
+:- name(P1, lynda), entree(P2, beef_stir_fry), not price_diff(P1, P2, 2).
+
+% Clue 2: The diner who ordered the beef stir-fry was either the one who had the merlot or the one who had the bordeaux.
+:- entree(P, beef_stir_fry), not wine(P, merlot), not wine(P, bordeaux).
+
+% Clue 3: The person who paid $26.99 didn't have the zinfandel.
+:- wine(p26_99, zinfandel).
+
+% Clue 4: The one who had the chianti paid 2 dollars less than the diner who ordered the filet mignon.
+% This means the filet mignon diner paid 2 dollars more than the chianti diner.
+:- wine(P1, chianti), entree(P2, filet_mignon), not price_diff(P2, P1, 2).
+
+% Clue 5: Of the one who had the merlot and the one who had the chianti,
+%         one paid $25.99 and the other ordered the lobster tail.
+% Helper predicates for the two possibilities
+clue5_possibility_1(P_merlot, P_chianti) :- P_merlot = p25_99, entree(P_chianti, lobster_tail).
+clue5_possibility_2(P_merlot, P_chianti) :- P_chianti = p25_99, entree(P_merlot, lobster_tail).
+
+% Constraint: one of the possibilities must be true
+:- wine(P_merlot, merlot), wine(P_chianti, chianti), P_merlot != P_chianti,
+   not clue5_possibility_1(P_merlot, P_chianti),
+   not clue5_possibility_2(P_merlot, P_chianti).
+
+% Clue 6: The diner who ordered the beef stir-fry paid 1 dollar more than Frances.
+:- entree(P1, beef_stir_fry), name(P2, frances), not price_diff(P1, P2, 1).
+
+% Clue 7: Neither Willie nor the diner who ordered the beef stir-fry was the person who paid $27.99.
+:- name(p27_99, willie).
+:- entree(p27_99, beef_stir_fry).
+
+% ============================================================
+% Output
+% ============================================================
+#show name/2.
+#show wine/2.
+#show entree/2."
+e78c8405-e44f-4ee0-a389-a6681a974349,"```asp
+% ============================================================
+% Book Club Meeting grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+% Prices are represented as atoms (e.g., p24_99) to avoid floating point issues
+% and allow direct comparison in rules.
+prices(p24_99; p25_99; p26_99; p27_99).
+names(david; emily; margaret; nathan).
+genres(fantasy; mystery; romance; science_fiction).
+books(historical_fiction; mystery_novel; thriller; western).
+
+% Helper predicate to extract the integer part of the price for calculations.
+% This assumes all prices end in .99 and we only care about the dollar amount.
+price_val(p24_99, 24).
+price_val(p25_99, 25).
+price_val(p26_99, 26).
+price_val(p27_99, 27).
+
+% ---- Assignment: each price gets exactly one of each category, and vice versa ----
+% Each price is assigned to exactly one name
+1 { name(P, N) : names(N) } 1 :- prices(P).
+% Each name is assigned to exactly one price
+1 { name(P, N) : prices(P) } 1 :- names(N).
+
+% Each price is assigned to exactly one genre
+1 { genre(P, G) : genres(G) } 1 :- prices(P).
+% Each genre is assigned to exactly one price
+1 { genre(P, G) : prices(P) } 1 :- genres(G).
+
+% Each price is assigned to exactly one book
+1 { book(P, B) : books(B) } 1 :- prices(P).
+% Each book is assigned to exactly one price
+1 { book(P, B) : prices(P) } 1 :- books(B).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: Margaret spent 3 dollars more than the person who bought the mystery novel.
+% This implies that the price Margaret paid is 3 more than the price for the mystery novel.
+% With the given prices (24.99, 25.99, 26.99, 27.99), the only pair with a difference of 3
+% is (27.99, 24.99). So, Margaret must have paid 27.99 and the mystery novel buyer 24.99.
+:- name(P_margaret, margaret), book(P_mystery_novel_buyer, mystery_novel),
+   price_val(P_margaret, V_margaret), price_val(P_mystery_novel_buyer, V_mystery_novel_buyer),
+   V_margaret != V_mystery_novel_buyer + 3.
+
+% Clue 2: The person who bought the mystery novel was either the one who selected fantasy or the one who selected science fiction.
+% The price associated with the mystery novel must also be associated with either fantasy or science_fiction.
+:- book(P, mystery_novel),
+   not genre(P, fantasy),
+   not genre(P, science_fiction).
+
+% Clue 3: The individual who paid $28.99 did not choose the romance genre.
+% Since 'p28_99' is not in the domain of 'prices', no one paid this amount.
+% Thus, the premise of this rule (genre(P, romance), P = p28_99) will never be true,
+% making the constraint vacuously true and having no effect.
+:- genre(P, romance), P = p28_99.
+
+% Clue 4: The person who selected the sci-fi book spent 1 dollar less than the one who purchased the thriller.
+% The price for science_fiction is 1 less than the price for thriller.
+:- genre(P_sci_fi, science_fiction), book(P_thriller, thriller),
+   price_val(P_sci_fi, V_sci_fi), price_val(P_thriller, V_thriller),
+   V_sci_fi != V_thriller - 1.
+
+% Clue 5: Of the ones who chose fantasy and science fiction, one spent $27.99 and the other bought the historical fiction novel.
+% Let P_fantasy be the price for fantasy, P_sci_fi for science_fiction.
+% These prices (P_fantasy, P_sci_fi) must be distinct because fantasy and science_fiction are distinct genres,
+% and each genre is assigned to exactly one price.
+:- genre(P_fantasy, fantasy), genre(P_sci_fi, science_fiction),
+   not ( (P_fantasy = p27_99, book(P_sci_fi, historical_fiction))
+      ; (P_sci_fi = p27_99, book(P_fantasy, historical_fiction)) ).
+
+% Clue 6: The person who bought the mystery novel paid 2 dollars more than David.
+% The price for the mystery novel is 2 more than David's price.
+% This clue, combined with Clue 1, makes the puzzle unsatisfiable:
+% From Clue 1: The mystery novel buyer paid $24.99 (V_mystery_novel_buyer = 24).
+% From Clue 6: V_mystery_novel_buyer = V_david + 2 => 24 = V_david + 2 => V_david = 22.
+% However, 22 is not among the defined price_val values (24, 25, 26, 27).
+% Therefore, no solution exists for this puzzle.
+:- book(P_mystery_novel_buyer, mystery_novel), name(P_david, david),
+   price_val(P_mystery_novel_buyer, V_mystery_novel_buyer), price_val(P_david, V_david),
+   V_mystery_novel_buyer != V_david + 2.
+
+% Clue 7: Neither Emily nor the person who bought the mystery novel was the one who spent $29.99.
+% Similar to Clue 3, 'p29_99' is not in the domain of 'prices'.
+% These constraints will be vacuously true.
+:- name(P, emily), P = p29_99.
+:- book(P, mystery_novel), P = p29_99.
+
+% ============================================================
+% Output
+% ============================================================
+#show name/2.
+#show genre/2.
+#show book/2.
+```"
+8168dc5e-3497-4588-90e0-93609aec540b,"% ============================================================
+% Greenwood Middle School Science Fair grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+altitudes(50).
+altitudes(60).
+altitudes(75).
+altitudes(80).
+
+students(adam).
+students(olivia).
+students(sarah).
+students(nathan).
+
+colors(blue).
+colors(red).
+colors(black).
+colors(white).
+
+order(1).
+order(2).
+order(3).
+order(6).
+
+% ---- Assignment: each altitude gets exactly one student, color, and order, and vice versa ----
+% Altitude to Student
+1 { student(A,S) : students(S) } 1 :- altitudes(A).
+1 { student(A,S) : altitudes(A) } 1 :- students(S).
+
+% Altitude to Color
+1 { color(A,C) : colors(C) } 1 :- altitudes(A).
+1 { color(A,C) : altitudes(A) } 1 :- colors(C).
+
+% Altitude to Order
+1 { launched(A,O) : order(O) } 1 :- altitudes(A).
+1 { launched(A,O) : altitudes(A) } 1 :- order(O).
+
+% ---- Helper predicates for easier access to relationships ----
+% student_color(S,C) means student S's rocket has color C
+student_color(S,C) :- student(A,S), color(A,C).
+% student_launched(S,O) means student S's rocket was launched at order O
+student_launched(S,O) :- student(A,S), launched(A,O).
+% student_altitude(S,A) means student S's rocket reached altitude A
+student_altitude(S,A) :- student(A,S), altitudes(A).
+
+% color_altitude(C,A) means color C rocket reached altitude A
+color_altitude(C,A) :- color(A,C), altitudes(A).
+% color_launched(C,O) means color C rocket was launched at order O
+color_launched(C,O) :- color(A,C), launched(A,O).
+
+% launched_altitude(O,A) means rocket launched at order O reached altitude A
+launched_altitude(O,A) :- launched(A,O), altitudes(A).
+% launched_color(O,C) means rocket launched at order O has color C
+launched_color(O,C) :- launched(A,O), color(A,C).
+% launched_student(O,S) means rocket launched at order O belongs to student S
+launched_student(O,S) :- launched(A,O), student(A,S).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: The rocket that reached 50 feet wasn't red.
+:- color(50,red).
+
+% Clue 2: The rocket that reached 75 feet was black.
+:- color(75,C), C != black.
+
+% Clue 3: Adam's design was black.
+:- student_color(adam,C), C != black.
+
+% Clue 4: The black rocket reached 15 feet higher than the rocket that was launched first.
+% Find the altitude of the black rocket (A_black)
+% Find the altitude of the rocket launched first (A_first)
+% A_black = A_first + 15
+:- color_altitude(black,A_black), launched_altitude(1,A_first), A_black != A_first + 15.
+
+% Clue 5: The rocket that was launched 6th reached 10 feet less than Olivia's design.
+% Find the altitude of the rocket launched 6th (A_sixth)
+% Find the altitude of Olivia's design (A_olivia)
+% A_sixth = A_olivia - 10
+:- launched_altitude(6,A_sixth), student_altitude(olivia,A_olivia), A_sixth != A_olivia - 10.
+
+% Clue 6: Of the blue rocket and the red rocket, one was launched 6th and the other was Sarah's.
+% This means:
+% (blue rocket was launched 6th AND red rocket belongs to Sarah)
+% OR
+% (red rocket was launched 6th AND blue rocket belongs to Sarah)
+:- not ( (color_launched(blue,6), student_color(sarah,red)) ; (color_launched(red,6), student_color(sarah,blue)) ).
+
+% Clue 7: Adam's design was either the rocket that was launched 1st or the rocket that was launched 2nd.
+% Adam's rocket was launched 1st OR Adam's rocket was launched 2nd.
+:- student_launched(adam,O), O != 1, O != 2.
+
+% ============================================================
+% Output
+% ============================================================
+#show student/2.
+#show color/2.
+#show launched/2."
+1a90154a-be5c-43bd-ab67-15b3c4d31cde,"```asp
+% ============================================================
+% Gil Glabbers' Messages in a Bottle puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+year_sent(1962;1969;1976;1983).
+writers(bernadette;karla;noel;victor).
+origins(bournemouth;brighton;le_havre;torquay).
+year_found(2010;2011;2013;2015).
+
+% ---- Relations ----
+% Define order for year_sent values (YS1 is strictly before YS2)
+order_sent(YS1, YS2) :- year_sent(YS1), year_sent(YS2), YS1 < YS2.
+
+% ---- Assignment: each year_sent gets exactly one writer, and vice versa ----
+1 { writer(YS,W) : writers(W) } 1 :- year_sent(YS).
+1 { writer(YS,W) : year_sent(YS) } 1 :- writers(W).
+
+% ---- Assignment: each year_sent gets exactly one origin, and vice versa ----
+1 { origin(YS,O) : origins(O) } 1 :- year_sent(YS).
+1 { origin(YS,O) : year_sent(YS) } 1 :- origins(O).
+
+% ---- Assignment: each year_sent gets exactly one year_found, and vice versa ----
+1 { yearfound(YS,YF) : year_found(YF) } 1 :- year_sent(YS).
+1 { yearfound(YS,YF) : year_sent(YS) } 1 :- year_found(YF).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: Noel's letter, the letter found in 2015 and the message that was sent in 1983 are all different letters.
+%   - Noel's letter is not the letter found in 2015.
+:- writer(YS, noel), yearfound(YS, 2015).
+%   - Noel's letter is not the message sent in 1983.
+:- writer(1983, noel).
+%   - The letter found in 2015 is not the message sent in 1983.
+:- yearfound(1983, 2015).
+
+% Clue 2: Victor's letter, the message that was sent in 1983, and the bottle from Bournemouth are three different letters.
+%   - Victor's letter is not the message sent in 1983.
+:- writer(1983, victor).
+%   - Victor's letter is not the bottle from Bournemouth.
+:- writer(YS, victor), origin(YS, bournemouth).
+%   - The message sent in 1983 is not the bottle from Bournemouth.
+:- origin(1983, bournemouth).
+
+% Clue 3: Of the message that was sent in 1976 and the message found in 2011, one is Victor's and the other was from Le Havre.
+% Helper predicate to identify the year_sent for the message found in 2011
+ys_found_2011(YS) :- yearfound(YS, 2011).
+% Constraint: (1976 is Victor's AND 2011-found is from Le Havre) OR (1976 is from Le Havre AND 2011-found is Victor's)
+:- ys_found_2011(YS_2011),
+   not ( (writer(1976, victor), origin(YS_2011, le_havre)) ; (origin(1976, le_havre), writer(YS_2011, victor)) ).
+
+% Clue 4: The letter that was sent in 1983, the message from Le Havre, and Bernadette's missive are three different letters.
+%   - The letter sent in 1983 is not the message from Le Havre.
+:- origin(1983, le_havre).
+%   - The letter sent in 1983 is not Bernadette's missive.
+:- writer(1983, bernadette).
+%   - The message from Le Havre is not Bernadette's missive.
+:- origin(YS, le_havre), writer(YS, bernadette).
+
+% Clue 5: The message found in 2015 was sent sometime before the message from Brighton.
+:- yearfound(YS1, 2015), origin(YS2, brighton), not order_sent(YS1, YS2).
+
+% Clue 6: The bottle from Torquay was sent 14 years after the message found in 2010.
+% This means: year_sent(Torquay) = year_sent(found_2010) + 14
+:- origin(YS_torquay, torquay), yearfound(YS_found_2010, 2010), YS_torquay != (YS_found_2010 + 14).
+
+% ============================================================
+% Output
+% ============================================================
+#show writer/2.
+#show origin/2.
+#show yearfound/2.
+```"
+06d29d9d-96f0-485e-bc4d-5fdf08990295,"% ============================================================
+% Culinary Competition grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+times(2;3;4;5;6).
+cuisines(italian;french;spanish;japanese;mexican).
+countries(italy;france;spain;germany;portugal).
+chefs(marco;ana;luca;sophie;carlos).
+
+% ""slower/faster"" relation over the timeline
+% order(T1, T2, Diff) means T2 is Diff minutes slower than T1 (T2 = T1 + Diff)
+order(T1, T2, Diff) :- times(T1), times(T2), Diff = T2 - T1, Diff > 0.
+
+% ---- Assignment: each time gets exactly one cuisine, and vice versa ----
+1 { cuisine(T,C) : cuisines(C) } 1 :- times(T).
+1 { cuisine(T,C) : times(T) } 1 :- cuisines(C).
+
+% ---- Assignment: each time gets exactly one country, and vice versa ----
+1 { country(T,C) : countries(C) } 1 :- times(T).
+1 { country(T,C) : times(T) } 1 :- countries(C).
+
+% ---- Assignment: each time gets exactly one chef, and vice versa ----
+1 { chef(T,C) : chefs(C) } 1 :- times(T).
+1 { chef(T,C) : times(T) } 1 :- chefs(C).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: The chef from Italy finished 2 minutes slower than the one specializing in Italian cuisine.
+% Let T_italy_country be the time for the chef from Italy.
+% Let T_italian_cuisine be the time for the chef specializing in Italian cuisine.
+% T_italy_country = T_italian_cuisine + 2, so order(T_italian_cuisine, T_italy_country, 2) must be true.
+:- country(T_italy_country, italy), cuisine(T_italian_cuisine, italian), not order(T_italian_cuisine, T_italy_country, 2).
+
+% Clue 2: The chef from France finished 3 minutes faster than the competitor specializing in French cuisine.
+% Let T_france_country be the time for the chef from France.
+% Let T_french_cuisine be the time for the chef specializing in French cuisine.
+% T_france_country = T_french_cuisine - 3, so T_french_cuisine = T_france_country + 3.
+% Thus, order(T_france_country, T_french_cuisine, 3) must be true.
+:- country(T_france_country, france), cuisine(T_french_cuisine, french), not order(T_france_country, T_french_cuisine, 3).
+
+% Clue 3: The chef from Spain finished 1 minute faster than the one specializing in tapas.
+% ""tapas"" implies spanish cuisine.
+% Let T_spain_country be the time for the chef from Spain.
+% Let T_spanish_cuisine be the time for the chef specializing in Spanish cuisine.
+% T_spain_country = T_spanish_cuisine - 1, so T_spanish_cuisine = T_spain_country + 1.
+% Thus, order(T_spain_country, T_spanish_cuisine, 1) must be true.
+:- country(T_spain_country, spain), cuisine(T_spanish_cuisine, spanish), not order(T_spain_country, T_spanish_cuisine, 1).
+
+% Clue 4: The chef specializing in sushi didn't finish in 5 minutes.
+% ""sushi"" implies japanese cuisine.
+:- cuisine(5, japanese).
+
+% Clue 5: The chef specializing in pasta was either from Italy or the chef from Barcelona.
+% ""pasta"" implies italian cuisine. ""Barcelona"" implies spain country.
+% For the time T where cuisine(T, italian) is true, country(T, italy) OR country(T, spain) must be true.
+:- cuisine(T, italian), not country(T, italy), not country(T, spain).
+
+% Clue 6: The chef from Madrid finished somewhat slower than the chef specializing in pastries.
+% ""Madrid"" implies spain country. ""pastries"" implies french cuisine.
+% Let T_madrid be the time for the chef from Spain.
+% Let T_pastries be the time for the chef specializing in French cuisine.
+% T_madrid > T_pastries must be true.
+:- country(T_madrid, spain), cuisine(T_pastries, french), T_madrid <= T_pastries.
+
+% Clue 7: The five chefs were the competitor finishing in 4 minutes, the one from Spain,
+%         the chef from Paris, the one specializing in pastries, and the chef from Berlin.
+% This means the properties (time=4, country=spain, country=france, cuisine=french, country=germany)
+% must be assigned to five distinct times. Since there are only 5 times, these properties must
+% uniquely identify each time.
+% ""Paris"" implies france country. ""Berlin"" implies germany country. ""pastries"" implies french cuisine.
+% This implies that the time 4 cannot be associated with Spain, France, French cuisine, or Germany.
+:- country(4, spain).
+:- country(4, france).
+:- cuisine(4, french).
+:- country(4, germany).
+% It also implies that the properties (country=spain, country=france, cuisine=french, country=germany)
+% must be assigned to distinct times, and none of them can be the same time.
+% (Country bijections already handle distinctness for countries).
+% We need to ensure that a country is not assigned to the same time as a cuisine from this list.
+:- country(T, spain), cuisine(T, french).
+:- country(T, france), cuisine(T, french).
+:- country(T, germany), cuisine(T, french).
+
+% Clue 8: Of the chef with a time of 3 minutes and the one from Italy, one is from Barcelona and the other specializes in pastries.
+% ""Barcelona"" implies spain country. ""pastries"" implies french cuisine.
+% Let T_italy be the time for the chef from Italy.
+% The two entities are (time=3) and (time=T_italy). They must be distinct.
+:- country(T_italy, italy), T_italy = 3.
+% One of them has country=spain, the other has cuisine=french.
+% Case 1: (time=3) has country=spain AND (time=T_italy) has cuisine=french.
+% Case 2: (time=3) has cuisine=french AND (time=T_italy) has country=spain.
+% Due to country bijection, if country(T_italy, italy) is true, then country(T_italy, spain) must be false.
+% This means Case 2 is impossible. Therefore, Case 1 must be true.
+:- country(T_italy, italy), not country(3, spain).
+:- country(T_italy, italy), not cuisine(T_italy, french).
+
+% Clue 9: The chef with a time of 6 minutes isn't from Paris.
+% ""Paris"" implies france country.
+:- country(6, france).
+
+% ============================================================
+% Output
+% ============================================================
+#show cuisine/2.
+#show country/2.
+#show chef/2."
+361864aa-1f5a-4046-a871-c951cba18e33,"% ============================================================
+% Pineview High School grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+years(2010;2011;2012;2013;2014).
+athletes(adam;jackie;marcus;taylor;walter).
+teams(phillies;nationals;rockies;giants;brewers).
+hometowns(cedar_grove;franklin;lakeview;riverside;jacumba).
+
+% ---- Relations over years (timeline) ----
+next_year(2010,2011).
+next_year(2011,2012).
+next_year(2012,2013).
+next_year(2013,2014).
+
+% order(Y1,Y2) means Y1 is earlier than Y2
+order(Y1,Y2) :- next_year(Y1,Y2).
+order(Y1,Y3) :- next_year(Y1,Y2), order(Y2,Y3).
+
+% diff_year(Y1,Y2,N) means Y2 is N years after Y1
+diff_year(Y1,Y2,1) :- next_year(Y1,Y2).
+diff_year(Y1,Y3,N+1) :- next_year(Y1,Y2), diff_year(Y2,Y3,N).
+
+% ---- Assignment: each year gets exactly one athlete, and vice versa ----
+1 { athlete(Y,A) : athletes(A) } 1 :- years(Y).
+1 { athlete(Y,A) : years(Y) } 1 :- athletes(A).
+
+% ---- Assignment: each year gets exactly one team, and vice versa ----
+1 { team(Y,T) : teams(T) } 1 :- years(Y).
+1 { team(Y,T) : years(Y) } 1 :- teams(T).
+
+% ---- Assignment: each year gets exactly one hometown, and vice versa ----
+1 { hometown(Y,H) : hometowns(H) } 1 :- years(Y).
+1 { hometown(Y,H) : years(Y) } 1 :- hometowns(H).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: Of the athlete who graduated in 2010 and the one who graduated in 2011,
+%         one is from Riverside and the other is now with the Giants.
+% This means: (hometown(2010, riverside) AND team(2011, giants)) OR
+%             (hometown(2011, riverside) AND team(2010, giants))
+:- not ( (hometown(2010,riverside), team(2011,giants)) ; (hometown(2011,riverside), team(2010,giants)) ).
+
+% Clue 2: Marcus graduated after Sarah.
+% Note: 'sarah' is not in the list of athletes. This clue will be vacuously true
+% as athlete(Y_sarah,sarah) will never be satisfied.
+:- athlete(Y_marcus,marcus), athlete(Y_sarah,sarah), not order(Y_sarah,Y_marcus).
+
+% Clue 3: Sarah isn't from Lakeview.
+% Note: 'sarah' is not in the list of athletes. This clue will be vacuously true
+% as athlete(Y,sarah) will never be satisfied.
+:- athlete(Y,sarah), hometown(Y,lakeview).
+
+% Clue 4: The athlete who's now with the Rockies graduated 1 year after Marcus.
+:- team(Y_rockies,rockies), athlete(Y_marcus,marcus), not diff_year(Y_marcus,Y_rockies,1).
+
+% Clue 5: Adam graduated 1 year after Taylor.
+:- athlete(Y_adam,adam), athlete(Y_taylor,taylor), not diff_year(Y_taylor,Y_adam,1).
+
+% Clue 6: Taylor isn't from Cedar Grove.
+:- athlete(Y,taylor), hometown(Y,cedar_grove).
+
+% Clue 7: Of the athlete who's now with the Giants and the one who graduated in 2012,
+%         one is Taylor and the other is Marcus.
+% This means: (athlete(Y_giants, taylor) AND athlete(2012, marcus)) OR
+%             (athlete(Y_giants, marcus) AND athlete(2012, taylor))
+:- team(Y_giants,giants),
+   not ( (athlete(Y_giants,taylor), athlete(2012,marcus))
+       ; (athlete(Y_giants,marcus), athlete(2012,taylor)) ).
+
+% Clue 8: The person who's now with the Nationals graduated 3 years after the person who's now with the Phillies.
+:- team(Y_nationals,nationals), team(Y_phillies,phillies), not diff_year(Y_phillies,Y_nationals,3).
+
+% Clue 9: Marcus isn't from Cedar Grove.
+:- athlete(Y,marcus), hometown(Y,cedar_grove).
+
+% Clue 10: The person who graduated in 2012 is either Taylor or the person from Franklin.
+% This means: athlete(2012,taylor) OR hometown(2012,franklin) must be true.
+:- not athlete(2012,taylor), not hometown(2012,franklin).
+
+% ============================================================
+% Output
+% ============================================================
+#show athlete/2.
+#show team/2.
+#show hometown/2."
+8b5acd64-7906-4a01-b83f-c0c71b108a89,"% ============================================================
+% Social Media Stats grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+names(adam;charlie;mary;tom;neil).
+facebook(100;110;150;180;200).
+linkedin(40;50;60;85;95).
+twitter(600;620;720;800;900).
+
+% ---- Assignment: each name is assigned exactly one value from each category,
+%     and each value from each category is assigned to exactly one name. ----
+
+% Each name has exactly one facebook value
+1 { val(N,facebook,F) : facebook(F) } 1 :- names(N).
+% Each facebook value belongs to exactly one name
+1 { val(N,facebook,F) : names(N) } 1 :- facebook(F).
+
+% Each name has exactly one linkedin value
+1 { val(N,linkedin,L) : linkedin(L) } 1 :- names(N).
+% Each linkedin value belongs to exactly one name
+1 { val(N,linkedin,L) : names(N) } 1 :- linkedin(L).
+
+% Each name has exactly one twitter value
+1 { val(N,twitter,T) : twitter(T) } 1 :- names(N).
+% Each twitter value belongs to exactly one name
+1 { val(N,twitter,T) : names(N) } 1 :- twitter(T).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: The person with 200 Facebook friends is either the one with 85 LinkedIn
+%         connections or the one with 720 Twitter followers.
+:- val(N,facebook,200), not val(N,linkedin,85), not val(N,twitter,720).
+
+% Clue 2: Charlie has 30 fewer Facebook friends than the one with 60 LinkedIn connections.
+:- val(charlie,facebook,F1), val(N,linkedin,60), val(N,facebook,F2), F1 != F2 - 30.
+% Implication: Charlie cannot be the person with 60 LinkedIn connections.
+:- val(charlie,linkedin,60).
+
+% Clue 3: Mary doesn't have exactly 900 Twitter followers.
+:- val(mary,twitter,900).
+
+% Clue 4: The person with 180 Facebook friends, the one with 85 LinkedIn connections,
+%         the one with 720 Twitter followers and Tom are all different people.
+% The person with 180 Facebook friends is not the person with 85 LinkedIn connections.
+:- val(N,facebook,180), val(N,linkedin,85).
+% The person with 180 Facebook friends is not the person with 720 Twitter followers.
+:- val(N,facebook,180), val(N,twitter,720).
+% The person with 180 Facebook friends is not Tom.
+:- val(tom,facebook,180).
+% The person with 85 LinkedIn connections is not the person with 720 Twitter followers.
+:- val(N,linkedin,85), val(N,twitter,720).
+% The person with 85 LinkedIn connections is not Tom.
+:- val(tom,linkedin,85).
+% The person with 720 Twitter followers is not Tom.
+:- val(tom,twitter,720).
+
+% Clue 5: Adam doesn't have exactly 110 Facebook friends.
+:- val(adam,facebook,110).
+
+% Clue 6: The person with 600 Twitter followers is either the one with 100 Facebook
+%         friends or the person with 200 Facebook friends.
+:- val(N,twitter,600), not val(N,facebook,100), not val(N,facebook,200).
+
+% Clue 7: Adam is either the person with 200 Facebook friends or the person with 50 LinkedIn connections.
+:- not val(adam,facebook,200), not val(adam,linkedin,50).
+
+% Clue 8: The person with 600 Twitter followers doesn't have exactly 40 LinkedIn connections.
+:- val(N,twitter,600), val(N,linkedin,40).
+
+% Clue 9: The one with 60 LinkedIn connections has more Facebook friends than the person with 600 Twitter followers.
+:- val(N1,linkedin,60), val(N1,facebook,F1), val(N2,twitter,600), val(N2,facebook,F2), F1 <= F2.
+% Implication: The person with 60 LinkedIn connections is not the person with 600 Twitter followers.
+:- val(N,linkedin,60), val(N,twitter,600).
+
+% Clue 10: The one with 620 Twitter followers has 30 fewer Facebook friends than the person with 720 Twitter followers.
+:- val(N1,twitter,620), val(N1,facebook,F1), val(N2,twitter,720), val(N2,facebook,F2), F1 != F2 - 30.
+
+% Clue 11: Of Tom and the person with 900 Twitter followers, one has 50 LinkedIn
+%          connections and the other has 100 Facebook friends.
+% Implication: Tom is not the person with 900 Twitter followers.
+:- val(tom,twitter,900).
+% The condition itself:
+:- val(N,twitter,900), N != tom,
+   not (val(tom,linkedin,50), val(N,facebook,100)),
+   not (val(tom,facebook,100), val(N,linkedin,50)).
+
+% ============================================================
+% Output
+% ============================================================
+#show val/3."
+5c79a174-db0e-4de2-bd56-57c1437e8911,"% ============================================================
+% Mira's Mountain Peaks puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+elevations(2000; 2200; 2500; 3000; 3500).
+names(sihat; garray; cerbel; irskela; inawatai).
+continents(asia; europe; africa; south_america; australia).
+years(1998; 2004; 2005; 2008; 2010).
+
+% ---- Helper Predicates ----
+% E1 is D meters taller than E2
+taller_by(E1, E2, D) :- elevations(E1), elevations(E2), E1 = E2 + D.
+
+% ---- Assignment: each elevation gets exactly one name, and vice versa ----
+1 { name(E,N) : names(N) } 1 :- elevations(E).
+1 { name(E,N) : elevations(E) } 1 :- names(N).
+
+% ---- Assignment: each elevation gets exactly one continent, and vice versa ----
+1 { continent(E,C) : continents(C) } 1 :- elevations(E).
+1 { continent(E,C) : elevations(E) } 1 :- continents(C).
+
+% ---- Assignment: each elevation gets exactly one year, and vice versa ----
+1 { year(E,Y) : years(Y) } 1 :- elevations(E).
+1 { year(E,Y) : elevations(E) } 1 :- years(Y).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: Cerbel was not recorded in 2005.
+:- name(E, cerbel), year(E, 2005).
+
+% Clue 2: Of the mountain Mira recorded in 2005 and Irskela, one is in Africa and the other is 3,000 meters high.
+% Let Ey2005 be the elevation of the mountain recorded in 2005.
+% Let Eirskela be the elevation of Irskela.
+% Condition: (Ey2005 is in Africa AND Eirskela is 3000m) XOR (Eirskela is in Africa AND Ey2005 is 3000m).
+% This is enforced by ensuring that at least one of the two conditions holds (OR)
+% and that they are not both true (NOT AND).
+:- year(Ey2005, 2005), name(Eirskela, irskela),
+   not ( (continent(Ey2005, africa), Eirskela = 3000) ; (continent(Eirskela, africa), Ey2005 = 3000) ).
+% Enforce XOR: they cannot both be in Africa.
+:- year(Ey2005, 2005), name(Eirskela, irskela), continent(Ey2005, africa), continent(Eirskela, africa).
+% Enforce XOR: they cannot both be 3000m.
+:- year(Ey2005, 2005), name(Eirskela, irskela), Ey2005 = 3000, Eirskela = 3000.
+
+% Clue 3: Garray is either the 3,000-meter peak or the mountain Mira recorded in 1998.
+% This implies an exclusive OR (XOR).
+% Let Egarray be the elevation of Garray.
+% Condition: (Egarray is 3000m) XOR (Egarray was recorded in 1998).
+% Forbids both conditions from being true.
+:- name(Egarray, garray), Egarray = 3000, year(Egarray, 1998).
+% Forbids neither condition from being true.
+:- name(Egarray, garray), Egarray != 3000, not year(Egarray, 1998).
+
+% Clue 4: Sihat is 500 meters taller than the mountain Mira recorded in 2005.
+% Let Esihat be the elevation of Sihat.
+% Let Ey2005 be the elevation of the mountain recorded in 2005.
+:- name(Esihat, sihat), year(Ey2005, 2005), not taller_by(Esihat, Ey2005, 500).
+
+% Clue 5: The five mountains are the 2,500-meter peak, the mountain Mira recorded in 2010,
+%         the mountain located in Asia, the mountain located in Europe and the mountain in South America.
+% This implies these five descriptions must refer to five distinct elevations.
+% Define identifiers for each description.
+desc_id(e2500). desc_id(y2010). desc_id(asia). desc_id(europe). desc_id(south_america).
+
+% Map each description identifier to its corresponding elevation.
+desc_to_elevation(e2500, E) :- E = 2500.
+desc_to_elevation(y2010, E) :- year(E, 2010).
+desc_to_elevation(asia, E) :- continent(E, asia).
+desc_to_elevation(europe, E) :- continent(E, europe).
+desc_to_elevation(south_america, E) :- continent(E, south_america).
+
+% Constraint: If two description identifiers are different, their corresponding elevations must also be different.
+% Since there are 5 distinct descriptions and 5 total elevations, this ensures these 5 descriptions cover all 5 elevations.
+:- desc_to_elevation(ID1, E1), desc_to_elevation(ID2, E2), ID1 != ID2, E1 = E2.
+
+% Clue 6: Sihat is somewhat taller than the mountain located in Australia.
+% Let Esihat be the elevation of Sihat.
+% Let Eaustralia be the elevation of the mountain in Australia.
+:- name(Esihat, sihat), continent(Eaustralia, australia), not Esihat > Eaustralia.
+
+% Clue 7: The mountain Mira recorded in 2008 is not in Europe.
+% Let Ey2008 be the elevation of the mountain recorded in 2008.
+:- year(E, 2008), continent(E, europe).
+
+% Clue 8: The mountain located in Asia is 500 meters higher than the mountain Mira recorded in 2005.
+% Let Easia be the elevation of the mountain in Asia.
+% Let Ey2005 be the elevation of the mountain recorded in 2005.
+:- continent(Easia, asia), year(Ey2005, 2005), not taller_by(Easia, Ey2005, 500).
+
+% ============================================================
+% Output
+% ============================================================
+#show name/2.
+#show continent/2.
+#show year/2."
+4817196a-ef35-4151-8451-fde861e2250b,"% ============================================================
+% Coastal Tour Company grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+% There are 5 boats, 5 captains, and 5 locations.
+% The table lists 4, 5, 6, 7 dolphins. Clue 8 implies a value of 2 (D_lee = D_tropic_star - 2).
+% Clue 10 explicitly mentions 3 dolphins. To maintain a 5x5 grid,
+% we infer the dolphin counts are 3, 4, 5, 6, 7.
+dolphins(3;4;5;6;7).
+boats(dolphin_express;ocean_breeze;tropic_star;neptune;sea_wolf).
+captains(taylor;morgan;carter;lee;armstrong).
+locations(mariners_point;coral_cove;sandy_bay;crystal_lake;seabrook).
+
+% ---- Assignment: each dolphin count gets exactly one boat, and vice versa ----
+1 { boat(D,B) : boats(B) } 1 :- dolphins(D).
+1 { boat(D,B) : dolphins(D) } 1 :- boats(B).
+
+% ---- Assignment: each dolphin count gets exactly one captain, and vice versa ----
+1 { captain(D,C) : captains(C) } 1 :- dolphins(D).
+1 { captain(D,C) : dolphins(D) } 1 :- captains(C).
+
+% ---- Assignment: each dolphin count gets exactly one location, and vice versa ----
+1 { location(D,L) : locations(L) } 1 :- dolphins(D).
+1 { location(D,L) : dolphins(D) } 1 :- locations(L).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: Of Captain Lee's vessel and the boat that went to Coral Cove,
+%         one saw 4 dolphins and the other was the Neptune.
+% Let D_lee be the dolphin count for Captain Lee's vessel.
+% Let D_cove be the dolphin count for the vessel that went to Coral Cove.
+:- captain(D_lee, lee), location(D_cove, coral_cove),
+   not ( (D_lee = 4, boat(D_cove, neptune)) ; (D_cove = 4, boat(D_lee, neptune)) ).
+
+% Clue 2: The vessel that went to Mariner's Point was led by Captain Morgan.
+:- location(D, mariners_point), not captain(D, morgan).
+
+% Clue 3: The Dolphin Express, the boat that saw 5 dolphins and Captain Morgan's vessel
+%         are all different boats.
+% Dolphin Express is not the boat that saw 5 dolphins.
+:- boat(5, dolphin_express).
+% Dolphin Express is not Captain Morgan's vessel.
+:- captain(D, morgan), boat(D, dolphin_express).
+% The boat that saw 5 dolphins is not Captain Morgan's vessel.
+:- captain(5, morgan).
+
+% Clue 4: The vessel that went to Seabrook saw more dolphins than the vessel that went to Sandy Bay.
+:- location(D1, seabrook), location(D2, sandy_bay), not D1 > D2.
+
+% Clue 5: Captain Carter's vessel is either the Tropic Star or the vessel that went to Mariner's Point.
+% Let D_carter be the dolphin count for Captain Carter's vessel.
+:- captain(D_carter, carter),
+   not ( boat(D_carter, tropic_star) ; location(D_carter, mariners_point) ).
+
+% Clue 6: The vessel that went to Crystal Lake was led by Captain Taylor.
+:- location(D, crystal_lake), not captain(D, taylor).
+
+% Clue 7: The boat that saw 6 dolphins, the Neptune, and Captain Carter's boat are three different boats.
+% The boat that saw 6 dolphins is not the Neptune.
+:- boat(6, neptune).
+% The boat that saw 6 dolphins is not Captain Carter's boat.
+:- captain(6, carter).
+% The Neptune is not Captain Carter's boat.
+:- captain(D, carter), boat(D, neptune).
+
+% Clue 8: Captain Lee's vessel saw 2 fewer dolphins than the Tropic Star.
+% Let D_lee be the dolphin count for Captain Lee's vessel.
+% Let D_tropic_star be the dolphin count for the Tropic Star.
+:- captain(D_lee, lee), boat(D_tropic_star, tropic_star),
+   not (D_lee = D_tropic_star - 2).
+
+% Clue 9: Of Captain Morgan's boat and the vessel that saw 7 dolphins,
+%         one was the Dolphin Express and the other was the Ocean Breeze.
+% Let D_morgan be the dolphin count for Captain Morgan's boat.
+:- captain(D_morgan, morgan),
+   not ( (boat(D_morgan, dolphin_express), boat(7, ocean_breeze)) ;
+         (boat(D_morgan, ocean_breeze), boat(7, dolphin_express)) ).
+
+% Clue 10: The Neptune didn't see a total of 3 dolphins.
+:- boat(3, neptune).
+
+% ============================================================
+% Output
+% ============================================================
+#show boat/2.
+#show captain/2.
+#show location/2."
+bcc5699a-411b-43a2-bfe1-a5169d927f88,"% ============================================================
+% Carmike Cunningham holiday special - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+viewers(v250000;v500000;v750000;v1000000;v1250000).
+times(t1130am;t100pm;t200pm;t430pm;t830pm).
+days(monday;wednesday;thursday;friday;saturday).
+channels(cbr;fnx;ptr;sbc;wnw).
+
+% ""somewhat more viewers"" relation (order)
+% Define direct order first
+order_viewers_direct(v250000,v500000).
+order_viewers_direct(v500000,v750000).
+order_viewers_direct(v750000,v1000000).
+order_viewers_direct(v1000000,v1250000).
+
+% Transitive closure for ""strictly more viewers""
+strictly_more_viewers(V1, V2) :- order_viewers_direct(V1, V2).
+strictly_more_viewers(V1, V3) :- order_viewers_direct(V1, V2), strictly_more_viewers(V2, V3).
+
+% ---- Assignment: each viewer count gets exactly one time, and vice versa ----
+1 { time(V,T) : times(T) } 1 :- viewers(V).
+1 { time(V,T) : viewers(V) } 1 :- times(T).
+
+% ---- Assignment: each viewer count gets exactly one day, and vice versa ----
+1 { day(V,D) : days(D) } 1 :- viewers(V).
+1 { day(V,D) : viewers(V) } 1 :- days(D).
+
+% ---- Assignment: each viewer count gets exactly one channel, and vice versa ----
+1 { channel(V,C) : channels(C) } 1 :- viewers(V).
+1 { channel(V,C) : viewers(V) } 1 :- channels(C).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: Of the show that aired on CBR and the show that aired at 11:30am,
+%         one brought in 500,000 viewers and the other aired on Monday.
+% Ensure the two shows are distinct programs (i.e., have different viewer counts)
+:- channel(VCBR,cbr), time(VT1130,t1130am), VCBR = VT1130.
+% Enforce the condition: (CBR show is 500k AND 11:30am show is Monday) OR (CBR show is Monday AND 11:30am show is 500k)
+:- channel(VCBR,cbr), time(VT1130,t1130am),
+   not ( (VCBR = v500000 and day(VT1130,monday)) or (day(VCBR,monday) and VT1130 = v500000) ).
+
+% Clue 2: The program that aired on Monday had 750,000 more viewers than the program that aired at 8:30pm.
+% This means (Monday show = 1,000,000 AND 8:30pm show = 250,000) OR (Monday show = 1,250,000 AND 8:30pm show = 500,000)
+:- day(VMonday,monday), time(VT830pm,t830pm),
+   not ( (VMonday = v1000000 and VT830pm = v250000) or (VMonday = v1250000 and VT830pm = v500000) ).
+
+% Clue 3: The show that aired on FNX didn't air on Friday.
+:- channel(V,fnx), day(V,friday).
+
+% Clue 4: Of the program that aired on Saturday and the show that aired on PTR,
+%         one aired at 1:00pm and the other brought in 750,000 viewers.
+% Ensure the two shows are distinct programs
+:- day(VSaturday,saturday), channel(VPTR,ptr), VSaturday = VPTR.
+% Enforce the condition: (Saturday show is 1:00pm AND PTR show is 750k) OR (Saturday show is 750k AND PTR show is 1:00pm)
+:- day(VSaturday,saturday), channel(VPTR,ptr),
+   not ( (time(VSaturday,t100pm) and VPTR = v750000) or (VSaturday = v750000 and time(VPTR,t100pm)) ).
+
+% Clue 5: The show that aired at 1:00pm didn't have exactly 1,250,000 viewers.
+:- time(V,t100pm), V = v1250000.
+
+% Clue 6: The program that aired at 11:30am had somewhat more viewers than the program that aired on Friday.
+:- time(V1130,t1130am), day(VFriday,friday), not strictly_more_viewers(VFriday,V1130).
+
+% Clue 7: The show that aired on Thursday, the show with 1,250,000 viewers,
+%         and the show with 250,000 viewers are three different programs.
+% The Thursday show is not the 1,250,000 viewers show.
+:- day(V,thursday), V = v1250000.
+% The Thursday show is not the 250,000 viewers show.
+:- day(V,thursday), V = v250000.
+% The shows with 1,250,000 viewers and 250,000 viewers are distinct by definition of their viewer counts.
+
+% Clue 8: The show that aired on SBC, the show with 1,000,000 viewers,
+%         and the show that aired at 2:00pm are three different programs.
+% The SBC show is not the 1,000,000 viewers show.
+:- channel(V,sbc), V = v1000000.
+% The SBC show is not the 2:00pm show.
+:- channel(V1,sbc), time(V2,t200pm), V1 = V2.
+% The 2:00pm show is not the 1,000,000 viewers show.
+:- time(V,t200pm), V = v1000000.
+
+% Clue 9: The program that aired on SBC had somewhat more viewers than the program that aired on Monday.
+:- channel(VSBC,sbc), day(VMonday,monday), not strictly_more_viewers(VMonday,VSBC).
+
+% ============================================================
+% Output
+% ============================================================
+#show time/2.
+#show day/2.
+#show channel/2."
+2376337e-606f-4728-b685-cb20b89de8e3,"% ============================================================
+% Rental Car Logic Grid Puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+prices(p380;p420;p490;p555;p620;p700).
+cartypes(aquadrive;ecoride;turbox;solarmax;binsonc40;chillerz).
+fuelefficiencies(fe15;fe18;fe20;fe25;fe28;fe30).
+transmissions(tm3speedmanual;tm4speedauto;tm5speedauto;tm5speedmanual).
+seats(s3;s4;s5;s6;s7;s8).
+
+% Price values for arithmetic comparisons
+price_val(p380, 380).
+price_val(p420, 420).
+price_val(p490, 490).
+price_val(p555, 555).
+price_val(p620, 620).
+price_val(p700, 700).
+
+% Helper predicates for price comparisons
+price_diff(P1, P2, D) :- price_val(P1, V1), price_val(P2, V2), D = V1 - V2.
+price_greater(P1, P2) :- price_val(P1, V1), price_val(P2, V2), V1 > V2.
+
+% ---- Assignment: each price gets exactly one of each category ----
+% Each price corresponds to exactly one car type, and each car type to exactly one price (bijection).
+1 { has_cartype(P, CT) : cartypes(CT) } 1 :- prices(P).
+1 { has_cartype(P, CT) : prices(P) } 1 :- cartypes(CT).
+
+% Each price corresponds to exactly one fuel efficiency, and each fuel efficiency to exactly one price (bijection).
+1 { has_fuelefficiency(P, FE) : fuelefficiencies(FE) } 1 :- prices(P).
+1 { has_fuelefficiency(P, FE) : prices(P) } 1 :- fuelefficiencies(FE).
+
+% Each price corresponds to exactly one transmission.
+% Since there are 6 prices and only 4 transmission types, transmission types must be reused.
+% Each transmission type must be used at least once.
+1 { has_transmission(P, TM) : transmissions(TM) } 1 :- prices(P).
+1 { has_transmission(P, TM) : prices(P) } :- transmissions(TM).
+
+% Each price corresponds to exactly one seat capacity, and each seat capacity to exactly one price (bijection).
+1 { has_seats(P, S) : seats(S) } 1 :- prices(P).
+1 { has_seats(P, S) : prices(P) } 1 :- seats(S).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: The car with the 25 mpg fuel efficiency is either the $380 vehicle or the SolarMax.
+:- has_fuelefficiency(P, fe25), P != p380, not has_cartype(P, solarmax).
+
+% Clue 2: The EcoRide doesn't cost $420.
+:- has_cartype(p420, ecoride).
+
+% Clue 3: The $380 vehicle has the 4-seat capacity.
+:- not has_seats(p380, s4).
+
+% Clue 4: The car with the 20 mpg fuel efficiency costs 65 dollars less than the item with the 5-speed automatic transmission.
+:- has_fuelefficiency(P1, fe20), has_transmission(P2, tm5speedauto), not price_diff(P2, P1, 65).
+
+% Clue 5: The EcoRide doesn't have exactly 20 mpg in fuel efficiency.
+:- has_cartype(P, ecoride), has_fuelefficiency(P, fe20).
+
+% Clue 6: The TurboX has the 5-speed manual transmission.
+:- has_cartype(P1, turbox), has_transmission(P2, tm5speedmanual), P1 != P2.
+
+% Clue 7: The car with the 3-seat capacity is either the SolarMax or the item with the 18 mpg fuel efficiency.
+:- has_seats(P, s3), not has_cartype(P, solarmax), not has_fuelefficiency(P, fe18).
+
+% Clue 8: The AquaDrive costs 65 dollars less than the car with the 4-speed automatic transmission.
+:- has_cartype(P1, aquadrive), has_transmission(P2, tm4speedauto), not price_diff(P2, P1, 65).
+
+% Clue 9: The $420 vehicle, the unit with the 20 mpg fuel efficiency, and the SolarMax are three different vehicles.
+:- has_fuelefficiency(p420, fe20).
+:- has_cartype(p420, solarmax).
+:- has_cartype(P, solarmax), has_fuelefficiency(P, fe20).
+
+% Clue 10: The item with the 3-speed manual transmission costs 65 dollars more than the AquaDrive.
+:- has_transmission(P1, tm3speedmanual), has_cartype(P2, aquadrive), not price_diff(P1, P2, 65).
+
+% Clue 11: Of the TurboX and the car with the 4-speed automatic transmission, one has the 28 mpg fuel efficiency and the other costs $490.
+clue11_case1(P1, P2) :- has_fuelefficiency(P1, fe28), P2 = p490.
+clue11_case2(P1, P2) :- P1 = p490, has_fuelefficiency(P2, fe28).
+:- has_cartype(P1, turbox), has_transmission(P2, tm4speedauto), P1 != P2,
+   not clue11_case1(P1, P2), not clue11_case2(P1, P2).
+
+% Clue 12: The car with the 5-speed automatic transmission doesn't have exactly 18 mpg in fuel efficiency.
+:- has_transmission(P, tm5speedauto), has_fuelefficiency(P, fe18).
+
+% Clue 13: The AquaDrive costs somewhat more than the item with the 15 mpg fuel efficiency.
+:- has_cartype(P1, aquadrive), has_fuelefficiency(P2, fe15), not price_greater(P1, P2).
+
+% Clue 14: The EcoRide doesn't cost $490.
+:- has_cartype(p490, ecoride).
+
+% ============================================================
+% Output
+% ============================================================
+#show has_cartype/2.
+#show has_fuelefficiency/2.
+#show has_transmission/2.
+#show has_seats/2."
+fb2961df-2391-423b-ae7a-3128d4dcdc8d,"% ============================================================
+% Eliza's Bakery grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+ages(80;100;120;140;160;180).
+flour_types(almond;coconut;wheat;flourless;oat;rice).
+tart_styles(fluted;open_faced;roulade;layered;fruit;custard).
+issues(dough_texture;sugar_measurement;crust_repair;filling_consistency;oven_temperature;weight_pulley).
+
+% ---- Assignment: each age gets exactly one of each other category, and vice versa ----
+% Each age has one flour type, and each flour type is assigned to one age
+1 { flour(A,F) : flour_types(F) } 1 :- ages(A).
+1 { flour(A,F) : ages(A) } 1 :- flour_types(F).
+
+% Each age has one tart style, and each tart style is assigned to one age
+1 { style(A,S) : tart_styles(S) } 1 :- ages(A).
+1 { style(A,S) : ages(A) } 1 :- tart_styles(S).
+
+% Each age has one issue, and each issue is assigned to one age
+1 { issue(A,I) : issues(I) } 1 :- ages(A).
+1 { issue(A,I) : ages(A) } 1 :- issues(I).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: Of the almond flour tart and the tart needing oven temperature adjustment,
+%         one is 150 years old and the other is a fluted style.
+% Let A_almond be the age of the almond flour tart.
+% Let A_oven be the age of the oven temperature adjustment tart.
+% Condition: (A_almond = 150 AND style(A_oven, fluted)) XOR (style(A_almond, fluted) AND A_oven = 150).
+% Define auxiliary predicates for the two parts of the XOR condition.
+holds_c1_clue1(A_almond, A_oven) :- flour(A_almond, almond), issue(A_oven, oven_temperature), A_almond = 150, style(A_oven, fluted).
+holds_c2_clue1(A_almond, A_oven) :- flour(A_almond, almond), issue(A_oven, oven_temperature), style(A_almond, fluted), A_oven = 150.
+
+% Enforce XOR: they cannot both be true.
+:- holds_c1_clue1(A_almond, A_oven), holds_c2_clue1(A_almond, A_oven).
+% Enforce XOR: they cannot both be false.
+:- flour(A_almond, almond), issue(A_oven, oven_temperature),
+   not holds_c1_clue1(A_almond, A_oven),
+   not holds_c2_clue1(A_almond, A_oven).
+
+% Clue 2: The tart made with wheat flour is either the tart that is 100 years old or the tart needing crust repair.
+% Let A be the age of the wheat flour tart.
+% Condition: (A = 100) XOR (issue(A, crust_repair)).
+% Cannot be both true.
+:- flour(A, wheat), A = 100, issue(A, crust_repair).
+% Cannot be both false.
+:- flour(A, wheat), not A = 100, not issue(A, crust_repair).
+
+% Clue 3: Of the tart made with wheat flour and the tart with baking issues,
+%         one is 150 years old and the other is a layered style.
+% Assuming ""baking issues"" refers to 'oven_temperature'.
+% Let A_wheat be the age of the wheat flour tart.
+% Let A_oven be the age of the oven temperature adjustment tart.
+% Condition: (A_wheat = 150 AND style(A_oven, layered)) XOR (style(A_wheat, layered) AND A_oven = 150).
+% Define auxiliary predicates for the two parts of the XOR condition.
+holds_c1_clue3(A_wheat, A_oven) :- flour(A_wheat, wheat), issue(A_oven, oven_temperature), A_wheat = 150, style(A_oven, layered).
+holds_c2_clue3(A_wheat, A_oven) :- flour(A_wheat, wheat), issue(A_oven, oven_temperature), style(A_wheat, layered), A_oven = 150.
+
+% Enforce XOR: they cannot both be true.
+:- holds_c1_clue3(A_wheat, A_oven), holds_c2_clue3(A_wheat, A_oven).
+% Enforce XOR: they cannot both be false.
+:- flour(A_wheat, wheat), issue(A_oven, oven_temperature),
+   not holds_c1_clue3(A_wheat, A_oven),
+   not holds_c2_clue3(A_wheat, A_oven).
+
+% Clue 4: The tart needing sugar measurement adjustment isn't a roulade style.
+:- issue(A,sugar_measurement), style(A,roulade).
+
+% Clue 5: The tart requiring filling consistency check is either the open-faced tart or the tart that is 150 years old.
+% Let A be the age of the filling consistency tart.
+% Condition: (style(A, open_faced)) XOR (A = 150).
+% Cannot be both true.
+:- issue(A, filling_consistency), style(A, open_faced), A = 150.
+% Cannot be both false.
+:- issue(A, filling_consistency), not style(A, open_faced), not A = 150.
+
+% Clue 6: The flourless tart is 30 years younger than the tart with dough texture problems.
+% Let A1 be the age of the flourless tart.
+% Let A2 be the age of the dough texture tart.
+% Condition: A1 = A2 - 30.
+:- flour(A1, flourless), issue(A2, dough_texture), A1 != A2 - 30.
+
+% Clue 7: The 120 year-old tart is either the roulade tart or the almond flour tart.
+% Condition: (style(120, roulade)) XOR (flour(120, almond)).
+% Cannot be both true.
+:- style(120, roulade), flour(120, almond).
+% Cannot be both false.
+:- not style(120, roulade), not flour(120, almond).
+
+% Clue 8: The almond flour tart is 40 years younger than the tart needing crust repair.
+% Let A1 be the age of the almond flour tart.
+% Let A2 be the age of the crust repair tart.
+% Condition: A1 = A2 - 40.
+:- flour(A1, almond), issue(A2, crust_repair), A1 != A2 - 40.
+
+% Clue 9: The fruit tart is 20 years younger than the tart made with coconut flour.
+% Let A1 be the age of the fruit tart.
+% Let A2 be the age of the coconut flour tart.
+% Condition: A1 = A2 - 20.
+:- style(A1, fruit), flour(A2, coconut), A1 != A2 - 20.
+
+% ============================================================
+% Output
+% ============================================================
+#show flour/2.
+#show style/2.
+#show issue/2."
+c0fb918e-3ef7-46a3-a7e4-f86b4f9c36f0,"```asp
+% ============================================================
+% Pacific Coast Vintage Motorcycle Rally - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+years(1950;1955;1960;1965;1970;1975).
+makes(bmw;bsa;harley;honda;indian;triumph).
+colors(black;burgundy;green;orange;red;silver).
+owners(buck;chip;dusty;mack;rex;wyatt).
+
+% ---- Assignment: each year gets exactly one make, color, and owner, and vice versa ----
+1 { make(Y,M) : makes(M) } 1 :- years(Y).
+1 { make(Y,M) : years(Y) } 1 :- makes(M).
+
+1 { color(Y,C) : colors(C) } 1 :- years(Y).
+1 { color(Y,C) : years(Y) } 1 :- colors(C).
+
+1 { owner(Y,O) : owners(O) } 1 :- years(Y).
+1 { owner(Y,O) : years(Y) } 1 :- owners(O).
+
+% Helper predicates for linking categories
+% make_of_owner(O,M) means owner O owns a bike of make M
+make_of_owner(O,M) :- owner(Y,O), make(Y,M).
+color_of_owner(O,C) :- owner(Y,O), color(Y,C).
+year_of_owner(O,Y) :- owner(Y,O).
+
+make_of_color(C,M) :- color(Y,C), make(Y,M).
+year_of_color(C,Y) :- color(Y,C).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: Mack's bike is 20 years older than the orange motorcycle.
+:- year_of_owner(mack, Y1), year_of_color(orange, Y2), Y1 != Y2 - 20.
+
+% Clue 2: The burgundy motorcycle is 5 years newer than Rex's motorcycle.
+:- year_of_color(burgundy, Y1), year_of_owner(rex, Y2), Y1 != Y2 + 5.
+
+% Clue 3: Of the 1950 motorcycle and the black motorcycle, one is owned by Rex and the other is a Harley.
+% Case 1: 1950 is Rex's, Black is Harley
+:- owner(1950, rex), make_of_color(black, harley).
+% Case 2: 1950 is Harley, Black is Rex's
+:- make(1950, harley), color_of_owner(rex, black).
+% Must be one of these two cases, so if not Case 1, then must be Case 2
+:- not owner(1950, rex), not make_of_color(black, harley), not make(1950, harley), not color_of_owner(rex, black).
+
+% Clue 4: The silver bike is 5 years newer than Wyatt's motorcycle.
+:- year_of_color(silver, Y1), year_of_owner(wyatt, Y2), Y1 != Y2 + 5.
+
+% Clue 5: The six motorcycles are the Indian, the black motorcycle, Rex's bike, the 1965 motorcycle, Chip's bike and Mack's motorcycle.
+% This clue implies that these are all distinct entities.
+% It also implies that all categories are covered by these descriptions.
+% Since we have 6 years, 6 makes, 6 colors, 6 owners, and our assignment rules ensure one-to-one,
+% this clue primarily serves to establish distinctness between certain items.
+
+% Indian is not black
+:- make_of_color(black, indian).
+% Indian is not Rex's
+:- make_of_owner(rex, indian).
+% Indian is not 1965
+:- make(1965, indian).
+% Indian is not Chip's
+:- make_of_owner(chip, indian).
+% Indian is not Mack's
+:- make_of_owner(mack, indian).
+
+% Black is not Rex's
+:- color_of_owner(rex, black).
+% Black is not 1965
+:- color(1965, black).
+% Black is not Chip's
+:- color_of_owner(chip, black).
+% Black is not Mack's
+:- color_of_owner(mack, black).
+
+% Rex's is not 1965
+:- owner(1965, rex).
+% Rex's is not Chip's
+:- year_of_owner(rex, Y), year_of_owner(chip, Y). % If they own the same year, they are the same bike.
+% Rex's is not Mack's
+:- year_of_owner(rex, Y), year_of_owner(mack, Y).
+
+% 1965 is not Chip's
+:- owner(1965, chip).
+% 1965 is not Mack's
+:- owner(1965, mack).
+
+% Chip's is not Mack's
+:- year_of_owner(chip, Y), year_of_owner(mack, Y).
+
+% Clue 6: The BSA isn't owned by Wyatt.
+:- make_of_owner(wyatt, bsa).
+
+% Clue 7: The Honda is somewhat newer than the green motorcycle.
+% ""somewhat newer"" means it's newer, but not necessarily by a specific amount.
+% It implies the Honda and green motorcycle are distinct.
+:- make_of_color(green, honda). % Honda is not green
+:- make(Y1, honda), color(Y2, green), Y1 <= Y2. % Honda is not older or same year as green
+
+% Clue 8: Of the 1955 bike and the orange motorcycle, one is a Honda and the other is an Indian.
+% Case 1: 1955 is Honda, Orange is Indian
+:- make(1955, honda), make_of_color(orange, indian).
+% Case 2: 1955 is Indian, Orange is Honda
+:- make(1955, indian), make_of_color(orange, honda).
+% Must be one of these two cases
+:- not make(1955, honda), not make_of_color(orange, indian), not make(1955, indian), not make_of_color(orange, honda).
+
+% Clue 9: The Harley isn't owned by Wyatt.
+:- make_of_owner(wyatt, harley).
+
+% Clue 10: The 1960 motorcycle isn't owned by Dusty.
+:- owner(1960, dusty).
+
+% Clue 11: Of the BMW and the orange bike, one is owned by Rex and the other is from 1975.
+% Case 1: BMW is Rex's, Orange is 1975
+:- make_of_owner(rex, bmw), year_of_color(orange, 1975).
+% Case 2: BMW is 1975, Orange is Rex's
+:- make(1975, bmw), color_of_owner(rex, orange).
+% Must be one of these two cases
+:- not make_of_owner(rex, bmw), not year_of_color(orange, 1975), not make(1975, bmw), not color_of_owner(rex, orange).
+
+% ============================================================
+% Output
+% ============================================================
+#show make/2.
+#show color/2.
+#show owner/2.
+```"
+3b317882-2215-42a6-9443-18f1fc754f96,"```asp
+% ============================================================
+% U.S. Air Force experimental aircraft puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+prices(100;125;150;175;200;225). % in millions of dollars
+aircrafts(darkwing_6;dragon_f_15;falcon_x_2;graywing_vx;kesseling;vipertooth).
+companies(drummond;forsyth;mcconnell;pittakan;tenerife;wiseman).
+speeds(mach_1_8;mach_2_3;mach_2_5;mach_2_9;mach_3_2;mach_3_4).
+
+% ---- Assignment: each price gets exactly one aircraft, and vice versa ----
+1 { aircraft(P,A) : aircrafts(A) } 1 :- prices(P).
+1 { aircraft(P,A) : prices(P) } 1 :- aircrafts(A).
+
+% ---- Assignment: each price gets exactly one company, and vice versa ----
+1 { company(P,C) : companies(C) } 1 :- prices(P).
+1 { company(P,C) : prices(P) } 1 :- companies(C).
+
+% ---- Assignment: each price gets exactly one speed, and vice versa ----
+1 { speed(P,S) : speeds(S) } 1 :- prices(P).
+1 { speed(P,S) : prices(P) } 1 :- speeds(S).
+
+% ---- Helper predicates for cross-category relationships ----
+% aircraft_company(A,C) means aircraft A was built by company C
+aircraft_company(A,C) :- aircraft(P,A), company(P,C).
+% aircraft_speed(A,S) means aircraft A has speed S
+aircraft_speed(A,S) :- aircraft(P,A), speed(P,S).
+% company_speed(C,S) means company C's aircraft has speed S
+company_speed(C,S) :- company(P,C), speed(P,S).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: The Dragon F-15 doesn't have a top speed of Mach 3.4.
+:- aircraft_speed(dragon_f_15, mach_3_4).
+
+% Clue 2: The six jets are the jet with a top speed of Mach 2.5, the Graywing VX,
+%         the $225 million aircraft, the Darkwing 6, the Vipertooth and the $150 million aircraft.
+% This clue primarily lists the items in the categories and implies distinctness,
+% which is already handled by the one-to-one assignment rules. No additional constraint needed.
+
+% Clue 3: Of the $100 million plane and the jet with a top speed of Mach 1.8,
+%         one is the Kesseling and the other is the Graywing VX.
+% Let P_m1_8 be the price of the jet with speed mach_1_8.
+:- speed(P_m1_8, mach_1_8), 100 = P_m1_8. % The two entities must be distinct.
+:- not ( (aircraft(100, kesseling), speed(P_m1_8, mach_1_8), aircraft(P_m1_8, graywing_vx))
+       ; (aircraft(100, graywing_vx), speed(P_m1_8, mach_1_8), aircraft(P_m1_8, kesseling))
+       ).
+
+% Clue 4: The $125 million plane has a top speed of Mach 3.2.
+:- not speed(125, mach_3_2).
+
+% Clue 5: The Dragon F-15 costs 50 million dollars more than the jet built by McConnell.
+:- aircraft(P_dragon, dragon_f_15), company(P_mcconnell, mcconnell), P_dragon != P_mcconnell + 50.
+
+% Clue 6: The Vipertooth costs 25 million dollars less than the plane built by Wiseman.
+:- aircraft(P_vipertooth, vipertooth), company(P_wiseman, wiseman), P_vipertooth != P_wiseman - 25.
+
+% Clue 7: The Graywing VX wasn't built by Wiseman.
+:- aircraft_company(graywing_vx, wiseman).
+
+% Clue 8: Of the plane built by Tenerife and the aircraft built by Forsyth,
+%         one is the Darkwing 6 and the other costs $175 million.
+% Let P_tenerife be the price of Tenerife's plane, P_forsyth be the price of Forsyth's plane.
+:- company(P_tenerife, tenerife), company(P_forsyth, forsyth), P_tenerife = P_forsyth. % The two entities must be distinct.
+:- not ( (company(P_tenerife, tenerife), aircraft(P_tenerife, darkwing_6),
+          company(P_forsyth, forsyth), P_forsyth = 175)
+       ; (company(P_tenerife, tenerife), P_tenerife = 175,
+          company(P_forsyth, forsyth), aircraft(P_forsyth, darkwing_6))
+       ).
+
+% Clue 9: The Falcon X-2 doesn't have a top speed of Mach 2.3.
+:- aircraft_speed(falcon_x_2, mach_2_3).
+
+% Clue 10: Of the jet with a top speed of Mach 2.5 and the plane with a top speed of Mach 3.2,
+%          one was built by Forsyth and the other costs $100 million.
+% Let P_m2_5 be the price of the Mach 2.5 jet, P_m3_2 be the price of the Mach 3.2 jet.
+:- speed(P_m2_5, mach_2_5), speed(P_m3_2, mach_3_2), P_m2_5 = P_m3_2. % The two entities must be distinct.
+:- not ( (speed(P_m2_5, mach_2_5), company(P_m2_5, forsyth),
+          speed(P_m3_2, mach_3_2), P_m3_2 = 100)
+       ; (speed(P_m2_5, mach_2_5), P_m2_5 = 100,
+          speed(P_m3_2, mach_3_2), company(P_m3_2, forsyth))
+       ).
+
+% Clue 11: The $150 million plane wasn't built by Drummond.
+:- company(150, drummond).
+
+% Clue 12: The $225 million jet doesn't have a top speed of Mach 3.4.
+:- speed(225, mach_3_4).
+
+% ============================================================
+% Output
+% ============================================================
+#show aircraft/2.
+#show company/2.
+#show speed/2.
+```"
+cd802bf2-f630-4f06-9507-b3506ba21920,"% ============================================================
+% Logic Grid Puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+wealths(w25b;w26b;w27b;w28b;w29b;w30b).
+people(betty_bush;ida_ingram;joseph_jakes;kirk_kaplan;leonard_levy;tim_townsend).
+countries(argentina;denmark;ireland;france;germany;norway).
+industries(aerospace;biotech;medical;retail;pharmaceutical;software).
+
+% Map wealth string to integer value for comparisons
+wealth_val(w25b, 25).
+wealth_val(w26b, 26).
+wealth_val(w27b, 27).
+wealth_val(w28b, 28).
+wealth_val(w29b, 29).
+wealth_val(w30b, 30).
+
+% ---- Assignment: each wealth gets exactly one person, and vice versa ----
+1 { person(W,P) : people(P) } 1 :- wealths(W).
+1 { person(W,P) : wealths(W) } 1 :- people(P).
+
+% ---- Assignment: each wealth gets exactly one country, and vice versa ----
+1 { country(W,C) : countries(C) } 1 :- wealths(W).
+1 { country(W,C) : wealths(W) } 1 :- countries(C).
+
+% ---- Assignment: each wealth gets exactly one industry, and vice versa ----
+1 { industry(W,I) : industries(I) } 1 :- wealths(W).
+1 { industry(W,I) : wealths(W) } 1 :- industries(I).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: Of the mogul from Ireland and Leonard Levy, one works in the biotech industry and the other is worth $30 billion.
+% The two entities must be distinct.
+:- country(W1, ireland), person(W2, leonard_levy), W1 = W2.
+% If they are distinct, then one of the two pairings must be true.
+:- country(W1, ireland), person(W2, leonard_levy), W1 != W2,
+   not (industry(W1, biotech), wealth_val(W2, 30)).
+:- country(W1, ireland), person(W2, leonard_levy), W1 != W2,
+   not (wealth_val(W1, 30), industry(W2, biotech)).
+
+% Clue 2: The tycoon from Argentina is worth 4 billion less than Leonard Levy.
+:- country(W_arg, argentina), person(W_levy, leonard_levy),
+   wealth_val(W_arg, V_arg), wealth_val(W_levy, V_levy),
+   V_arg != V_levy - 4.
+
+% Clue 3: The person from Norway is worth 4 billion more than the mogul who works in the biotech industry.
+:- country(W_norway, norway), industry(W_biotech, biotech),
+   wealth_val(W_norway, V_norway), wealth_val(W_biotech, V_biotech),
+   V_norway != V_biotech + 4.
+
+% Clue 4: The magnate who works in the pharmaceutical industry isn't from Norway.
+:- industry(W, pharmaceutical), country(W, norway).
+
+% Clue 5: The person from Germany is worth somewhat less than the tycoon who works in the pharmaceutical industry.
+% 'somewhat less' implies strictly less.
+:- country(W_germany, germany), industry(W_pharma, pharmaceutical),
+   wealth_val(W_germany, V_germany), wealth_val(W_pharma, V_pharma),
+   V_germany >= V_pharma.
+
+% Clue 6: Of the tycoon worth $28 billion and the person who works in the retail industry, one is Joseph Jakes and the other is from Denmark.
+% The two entities must be distinct.
+:- wealth_val(W1, 28), industry(W2, retail), W1 = W2.
+% If they are distinct, then one of the two pairings must be true.
+:- wealth_val(W1, 28), industry(W2, retail), W1 != W2,
+   not (person(W1, joseph_jakes), country(W2, denmark)).
+:- wealth_val(W1, 28), industry(W2, retail), W1 != W2,
+   not (country(W1, denmark), person(W2, joseph_jakes)).
+
+% Clue 7: The mogul who works in the medical industry isn't from Germany.
+:- industry(W, medical), country(W, germany).
+
+% Clue 8: Tim Townsend is either the mogul who works in the medical industry or the magnate from Argentina.
+:- person(W_tim, tim_townsend), not industry(W_tim, medical), not country(W_tim, argentina).
+
+% Clue 9: Of the magnate from Germany and the magnate who works in the retail industry, one is worth $27 billion and the other is Joseph Jakes.
+% The two entities must be distinct.
+:- country(W1, germany), industry(W2, retail), W1 = W2.
+% If they are distinct, then one of the two pairings must be true.
+:- country(W1, germany), industry(W2, retail), W1 != W2,
+   not (wealth_val(W1, 27), person(W2, joseph_jakes)).
+:- country(W1, germany), industry(W2, retail), W1 != W2,
+   not (person(W1, joseph_jakes), wealth_val(W2, 27)).
+
+% Clue 10: Kirk Kaplan doesn't work in the aerospace industry.
+:- person(W, kirk_kaplan), industry(W, aerospace).
+
+% Clue 11: The mogul who works in the medical industry is worth 1 billion less than Betty Bush.
+:- industry(W_medical, medical), person(W_betty, betty_bush),
+   wealth_val(W_medical, V_medical), wealth_val(W_betty, V_betty),
+   V_medical != V_betty - 1.
+
+% Clue 12: Kirk Kaplan doesn't work in the biotech industry.
+:- person(W, kirk_kaplan), industry(W, biotech).
+
+% ============================================================
+% Output
+% ============================================================
+#show person/2.
+#show country/2.
+#show industry/2."
+20bd99f4-60d7-49fb-9c89-13fb6af10cc3,"```asp
+% ============================================================
+% Maplewood Festival perfume pavilion - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+prices(6;7;8;9;10;11).
+sellers(dana;clara;greg;henry;mary;victoria).
+fragrances1(cedar;lavender;amber;freesia;rose;vanilla).
+fragrances2(apple;oakmoss;bergamot;mint;jasmine;pear).
+
+% ---- Assignment: each price gets exactly one seller, and vice versa ----
+1 { seller(P,S) : sellers(S) } 1 :- prices(P).
+1 { seller(P,S) : prices(P) } 1 :- sellers(S).
+
+% ---- Assignment: each price gets exactly one fragrance1, and vice versa ----
+1 { fragrance1(P,F1) : fragrances1(F1) } 1 :- prices(P).
+1 { fragrance1(P,F1) : prices(P) } 1 :- fragrances1(F1).
+
+% ---- Assignment: each price gets exactly one fragrance2, and vice versa ----
+1 { fragrance2(P,F2) : fragrances2(F2) } 1 :- prices(P).
+1 { fragrance2(P,F2) : prices(P) } 1 :- fragrances2(F2).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: The $7.00 product contains lavender.
+:- not fragrance1(7,lavender).
+
+% Clue 2: The rose perfume, the jasmine product, and Clara's product are three different products.
+% This means they are associated with different prices.
+% - A product cannot have both rose (frag1) and jasmine (frag2).
+:- fragrance1(P,rose), fragrance2(P,jasmine).
+% - A product with rose cannot be Clara's product.
+:- fragrance1(P,rose), seller(P,clara).
+% - A product with jasmine cannot be Clara's product.
+:- fragrance2(P,jasmine), seller(P,clara).
+
+% Clue 3: The vanilla perfume, the mint product, and Clara's perfume are three different products.
+% This means they are associated with different prices.
+% - A product cannot have both vanilla (frag1) and mint (frag2).
+:- fragrance1(P,vanilla), fragrance2(P,mint).
+% - A product with vanilla cannot be Clara's product.
+:- fragrance1(P,vanilla), seller(P,clara).
+% - A product with mint cannot be Clara's product.
+:- fragrance2(P,mint), seller(P,clara).
+
+% Clue 4: The six products are Dana's product, the mint perfume, the oakmoss candle,
+%         the rose perfume, the bergamot candle and the $9.00 product.
+% This implies these six descriptions refer to distinct products (prices).
+% The existence of these products is guaranteed by the one-to-one mappings.
+% We enforce distinctness for all pairs of these descriptions.
+
+% Dana's product is not the mint product.
+:- seller(P,dana), fragrance2(P,mint).
+% Dana's product is not the oakmoss product.
+:- seller(P,dana), fragrance2(P,oakmoss).
+% Dana's product is not the rose product.
+:- seller(P,dana), fragrance1(P,rose).
+% Dana's product is not the bergamot product.
+:- seller(P,dana), fragrance2(P,bergamot).
+% Dana's product is not the $9.00 product.
+:- seller(9,dana).
+
+% The mint product is not the oakmoss product.
+:- fragrance2(P,mint), fragrance2(P,oakmoss). % This is implicitly covered by 1-to-1 for fragrance2
+% The mint product is not the rose product.
+:- fragrance2(P,mint), fragrance1(P,rose).
+% The mint product is not the bergamot product.
+:- fragrance2(P,mint), fragrance2(P,bergamot). % This is implicitly covered by 1-to-1 for fragrance2
+% The mint product is not the $9.00 product.
+:- fragrance2(9,mint).
+
+% The oakmoss product is not the rose product.
+:- fragrance2(P,oakmoss), fragrance1(P,rose).
+% The oakmoss product is not the bergamot product.
+:- fragrance2(P,oakmoss), fragrance2(P,bergamot). % This is implicitly covered by 1-to-1 for fragrance2
+% The oakmoss product is not the $9.00 product.
+:- fragrance2(9,oakmoss).
+
+% The rose product is not the bergamot product.
+:- fragrance1(P,rose), fragrance2(P,bergamot).
+% The rose product is not the $9.00 product.
+:- fragrance1(9,rose).
+
+% The bergamot product is not the $9.00 product.
+:- fragrance2(9,bergamot).
+
+% Clue 5: The jasmine product is either the vanilla perfume or the cedar product.
+% If a product has jasmine (frag2), it must also have vanilla (frag1) OR cedar (frag1).
+:- fragrance2(P,jasmine), not fragrance1(P,vanilla), not fragrance1(P,cedar).
+
+% Clue 6: The apple perfume costs 3 dollars more than the vanilla product.
+% Find P1 with apple and P2 with vanilla, then P1 must be P2 + 3.
+:- fragrance2(P1,apple), fragrance1(P2,vanilla), P1 != P2 + 3.
+
+% Clue 7: The jasmine perfume costs 5 dollars less than Henry's product.
+% This means Henry's product costs 5 dollars more than the jasmine product.
+% Find P1 with jasmine and P2 for Henry, then P2 must be P1 + 5.
+:- fragrance2(P1,jasmine), seller(P2,henry), P2 != P1 + 5.
+
+% Clue 8: The oakmoss perfume costs 2 dollars more than Dana's perfume.
+% Find P1 with oakmoss and P2 for Dana, then P1 must be P2 + 2.
+:- fragrance2(P1,oakmoss), seller(P2,dana), P1 != P2 + 2.
+
+% Clue 9: The mint product contains lavender.
+% If a product has mint (frag2), it must have lavender (frag1).
+:- fragrance2(P,mint), not fragrance1(P,lavender).
+
+% Clue 10: Greg's perfume contains apple.
+% If a product is Greg's, it must have apple (frag2).
+:- seller(P,greg), not fragrance2(P,apple).
+
+% Clue 11: Mary's product is either the oakmoss perfume or the amber product.
+% If a product is Mary's, it must have oakmoss (frag2) OR amber (frag1).
+:- seller(P,mary), not fragrance2(P,oakmoss), not fragrance1(P,amber).
+
+% Clue 12: Henry's product doesn't contain amber.
+% If a product is Henry's, it cannot have amber (frag1).
+:- seller(P,henry), fragrance1(P,amber).
+
+% ============================================================
+% Output
+% ============================================================
+#show seller/2.
+#show fragrance1/2.
+#show fragrance2/2.
+```"
+7eb16f40-ac0d-4fcd-961b-7b17ce206965,"```asp
+% ============================================================
+% Tybee Island Aquarium grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+lengths(21;23;25;27;29;31;33).
+species(beluga;bowhead;fin;gray;narwhal;right;sei).
+names(adam;brent;curtis;dennis;evan;gus;herbert).
+years(1994;1996;1999;2004;2007;2013;2015).
+
+% ---- Assignment: each length is assigned exactly one species, name, and year, and vice versa ----
+% Each length must be assigned exactly one species, one name, and one year.
+1 { assign(L,S,N,Y) : species(S), names(N), years(Y) } 1 :- lengths(L).
+
+% Each species must be assigned to exactly one length.
+1 { assign(L,S,N,Y) : lengths(L), names(N), years(Y) } 1 :- species(S).
+
+% Each name must be assigned to exactly one length.
+1 { assign(L,S,N,Y) : lengths(L), species(S), years(Y) } 1 :- names(N).
+
+% Each year must be assigned to exactly one length.
+1 { assign(L,S,N,Y) : lengths(L), species(S), names(N) } 1 :- years(Y).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: Of the 25 ft long whale and the 33 ft long specimen, one is the sei whale and the other was donated to the aquarium in 2004.
+% This is an XOR condition: (25ft is sei AND 33ft is 2004) OR (25ft is 2004 AND 33ft is sei).
+% Cannot both be sei:
+:- assign(25,sei,_,_), assign(33,sei,_,_).
+% Cannot both be 2004:
+:- assign(25,_,_,2004), assign(33,_,_,2004).
+% If 25ft is sei, 33ft must be 2004:
+:- assign(25,sei,_,_), not assign(33,_,_,2004).
+% If 25ft is 2004, 33ft must be sei:
+:- assign(25,_,_,2004), not assign(33,sei,_,_).
+
+% Clue 2: The whale donated in 2013 is 6 feet longer than the exhibit donated in 1994.
+% L_2013 - L_1994 = 6
+:- assign(L1,_,_,2013), assign(L2,_,_,1994), L1 - L2 != 6.
+
+% Clue 3: Brent is somewhat shorter than the beluga whale.
+% L_brent < L_beluga
+:- assign(L1,_,brent,_), assign(L2,beluga,_,_), L1 >= L2.
+
+% Clue 4: The whale donated in 1994 is 4 feet shorter than the narwhal.
+% L_narwhal - L_1994 = 4
+:- assign(L1,_,_,1994), assign(L2,narwhal,_,_), L2 - L1 != 4.
+
+% Clue 5: Of Adam and Herbert, one was donated to the aquarium in 2015 and the other is 25 ft long.
+% XOR condition: (Adam is 2015 AND Herbert is 25ft) OR (Adam is 25ft AND Herbert is 2015).
+% Cannot both be 2015:
+:- assign(_,_,adam,2015), assign(_,_,herbert,2015).
+% Cannot both be 25ft:
+:- assign(25,_,adam,_), assign(25,_,herbert,_).
+% If Adam is 2015, Herbert must be 25ft:
+:- assign(L_adam,_,adam,2015), not assign(25,_,herbert,_).
+% If Adam is 25ft, Herbert must be 2015:
+:- assign(25,_,adam,_), not assign(_,_,herbert,2015).
+
+% Clue 6: Of the exhibit donated in 2015 and Dennis, one is the gray whale and the other is 27 ft long.
+% XOR condition: (2015 whale is gray AND Dennis is 27ft) OR (2015 whale is 27ft AND Dennis is gray).
+% Cannot both be gray:
+:- assign(_,gray,_,2015), assign(_,gray,dennis,_).
+% Cannot both be 27ft:
+:- assign(27,_,_,2015), assign(27,_,dennis,_).
+% If 2015 whale is gray, Dennis must be 27ft:
+:- assign(L1,gray,_,2015), not assign(27,_,dennis,_).
+% If 2015 whale is 27ft, Dennis must be gray:
+:- assign(27,_,_,2015), not assign(L2,gray,dennis,_).
+
+% Clue 7: The fin whale isn't Brent.
+:- assign(_,fin,brent,_).
+
+% Clue 8: Dennis is somewhat longer than the whale donated in 1999.
+% L_dennis > L_1999
+:- assign(L1,_,dennis,_), assign(L2,_,_,1999), L1 <= L2.
+
+% Clue 9: The sei whale wasn't donated in 2007.
+:- assign(_,sei,_,2007).
+
+% Clue 10: The whale donated in 1994 is either the 31 ft long specimen or Brent.
+% (L_1994 = 31) OR (N_1994 = brent)
+:- assign(L,_,N,1994), L != 31, N != brent.
+
+% Clue 11: The right whale is 2 feet longer than the specimen donated in 2004.
+% L_right - L_2004 = 2
+:- assign(L1,right,_,_), assign(L2,_,_,2004), L1 - L2 != 2.
+
+% Clue 12: The beluga whale isn't 23 ft long.
+:- assign(23,beluga,_,_).
+
+% Clue 13: The fin whale, Curtis and the beluga whale are all different whales.
+% The fin whale is not Curtis:
+:- assign(_,fin,curtis,_).
+% The beluga whale is not Curtis:
+:- assign(_,beluga,curtis,_).
+% (The fin whale is not the beluga whale is enforced by one-to-one species assignment).
+
+% Clue 14: Gus is 4 feet longer than Adam.
+% L_gus - L_adam = 4
+:- assign(L1,_,gus,_), assign(L2,_,adam,_), L1 - L2 != 4.
+
+% ============================================================
+% Output
+% ============================================================
+#show assign/4.
+```"
+0c320aec-dc2b-4e29-a3b1-b5c5487d156b,"days(monday;tuesday;wednesday;thursday;friday;saturday;sunday).
+animals(cat;dog;ferret;horse;parrot;snake;rabbit).
+
+% Derived from clues and original list to fit 7x7 grid:
+% Towns mentioned in clues: milltown, brookside, elmsworth, pineville, cedar_hill, oakridge (6)
+% Arbitrarily chosen from original list to complete 7: albion
+towns(milltown;brookside;elmsworth;pineville;cedar_hill;oakridge;albion).
+
+% Pet Owners mentioned in clues: rainbow_valley, sunset_lane, maple_grove, sunrise_park, willow_creek (5)
+% (willow_creek is interpreted as an owner based on Clue 10)
+% Arbitrarily chosen from original list to complete 7: blackwater, hazelwood
+owners(rainbow_valley;sunset_lane;maple_grove;sunrise_park;willow_creek;blackwater;hazelwood).
+
+% ---- Relations over days (timeline) ----
+next_day(monday, tuesday).
+next_day(tuesday, wednesday).
+next_day(wednesday, thursday).
+next_day(thursday, friday).
+next_day(friday, saturday).
+next_day(saturday, sunday).
+
+% order(D1, D2, N) means D1 is N days before D2
+order(D1, D2, 1) :- next_day(D1, D2).
+order(D1, D3, N+1) :- order(D1, D2, N), next_day(D2, D3).
+
+% sometime_after(D1, D2) means D1 is any number of days after D2
+sometime_after(D1, D2) :- order(D2, D1, _).
+
+% ---- Assignment: each day gets exactly one owner, town, and animal, and vice versa ----
+% Each day is assigned exactly one owner
+1 { owner(D,O) : owners(O) } 1 :- days(D).
+% Each owner is assigned exactly one day
+1 { owner(D,O) : days(D) } 1 :- owners(O).
+
+% Each day is assigned exactly one town
+1 { town(D,T) : towns(T) } 1 :- days(D).
+% Each town is assigned exactly one day
+1 { town(D,T) : days(D) } 1 :- towns(T).
+
+% Each day is assigned exactly one animal
+1 { animal(D,A) : animals(A) } 1 :- days(D).
+% Each animal is assigned exactly one day
+1 { animal(D,A) : days(D) } 1 :- animals(A).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: The pet owner who brings a cat isn't from Milltown.
+:- animal(D, cat), town(D, milltown).
+
+% Clue 2: The pet owner who brings a dog doesn't have a parrot.
+% This clue is a tautology given the one-to-one assignment of animals to days.
+% Each day has only one animal, so a day with a dog cannot also have a parrot.
+% No explicit constraint needed.
+
+% Clue 3: Of the one in Brookside and the one that has a rabbit, one will be
+%         groomed on Wednesday and the other is from Willow Creek.
+% The two entities must be on different days.
+:- town(D1, brookside), animal(D2, rabbit), D1 = D2.
+% Enforce the ""one is Wednesday and the other is Willow Creek"" condition.
+:- town(D1, brookside), animal(D2, rabbit), D1 != D2,
+   not ( (D1 = wednesday, owner(D2, willow_creek)) ; (D2 = wednesday, owner(D1, willow_creek)) ).
+
+% Clue 4: The one in Elmsworth will be worked on 1 day before the one in Brookside.
+:- town(D1, elmsworth), town(D2, brookside), not order(D1, D2, 1).
+
+% Clue 5: Rainbow Valley will be worked on sometime after the pet owner in Pineville.
+:- owner(D1, rainbow_valley), town(D2, pineville), not sometime_after(D1, D2).
+
+% Clue 6: The business that brings a ferret is either the one Sarah will groom on Tuesday or the business in Milltown.
+:- animal(D, ferret), not (D = tuesday), not town(D, milltown).
+
+% Clue 7: Sunset Lane will be worked on 3 days before Maple Grove.
+:- owner(D1, sunset_lane), owner(D2, maple_grove), not order(D1, D2, 3).
+
+% Clue 8: The business in Cedar Hill will be worked on 1 day before Oakridge.
+:- town(D1, cedar_hill), town(D2, oakridge), not order(D1, D2, 1).
+
+% Clue 9: The one that has a snake will be worked on 2 days before the business in Cedar Hill.
+:- animal(D1, snake), town(D2, cedar_hill), not order(D1, D2, 2).
+
+% Clue 10: The pet owner in Cedar Hill is either Willow Creek or the one who brings a parrot.
+:- town(D_ch, cedar_hill), owner(D_ch, O_ch),
+   not ( (O_ch = willow_creek) ; animal(D_ch, parrot) ).
+
+% Clue 11: The pet owner in Pineville will be worked on 1 day after the business in Elmsworth.
+% (1 day after D1 is D2) is equivalent to (D1 is 1 day before D2)
+:- town(D1, elmsworth), town(D2, pineville), not order(D1, D2, 1).
+
+% Clue 12: Maple Grove doesn't have a snake.
+:- owner(D, maple_grove), animal(D, snake).
+
+% Clue 13: Maple Grove will be worked on 1 day before the pet owner that has a horse.
+:- owner(D1, maple_grove), animal(D2, horse), not order(D1, D2, 1).
+
+% Clue 14: The pet owner that has a parrot is either Sunset Lane or the one in Brookside.
+:- animal(D_parrot, parrot), owner(D_parrot, O_parrot),
+   not ( (O_parrot = sunset_lane) ; (town(D_brookside, brookside), owner(D_brookside, O_parrot)) ).
+
+% Clue 15: The pet owner in Pineville will be worked on 5 days before Sunrise Park.
+:- town(D1, pineville), owner(D2, sunrise_park), not order(D1, D2, 5).
+
+% ============================================================
+% Output
+% ============================================================
+#show owner/2.
+#show town/2.
+#show animal/2."
+bda4801d-ca56-4b17-b855-b772b3a8175e,"```asp
+% ============================================================
+% Galaxy Trek woodworkers grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+prices(3;5;7;9;11;13;15).
+woodworkers(cody;johnnie;larry;martin;richard;trevor;wallace).
+woods(boxwood;chestnut;elm;hickory;oak;pine;spruce).
+characters(guxuc;ineoch;kelher;oseb;poroth;shyclye;yamasawa).
+
+% ---- Assignment: each price gets exactly one woodworker, and vice versa ----
+1 { woodworker(P,W) : woodworkers(W) } 1 :- prices(P).
+1 { woodworker(P,W) : prices(P) } 1 :- woodworkers(W).
+
+% ---- Assignment: each price gets exactly one wood, and vice versa ----
+1 { wood(P,WO) : woods(WO) } 1 :- prices(P).
+1 { wood(P,WO) : prices(P) } 1 :- woods(WO).
+
+% ---- Assignment: each price gets exactly one character, and vice versa ----
+1 { character(P,C) : characters(C) } 1 :- prices(P).
+1 { character(P,C) : prices(P) } 1 :- characters(C).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: The sci-fi fan who works with elm is either the woodworker who charges 13 dollars or Trevor.
+% This means it's NOT the case that (the elm worker does not charge 13 dollars AND the elm worker is not Trevor).
+:- wood(P_elm, elm), woodworker(P_elm, W_elm), P_elm != 13, W_elm != trevor.
+
+% Clue 2: The woodworker who charges 15 dollars doesn't work with chestnut.
+:- wood(15, chestnut).
+
+% Clue 3: The woodworker who sells Yamasawa figurines charges 6 dollars less than Cody.
+% Let P_yamasawa be the price for Yamasawa, P_cody be the price for Cody.
+% P_yamasawa = P_cody - 6
+:- character(P_yamasawa, yamasawa), woodworker(P_cody, cody), P_yamasawa != P_cody - 6.
+
+% Clue 4: The woodworker who sells Ineoch figurines charges 4 dollars more than the carver who sells Shyclye figurines.
+% Let P_ineoch be the price for Ineoch, P_shyclye be the price for Shyclye.
+% P_ineoch = P_shyclye + 4
+:- character(P_ineoch, ineoch), character(P_shyclye, shyclye), P_ineoch != P_shyclye + 4.
+
+% Clue 5: The woodworker who charges 9 dollars is either Cody or Larry.
+:- woodworker(9, W), W != cody, W != larry.
+
+% Clue 6: Of the carver who sells Poroth figurines and the woodworker who charges 9 dollars, one works with hickory and the other is Martin.
+% Let P_poroth be the price for Poroth, W_poroth the woodworker, WO_poroth the wood.
+% Let W_9 be the woodworker for 9 dollars, WO_9 the wood for 9 dollars.
+% (WO_poroth = hickory AND W_9 = martin) OR (W_poroth = martin AND WO_9 = hickory)
+:- character(P_poroth, poroth), wood(P_poroth, WO_poroth), woodworker(P_poroth, W_poroth),
+   woodworker(9, W_9), wood(9, WO_9),
+   not ( (WO_poroth = hickory and W_9 = martin) or (W_poroth = martin and WO_9 = hickory) ).
+
+% Clue 7: The seven woodworkers are Martin, the woodworker who works with spruce, the woodworker who sells Kelher figurines,
+%         the woodworker who sells Ineoch figurines, the carver who works with elm, the sci-fi fan who sells Guxuc figurines
+%         and the carver who works with pine.
+% This implies that these seven descriptions refer to distinct woodworkers (and thus distinct prices).
+% We must ensure no single price P satisfies two of these descriptions.
+
+% Martin (W) vs Spruce (WO)
+:- woodworker(P, martin), wood(P, spruce).
+% Martin (W) vs Kelher (C)
+:- woodworker(P, martin), character(P, kelher).
+% Martin (W) vs Ineoch (C)
+:- woodworker(P, martin), character(P, ineoch).
+% Martin (W) vs Elm (WO)
+:- woodworker(P, martin), wood(P, elm).
+% Martin (W) vs Guxuc (C)
+:- woodworker(P, martin), character(P, guxuc).
+% Martin (W) vs Pine (WO)
+:- woodworker(P, martin), wood(P, pine).
+
+% Spruce (WO) vs Kelher (C)
+:- wood(P, spruce), character(P, kelher).
+% Spruce (WO) vs Ineoch (C)
+:- wood(P, spruce), character(P, ineoch).
+% Spruce (WO) vs Guxuc (C)
+:- wood(P, spruce), character(P, guxuc).
+
+% Kelher (C) vs Elm (WO)
+:- character(P, kelher), wood(P, elm).
+% Kelher (C) vs Pine (WO)
+:- character(P, kelher), wood(P, pine).
+
+% Ineoch (C) vs Elm (WO)
+:- character(P, ineoch), wood(P, elm).
+% Ineoch (C) vs Pine (WO)
+:- character(P, ineoch), wood(P, pine).
+
+% Elm (WO) vs Guxuc (C)
+:- wood(P, elm), character(P, guxuc).
+
+% Guxuc (C) vs Pine (WO)
+:- character(P, guxuc), wood(P, pine).
+
+% Clue 8: The sci-fi fan who works with hickory charges more than the sci-fi fan who sells Ineoch figurines.
+% Let P_hickory be the price for hickory, P_ineoch be the price for Ineoch.
+% P_hickory > P_ineoch
+:- wood(P_hickory, hickory), character(P_ineoch, ineoch), P_hickory <= P_ineoch.
+
+% Clue 9: The carver who works with spruce charges 6 dollars more than the woodworker who sells Ineoch figurines.
+% Let P_spruce be the price for spruce, P_ineoch be the price for Ineoch.
+% P_spruce = P_ineoch + 6
+:- wood(P_spruce, spruce), character(P_ineoch, ineoch), P_spruce != P_ineoch + 6.
+
+% Clue 10: The woodworker who works with oak charges 2 dollars less than the sci-fi fan who sells Guxuc figurines.
+% Let P_oak be the price for oak, P_guxuc be the price for Guxuc.
+% P_oak = P_guxuc - 2
+:- wood(P_oak, oak), character(P_guxuc, guxuc), P_oak != P_guxuc - 2.
+
+% Clue 11: Richard doesn't charge 5 dollars.
+:- woodworker(5, richard).
+
+% Clue 12: The woodworker who sells Ineoch figurines charges less than Johnnie.
+% Let P_ineoch be the price for Ineoch, P_johnnie be the price for Johnnie.
+% P_ineoch < P_johnnie
+:- character(P_ineoch, ineoch), woodworker(P_johnnie, johnnie), P_ineoch >= P_johnnie.
+
+% Clue 13: Larry charges 4 dollars more than the carver who works with pine.
+% Let P_larry be the price for Larry, P_pine be the price for pine.
+% P_larry = P_pine + 4
+:- woodworker(P_larry, larry), wood(P_pine, pine), P_larry != P_pine + 4.
+
+% ============================================================
+% Output
+% ============================================================
+#show woodworker/2.
+#show wood/2.
+#show character/2.
+```"
+207b36a0-5ede-43bd-81ec-96ba8ad02389,"```asp
+% ============================================================
+% Orangutan Sanctuary grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+ages(4;7;10;13;16;19;22).
+orangutans(mairan;nikatrice;ofallo;pemson;quirrel;ramoran;sergeant).
+handlers(aldo;beatrice;calliope;dolly;eva;francine;gracie).
+locations(ambalat;basahan;kendisi;melak;puak;sebulu;tarakan).
+
+% ---- Relations ----
+% order(A1, A2) means A1 is younger than A2 (A1 < A2)
+order(A1, A2) :- ages(A1), ages(A2), A1 < A2.
+
+% diff(A1, A2, D) means A2 - A1 = D
+diff(A1, A2, D) :- ages(A1), ages(A2), D = A2 - A1.
+
+% ---- Assignment: each age gets exactly one orangutan, handler, and location, and vice versa ----
+% Age <-> Orangutan
+1 { age_orangutan(A,O) : orangutans(O) } 1 :- ages(A).
+1 { age_orangutan(A,O) : ages(A) } 1 :- orangutans(O).
+
+% Age <-> Handler
+1 { age_handler(A,H) : handlers(H) } 1 :- ages(A).
+1 { age_handler(A,H) : ages(A) } 1 :- handlers(H).
+
+% Age <-> Location
+1 { age_location(A,L) : locations(L) } 1 :- ages(A).
+1 { age_location(A,L) : ages(A) } 1 :- locations(L).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: Sergeant is 3 years younger than the ape that was found in Ambalat.
+% A_sergeant = A_ambalat - 3  => A_ambalat - A_sergeant = 3
+:- age_orangutan(AS, sergeant), age_location(AL, ambalat), not diff(AS, AL, 3).
+
+% Clue 2: The seven animals are the 4-year-old, the ape Francine works with,
+%         the ape that was found in Basahan, the orangutan Beatrice works with,
+%         the animal that was found in Puak, Pemson and the animal that was found in Sebulu.
+% This means every animal (identified by its age) must match one of these descriptions.
+:- ages(A),
+   not ( A = 4
+       ; age_handler(A, francine)
+       ; age_location(A, basahan)
+       ; age_handler(A, beatrice)
+       ; age_location(A, puak)
+       ; age_orangutan(A, pemson)
+       ; age_location(A, sebulu)
+       ).
+
+% Clue 3: The orangutan that was found in Tarakan is younger than the ape Aldo works with.
+% A_tarakan < A_aldo
+:- age_location(AT, tarakan), age_handler(AA, aldo), not order(AT, AA).
+
+% Clue 4: The ape that was found in Kendisi isn't cared for by Dolly.
+:- age_location(A, kendisi), age_handler(A, dolly).
+
+% Clue 5: Ramoran, the orangutan that was found in Basahan, and the ape Dolly works with
+%         are three different animals.
+% This means their corresponding ages must be distinct.
+:- age_orangutan(A, ramoran), age_location(A, basahan).
+:- age_orangutan(A, ramoran), age_handler(A, dolly).
+:- age_location(A, basahan), age_handler(A, dolly).
+
+% Clue 6: Pemson is either the 19-year-old or the ape that was found in Tarakan.
+:- age_orangutan(AP, pemson), not (AP = 19 ; age_location(AP, tarakan)).
+
+% Clue 7: Of the ape Dolly works with and the animal that was found in Sebulu,
+%         one is Quirrel and the other is 7 years old.
+% First, they must be distinct animals (ages).
+:- age_handler(A, dolly), age_location(A, sebulu).
+% Second, the XOR condition:
+:- age_handler(AD, dolly), age_location(AS, sebulu), AD != AS,
+   not ( (age_orangutan(AD, quirrel) and AS = 7)
+         or
+         (AD = 7 and age_orangutan(AS, quirrel))
+       ).
+
+% Clue 8: The 13-year-old is either the animal Francine works with or the ape that was found in Puak.
+:- not age_handler(13, francine), not age_location(13, puak).
+
+% Clue 9: Sergeant is 13 years old.
+:- age_orangutan(A, sergeant), A != 13.
+
+% Clue 10: The animal Eva works with is 3 years older than Ofallo.
+% A_eva = A_ofallo + 3 => A_eva - A_ofallo = 3
+:- age_handler(AE, eva), age_orangutan(AO, ofallo), not diff(AO, AE, 3).
+
+% Clue 11: Nikatrice is 3 years younger than the animal Beatrice works with.
+% A_nikatrice = A_beatrice - 3 => A_beatrice - A_nikatrice = 3
+:- age_orangutan(AN, nikatrice), age_handler(AB, beatrice), not diff(AN, AB, 3).
+
+% Clue 12: The ape that was found in Sebulu is younger than Pemson.
+% A_sebulu < A_pemson
+:- age_location(AS, sebulu), age_orangutan(AP, pemson), not order(AS, AP).
+
+% Clue 13: Of Ramoran and the animal that was found in Ambalat,
+%          one is cared for by Francine and the other is 19 years old.
+% First, they must be distinct animals (ages).
+:- age_orangutan(A, ramoran), age_location(A, ambalat).
+% Second, the XOR condition:
+:- age_orangutan(AR, ramoran), age_location(AA, ambalat), AR != AA,
+   not ( (age_handler(AR, francine) and AA = 19)
+         or
+         (AR = 19 and age_handler(AA, francine))
+       ).
+
+% Clue 14: The 22-year-old is either the orangutan Dolly works with or the orangutan Gracie works with.
+:- not age_handler(22, dolly), not age_handler(22, gracie).
+
+% ============================================================
+% Output
+% ============================================================
+#show age_orangutan/2.
+#show age_handler/2.
+#show age_location/2.
+```"
+54590e58-3a15-4987-9e70-0d652f711714,"% ============================================================
+% Cafe Verve logic-grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+su(500;1000;1500;2000;2500;3000;3500).
+baristas(clara;elise;james;marcus;nathan;tyler).
+% The puzzle description lists ""Caramel Crisp"" twice in the drinks list.
+% Assuming there are 6 unique drinks as implied by the number of baristas and the nature of logic grids.
+drinks(caramel_crisp;cinnamon_glow;mocha_mist;sweet_harmony;vanilla_dream;caramel_drizzle).
+sweeteners(agave_syrup;maple_syrup;coconut_nectar;raw_sugar;brown_rice_syrup;honey;palm_sugar).
+
+% ---- Helper predicates for sweetness difference ----
+% is_sweeter(S1, S2, Diff) means S1 is Diff units sweeter than S2 (S1 - S2 = Diff)
+is_sweeter(S1, S2, D) :- su(S1), su(S2), D = S1 - S2, D > 0.
+
+% ---- Assignment: each drink is associated with exactly one barista, one SU, and one sweetener ----
+
+% Each drink has exactly one barista, and each barista has exactly one drink (bijection for 6 items)
+1 { assign_barista(D,B) : baristas(B) } 1 :- drinks(D).
+1 { assign_barista(D,B) : drinks(D) } 1 :- baristas(B).
+
+% Each drink has exactly one SU. Since there are more SU values than drinks, each SU can be assigned to at most one drink.
+1 { assign_su(D,S) : su(S) } 1 :- drinks(D).
+:- assign_su(D1,S), assign_su(D2,S), D1 != D2.
+
+% Each drink has exactly one sweetener. Since there are more sweeteners than drinks, each sweetener can be assigned to at most one drink.
+1 { assign_sweetener(D,W) : sweeteners(W) } 1 :- drinks(D).
+:- assign_sweetener(D1,W), assign_sweetener(D2,W), D1 != D2.
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: ""Caramel Crisp"", Clara's drink, and the drink that uses the agave syrup are three different products.
+%   - Caramel Crisp is not Clara's drink
+:- assign_barista(caramel_crisp, clara).
+%   - Caramel Crisp is not the drink that uses agave syrup
+:- assign_sweetener(caramel_crisp, agave_syrup).
+%   - Clara's drink is not the drink that uses agave syrup
+:- assign_barista(D, clara), assign_sweetener(D, agave_syrup).
+
+% Clue 2: Nathan's product is 500 SU sweeter than ""Mocha Mist"".
+:- assign_barista(D_nathan, nathan), assign_su(D_nathan, S1),
+   assign_su(mocha_mist, S2),
+   not is_sweeter(S1, S2, 500).
+
+% Clue 3: Elise's product is either the sweetened drink rated at 2,000 SU or the one rated at 3,000 SU.
+:- assign_barista(D_elise, elise), assign_su(D_elise, S), S != 2000, S != 3000.
+
+% Clue 4: ""Vanilla Dream"" is 500 SU sweeter than Elise's sweetened drink.
+:- assign_su(vanilla_dream, S1),
+   assign_barista(D_elise, elise), assign_su(D_elise, S2),
+   not is_sweeter(S1, S2, 500).
+
+% Clue 5: Of the drink rated at 2,000 SU and the one that uses the maple syrup, one is Clara's and the other is ""Cinnamon Glow"".
+% Define helper facts for the drinks involved
+drink_at_2000(D) :- assign_su(D, 2000).
+drink_with_maple(D) :- assign_sweetener(D, maple_syrup).
+clara_s_drink(D) :- assign_barista(D, clara).
+% Enforce the condition: (D_2000 is Clara's AND D_maple is Cinnamon Glow) OR (D_2000 is Cinnamon Glow AND D_maple is Clara's)
+:- drink_at_2000(D1), drink_with_maple(D2), clara_s_drink(D3),
+   not ( (D1 = D3, D2 = cinnamon_glow) ; (D1 = cinnamon_glow, D2 = D3) ).
+
+% Clue 6: Tyler's drink isn't rated at exactly 1,500 SU.
+:- assign_barista(D_tyler, tyler), assign_su(D_tyler, 1500).
+
+% Clue 7: Clara's product is either the product that uses the coconut nectar or the sweetened drink rated at 1,000 SU.
+:- assign_barista(D_clara, clara),
+   not assign_sweetener(D_clara, coconut_nectar),
+   not assign_su(D_clara, 1000).
+
+% Clue 8: Of the drink rated at 1,000 SU and the one rated at 3,000 SU, one uses the honey and the other is ""Sweet Harmony"".
+% Define helper facts for the drinks involved
+drink_at_1000(D) :- assign_su(D, 1000).
+drink_at_3000(D) :- assign_su(D, 3000).
+drink_with_honey(D) :- assign_sweetener(D, honey).
+% Enforce the condition: (D_1000 uses honey AND D_3000 is Sweet Harmony) OR (D_1000 is Sweet Harmony AND D_3000 uses honey)
+:- drink_at_1000(D1), drink_at_3000(D2), drink_with_honey(D3),
+   not ( (D1 = D3, D2 = sweet_harmony) ; (D1 = sweet_harmony, D2 = D3) ).
+
+% Clue 9: Marcus's product is either ""Sweet Harmony"" or the drink that uses the brown rice syrup.
+:- assign_barista(D_marcus, marcus),
+   D_marcus != sweet_harmony,
+   not assign_sweetener(D_marcus, brown_rice_syrup).
+
+% Clue 10: The drink that uses the raw sugar is 1,000 SU sweeter than ""Sweet Harmony"".
+:- assign_sweetener(D_raw_sugar, raw_sugar), assign_su(D_raw_sugar, S1),
+   assign_su(sweet_harmony, S2),
+   not is_sweeter(S1, S2, 1000).
+
+% Clue 11: ""Caramel Drizzle"", Clara's drink, and the product rated at 1,000 SU are three different products.
+%   - Caramel Drizzle is not Clara's drink
+:- assign_barista(caramel_drizzle, clara).
+%   - Caramel Drizzle is not the 1000 SU drink
+:- assign_su(caramel_drizzle, 1000).
+%   - Clara's drink is not the 1000 SU drink
+:- assign_barista(D, clara), assign_su(D, 1000).
+
+% Clue 12: James's drink is 2,000 SU sweeter than the drink that uses the palm sugar.
+:- assign_barista(D_james, james), assign_su(D_james, S1),
+   assign_sweetener(D_palm_sugar, palm_sugar), assign_su(D_palm_sugar, S2),
+   not is_sweeter(S1, S2, 2000).
+
+% Clue 13: Of ""Mocha Mist"" and the drink that uses the agave syrup, one is rated at 2,000 Sweetness Units and the other is Marcus's.
+% Define helper facts for the drinks involved
+drink_with_agave(D) :- assign_sweetener(D, agave_syrup).
+drink_at_2000_su(D) :- assign_su(D, 2000).
+marcus_s_drink(D) :- assign_barista(D, marcus).
+% Enforce the condition: (Mocha Mist is 2000 SU AND D_agave is Marcus's) OR (Mocha Mist is Marcus's AND D_agave is 2000 SU)
+:- drink_with_agave(D1), drink_at_2000_su(D2), marcus_s_drink(D3),
+   not ( (mocha_mist = D2, D1 = D3) ; (mocha_mist = D3, D1 = D2) ).
+
+% ============================================================
+% Output
+% ============================================================
+#show assign_barista/2.
+#show assign_su/2.
+#show assign_sweetener/2."
+0cf092cd-9c0b-4b19-a0f4-8364705cff31,"```asp
+% ============================================================
+% Thaddeus's Glass Lamps grid puzzle - ASP (clingo) encoding
+% ============================================================
+
+% ---- Domains ----
+heights(8;10;12;14;16;18;20).
+shades(bell;cone;cylinder;dome;flare;globe;tulip).
+colors(amber;blue;crimson;emerald;purple;ruby;yellow).
+clients(capt_holt;dr_ashton;miss_graves;mr_beckett;mrs_farley;prof_ives;rev_cole).
+
+% ""shorter/taller"" relations over heights
+is_shorter(H1, H2) :- heights(H1), heights(H2), H1 < H2.
+is_taller(H1, H2) :- heights(H1), heights(H2), H1 > H2.
+
+diff(H1, H2, D) :- heights(H1), heights(H2), D = H2 - H1, D > 0.
+diff(H1, H2, D) :- heights(H1), heights(H2), D = H1 - H2, D > 0.
+
+% ---- Assignment: each height gets exactly one shade, and vice versa ----
+1 { shade(H,S) : shades(S) } 1 :- heights(H).
+1 { shade(H,S) : heights(H) } 1 :- shades(S).
+
+% ---- Assignment: each height gets exactly one color, and vice versa ----
+1 { color(H,C) : colors(C) } 1 :- heights(H).
+1 { color(H,C) : heights(H) } 1 :- colors(C).
+
+% ---- Assignment: each height gets exactly one client, and vice versa ----
+1 { client(H,CL) : clients(CL) } 1 :- heights(H).
+1 { client(H,CL) : heights(H) } 1 :- clients(CL).
+
+% ============================================================
+% Clues
+% ============================================================
+
+% Clue 1: The bell lamp is 2 inches shorter than the amber lamp.
+:- shade(H_bell, bell), color(H_amber, amber), not diff(H_bell, H_amber, 2).
+:- shade(H_bell, bell), color(H_amber, amber), not is_shorter(H_bell, H_amber).
+
+% Clue 2: The lamp standing 18 inches tall is blue.
+:- color(18, C), C != blue.
+
+% Clue 3: The dome lamp is somewhat shorter than the crimson lamp.
+:- shade(H_dome, dome), color(H_crimson, crimson), not is_shorter(H_dome, H_crimson).
+
+% Clue 4: The lamp standing 16 inches tall was either the crimson lamp or the emerald lamp.
+:- color(16, C), C != crimson, C != emerald.
+
+% Clue 5: The blue lamp is 10 inches taller than the ruby lamp.
+:- color(H_blue, blue), color(H_ruby, ruby), not diff(H_blue, H_ruby, 10).
+:- color(H_blue, blue), color(H_ruby, ruby), not is_taller(H_blue, H_ruby).
+
+% Clue 6: The seven lamps were the amber lamp, the lamp standing 12 inches tall,
+%         the lamp ordered by Miss Graves, the lamp ordered by Rev. Cole,
+%         the lamp ordered by Prof. Ives, the tulip lamp and the lamp ordered by Capt. Holt.
+% This clue implicitly defines the set of all lamps and ensures they are distinct.
+% It's mostly for verification of the domain sizes and distinctness, which is
+% already handled by the one-to-one assignments.
+% The only explicit constraint here is that the lamp at 12 inches is distinct from the others.
+% This is already covered by the one-to-one mapping.
+% No explicit constraints needed beyond the one-to-one assignments.
+
+% Clue 7: The flare lamp doesn't belong to Capt. Holt.
+:- shade(H, flare), client(H, capt_holt).
+
+% Clue 8: The dome lamp is 2 inches taller than the ruby lamp.
+:- shade(H_dome, dome), color(H_ruby, ruby), not diff(H_dome, H_ruby, 2).
+:- shade(H_dome, dome), color(H_ruby, ruby), not is_taller(H_dome, H_ruby).
+
+% Clue 9: The tulip lamp is 10 inches taller than the lamp ordered by Rev. Cole.
+:- shade(H_tulip, tulip), client(H_rev_cole, rev_cole), not diff(H_tulip, H_rev_cole, 10).
+:- shade(H_tulip, tulip), client(H_rev_cole, rev_cole), not is_taller(H_tulip, H_rev_cole).
+
+% Clue 10: The globe lamp is 4 inches shorter than the emerald lamp.
+:- shade(H_globe, globe), color(H_emerald, emerald), not diff(H_globe, H_emerald, 4).
+:- shade(H_globe, globe), color(H_emerald, emerald), not is_shorter(H_globe, H_emerald).
+
+% Clue 11: The cylinder lamp doesn't belong to Miss Graves.
+:- shade(H, cylinder), client(H, miss_graves).
+
+% Clue 12: The dome lamp is 6 inches shorter than the lamp ordered by Miss Graves.
+:- shade(H_dome, dome), client(H_miss_graves, miss_graves), not diff(H_dome, H_miss_graves, 6).
+:- shade(H_dome, dome), client(H_miss_graves, miss_graves), not is_shorter(H_dome, H_miss_graves).
+
+% Clue 13: Of the yellow lamp and the lamp standing 20 inches tall,
+%          one belongs to Mrs. Farley and the other has the flare shade.
+% Case 1: yellow lamp is Mrs. Farley's, 20-inch lamp has flare shade
+:- color(H_yellow, yellow), client(H_yellow, mrs_farley),
+   shade(20, flare),
+   H_yellow != 20. % Ensure they are distinct lamps
+% Case 2: yellow lamp has flare shade, 20-inch lamp is Mrs. Farley's
+:- color(H_yellow, yellow), shade(H_yellow, flare),
+   client(20, mrs_farley),
+   H_yellow != 20. % Ensure they are distinct lamps
+% If neither case is true, then this combination is invalid.
+:- not ( (color(H_yellow, yellow), client(H_yellow, mrs_farley), shade(20, flare), H_yellow != 20)
+       ; (color(H_yellow, yellow), shade(H_yellow, flare), client(20, mrs_farley), H_yellow != 20)
+       ).
+
+% Clue 14: The dome lamp was either the crimson lamp or the lamp ordered by Dr. Ashton.
+:- shade(H_dome, dome), color(H_dome, C), C != crimson,
+   shade(H_dome, dome), client(H_dome, CL), CL != dr_ashton.
+% This means if it's not crimson, it must be Dr. Ashton's.
+% And if it's not Dr. Ashton's, it must be crimson.
+:- shade(H_dome, dome), color(H_dome, C), client(H_dome, CL),
+   C != crimson, CL != dr_ashton.
+
+% Clue 15: The lamp standing 14 inches tall isn't purple.
+:- color(14, purple).
+
+% ============================================================
+% Output
+% ============================================================
+#show shade/2.
+#show color/2.
+#show client/2.
+```"

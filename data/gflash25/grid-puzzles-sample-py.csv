@@ -1,0 +1,2831 @@
+Key,Code,Solution
+2b616fcd-8af9-435b-9ca3-70dfe176bd7a,"```python
+from dataclasses import dataclass
+
+PRICES = {
+    ""$45"": 45,
+    ""$60"": 60,
+    ""$75"": 75,
+    ""$90"": 90,
+}
+
+@dataclass
+class Price:
+    value: int
+    winner: str = None
+    spider: str = None
+
+@dataclass
+class Winner:
+    name: str
+    price: int = None
+    spider: str = None
+
+@dataclass
+class Spider:
+    name: str
+    price: int = None
+    winner: str = None
+
+def clue0(Prices, Winners, Spiders):
+    """"""Freddie's purchase cost 15 dollars more than the cart spider.""""""
+    freddie_price = Winners[""Freddie""].price
+    cart_spider_price = Spiders[""cart spider""].price
+    return freddie_price == cart_spider_price + 15
+
+def clue1(Prices, Winners, Spiders):
+    """"""Of the darkback and the cart spider, one sold for $60 and the other was won by Vicky.""""""
+    darkback_price = Spiders[""darkback""].price
+    darkback_winner = Spiders[""darkback""].winner
+    cart_spider_price = Spiders[""cart spider""].price
+    cart_spider_winner = Spiders[""cart spider""].winner
+
+    condition1 = (darkback_price == PRICES[""$60""] and cart_spider_winner == ""Vicky"")
+    condition2 = (cart_spider_price == PRICES[""$60""] and darkback_winner == ""Vicky"")
+
+    return condition1 or condition2
+
+def clue2(Prices, Winners, Spiders):
+    """"""Of the spider that sold for $75 and Shelley's purchase, one was the archaenido and the other was the cart spider.""""""
+    spider_75_name = Prices[PRICES[""$75""]].spider
+    shelley_spider_name = Winners[""Shelley""].spider
+
+    condition1 = (spider_75_name == ""archaenido"" and shelley_spider_name == ""cart spider"")
+    condition2 = (spider_75_name == ""cart spider"" and shelley_spider_name == ""archaenido"")
+
+    return condition1 or condition2
+
+def clue3(Prices, Winners, Spiders):
+    """"""The arachnid that sold for $90 was either Shelley's purchase or the darkback.""""""
+    spider_90_name = Prices[PRICES[""$90""]].spider
+    shelley_spider_name = Winners[""Shelley""].spider
+
+    return spider_90_name == shelley_spider_name or spider_90_name == ""darkback""
+
+def verify(grid):
+    total_clues = 4
+    
+    # Defensive handling for malformed input
+    if not isinstance(grid, list) or not all(isinstance(row, list) and len(row) == 3 for row in grid):
+        return (0.0, list(range(total_clues)))
+    
+    try:
+        # Parse grid into useful maps
+        prices_map = {}
+        winners_map = {}
+        spiders_map = {}
+
+        for row in grid:
+            price_str, winner_name, spider_name = row
+            price_val = PRICES.get(price_str)
+
+            if price_val is None:
+                return (0.0, list(range(total_clues))) # Missing required price value
+
+            # Populate maps
+            prices_map[price_val] = Price(value=price_val, winner=winner_name, spider=spider_name)
+            winners_map[winner_name] = Winner(name=winner_name, price=price_val, spider=spider_name)
+            spiders_map[spider_name] = Spider(name=spider_name, price=price_val, winner=winner_name)
+        
+        # Check for expected keys in maps (e.g., all winners, spiders, prices are present)
+        expected_winners = {""Charles"", ""Freddie"", ""Shelley"", ""Vicky""}
+        expected_spiders = {""archaenido"", ""cart spider"", ""darkback"", ""whip spider""}
+        expected_prices_values = set(PRICES.values())
+
+        if not (expected_winners == set(winners_map.keys()) and
+                expected_spiders == set(spiders_map.keys()) and
+                expected_prices_values == set(prices_map.keys())):
+            return (0.0, list(range(total_clues)))
+
+    except (KeyError, AttributeError, TypeError):
+        return (0.0, list(range(total_clues)))
+
+    clue_functions = [
+        clue0,
+        clue1,
+        clue2,
+        clue3,
+    ]
+
+    clue_results = []
+    for i, clue_func in enumerate(clue_functions):
+        try:
+            clue_results.append(clue_func(prices_map, winners_map, spiders_map))
+        except (KeyError, AttributeError):
+            # If a clue function fails due to missing data (e.g., a key not found),
+            # it means the grid is malformed or incomplete for that clue.
+            # Treat as failed, but the initial parsing should catch most of these.
+            clue_results.append(False)
+
+    failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
+    
+    satisfied_clues = sum(1 for ok in clue_results if ok)
+    reward = float(satisfied_clues) / total_clues
+    
+    return reward, failed_clues
+
+```","$45 | Charles | whip spider
+$60 | Shelley | cart spider
+$75 | Freddie | archaenido 
+$90 | Vicky   | darkback   "
+ff2cda15-4085-4a35-a869-82aac3565713,"from dataclasses import dataclass
+
+# Constants for categories and their valid values
+PRICES_MAP = {
+    ""$300"": 300,
+    ""$350"": 350,
+    ""$400"": 400,
+    ""$475"": 475,
+}
+ALL_PRICES_INT = set(PRICES_MAP.values())
+ALL_BRANDS = {""Bulova"", ""Citizen"", ""Hamilton"", ""Seiko""}
+ALL_FACE_COLORS = {""blue"", ""green"", ""red"", ""silver""}
+TOTAL_CLUES = 5
+
+@dataclass
+class Watch:
+    price: int
+    brand: str
+    face_color: str
+
+def clue0(Watches_by_Brand, Watches_by_FaceColor):
+    # Clue 1: The Tissot watch was either the timepiece with a silver face or the one with a blue dial.
+    # ""Tissot"" is not listed in the puzzle's allowed brands.
+    # Therefore, a ""Tissot watch"" cannot exist in a valid solution for this puzzle.
+    # This clue cannot be satisfied.
+    tissot_watch = Watches_by_Brand.get(""Tissot"")
+    if tissot_watch is None:
+        return False # Tissot watch does not exist in the puzzle's defined brands.
+    
+    # This part would only be reached if ""Tissot"" was an allowed brand.
+    return tissot_watch.face_color == ""silver"" or tissot_watch.face_color == ""blue""
+
+def clue1(Watches_by_Brand, Watches_by_FaceColor):
+    # Clue 2: The watch with a blue dial sold for 75 dollars less than the Bulova model.
+    blue_watch = Watches_by_FaceColor.get(""blue"")
+    bulova_watch = Watches_by_Brand.get(""Bulova"")
+    if blue_watch is None or bulova_watch is None:
+        return False # Should not happen with valid input, but defensive.
+    return blue_watch.price == bulova_watch.price - 75
+
+def clue2(Watches_by_Price):
+    # Clue 3: Of the $400 watch and the $350 piece, one is a Hamilton model and the other has a green face.
+    watch_400 = Watches_by_Price.get(400)
+    watch_350 = Watches_by_Price.get(350)
+    if watch_400 is None or watch_350 is None:
+        return False # Should not happen with valid input, but defensive.
+    
+    cond1 = (watch_400.brand == ""Hamilton"" and watch_350.face_color == ""green"")
+    cond2 = (watch_350.brand == ""Hamilton"" and watch_400.face_color == ""green"")
+    return cond1 or cond2
+
+def clue3(Watches_by_Brand):
+    # Clue 4: The Seiko model sold for somewhat more than the Citizen model.
+    seiko_watch = Watches_by_Brand.get(""Seiko"")
+    citizen_watch = Watches_by_Brand.get(""Citizen"")
+    if seiko_watch is None or citizen_watch is None:
+        return False # Should not happen with valid input, but defensive.
+    return seiko_watch.price > citizen_watch.price
+
+def clue4(Watches_by_FaceColor):
+    # Clue 5: The watch with a silver face sold for 125 dollars more than the timepiece with a green face.
+    silver_watch = Watches_by_FaceColor.get(""silver"")
+    green_watch = Watches_by_FaceColor.get(""green"")
+    if silver_watch is None or green_watch is None:
+        return False # Should not happen with valid input, but defensive.
+    return silver_watch.price == green_watch.price + 125
+
+def verify(grid):
+    # --- Input Validation and Parsing ---
+    if not isinstance(grid, list) or len(grid) != len(ALL_PRICES_INT):
+        return (0.0, list(range(TOTAL_CLUES)))
+
+    watches_data = []
+    seen_prices = set()
+    seen_brands = set()
+    seen_face_colors = set()
+
+    for row_idx, row in enumerate(grid):
+        if not isinstance(row, list) or len(row) != 3:
+            return (0.0, list(range(TOTAL_CLUES)))
+
+        price_str, brand, face_color = row
+
+        # Validate and parse price
+        if price_str not in PRICES_MAP:
+            return (0.0, list(range(TOTAL_CLUES)))
+        price_int = PRICES_MAP[price_str]
+        if price_int in seen_prices:
+            return (0.0, list(range(TOTAL_CLUES))) # Duplicate price in grid
+        seen_prices.add(price_int)
+
+        # Validate brand
+        if brand not in ALL_BRANDS:
+            return (0.0, list(range(TOTAL_CLUES)))
+        if brand in seen_brands:
+            return (0.0, list(range(TOTAL_CLUES))) # Duplicate brand in grid
+        seen_brands.add(brand)
+
+        # Validate face_color
+        if face_color not in ALL_FACE_COLORS:
+            return (0.0, list(range(TOTAL_CLUES)))
+        if face_color in seen_face_colors:
+            return (0.0, list(range(TOTAL_CLUES))) # Duplicate face_color in grid
+        seen_face_colors.add(face_color)
+
+        watches_data.append(Watch(price=price_int, brand=brand, face_color=face_color))
+
+    # Ensure all categories are fully represented and unique
+    if not (seen_prices == ALL_PRICES_INT and
+            seen_brands == ALL_BRANDS and
+            seen_face_colors == ALL_FACE_COLORS):
+        return (0.0, list(range(TOTAL_CLUES)))
+
+    # Create lookup maps for easy access in clue functions
+    Watches_by_Price = {w.price: w for w in watches_data}
+    Watches_by_Brand = {w.brand: w for w in watches_data}
+    Watches_by_FaceColor = {w.face_color: w for w in watches_data}
+
+    # --- Clue Evaluation ---
+    clue_results = [
+        clue0(Watches_by_Brand, Watches_by_FaceColor),
+        clue1(Watches_by_Brand, Watches_by_FaceColor),
+        clue2(Watches_by_Price),
+        clue3(Watches_by_Brand),
+        clue4(Watches_by_FaceColor),
+    ]
+
+    failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
+    
+    # Calculate reward
+    satisfied_clues = sum(clue_results)
+    reward = float(satisfied_clues) / TOTAL_CLUES
+    
+    return reward, failed_clues",Incorrect verification code
+25f9a633-8212-4985-9189-d7bc539d1621,"```python
+from dataclasses import dataclass
+
+# Mappings for categories to allow integer comparisons or consistent access
+BOOKS_ORDER = {
+    ""250"": 0,
+    ""300"": 1,
+    ""350"": 2,
+    ""400"": 3,
+}
+
+# Define dataclasses for each entity type to store their associated properties
+@dataclass
+class Bookmobile:
+    name: str
+    books: str = None
+    driver: str = None
+
+@dataclass
+class Driver:
+    name: str
+    books: str = None
+    bookmobile: str = None
+
+@dataclass
+class BookCount:
+    count: str
+    bookmobile: str = None
+    driver: str = None
+
+# Clue functions
+def clue0(Bookmobiles, Drivers, BookCounts):
+    # ""Tiny Tomes"" has 350 books.
+    return Bookmobiles[""Tiny Tomes""].books == ""350""
+
+def clue1(Bookmobiles, Drivers, BookCounts):
+    # The mobile library with 300 books is driven by Leroy.
+    return BookCounts[""300""].driver == ""Leroy""
+
+def clue2(Bookmobiles, Drivers, BookCounts):
+    # The four vehicles are the bookmobile with 400 books, the vehicle Gene drives, ""Explore More"" and ""Tiny Tomes"".
+    # This clue implies these are the four distinct bookmobiles.
+    # We need to find the bookmobile associated with 400 books and the one Gene drives.
+    bookmobile_400_books = BookCounts[""400""].bookmobile
+    bookmobile_gene_drives = Drivers[""Gene""].bookmobile
+
+    values = {
+        bookmobile_400_books,
+        bookmobile_gene_drives,
+        ""Explore More"",
+        ""Tiny Tomes"",
+    }
+    # Check if all four are distinct and present.
+    # Since there are exactly four bookmobiles in total, if these four names are distinct,
+    # they must be the four bookmobiles.
+    return len(values) == 4
+
+def clue3(Bookmobiles, Drivers, BookCounts):
+    # The mobile library Patsy drives is either the bookmobile with 300 books or ""Books-4-U"".
+    patsy_bookmobile = Drivers[""Patsy""].bookmobile
+    bookmobile_300_books = BookCounts[""300""].bookmobile
+    
+    return patsy_bookmobile == bookmobile_300_books or patsy_bookmobile == ""Books-4-U""
+
+def verify(grid):
+    # Expected categories and their order in a row
+    # Example row: ['250', 'Books4U', 'Antonio']
+    # Index 0: Books (count)
+    # Index 1: Bookmobiles (name)
+    # Index 2: Drivers (name)
+
+    # --- Data Parsing and Validation ---
+    
+    # Check for valid grid structure and minimum number of rows
+    if not isinstance(grid, list) or not grid:
+        return (0.0, list(range(4))) # 4 clues in total
+
+    # Initialize dictionaries to store parsed data
+    Bookmobiles = {}
+    Drivers = {}
+    BookCounts = {}
+
+    # Collect all possible names for validation
+    all_bookmobile_names = {""Books-4-U"", ""Dream Machine"", ""Explore More"", ""Tiny Tomes""}
+    all_driver_names = {""Antonio"", ""Gene"", ""Leroy"", ""Patsy""}
+    all_book_counts = {""250"", ""300"", ""350"", ""400""}
+
+    # Use sets to track used items to ensure uniqueness
+    used_bookmobiles = set()
+    used_drivers = set()
+    used_book_counts = set()
+
+    try:
+        for row in grid:
+            if not isinstance(row, list) or len(row) != 3:
+                return (0.0, list(range(4))) # Malformed row
+
+            books_val, bookmobile_name, driver_name = row[0], row[1], row[2]
+
+            # Basic type and value validation
+            if not (isinstance(books_val, str) and books_val in all_book_counts and
+                    isinstance(bookmobile_name, str) and bookmobile_name in all_bookmobile_names and
+                    isinstance(driver_name, str) and driver_name in all_driver_names):
+                return (0.0, list(range(4)))
+
+            # Check for uniqueness within the grid
+            if bookmobile_name in used_bookmobiles or \
+               driver_name in used_drivers or \
+               books_val in used_book_counts:
+                return (0.0, list(range(4))) # Duplicate entry found
+
+            used_bookmobiles.add(bookmobile_name)
+            used_drivers.add(driver_name)
+            used_book_counts.add(books_val)
+
+            # Populate the dictionaries
+            Bookmobiles[bookmobile_name] = Bookmobile(name=bookmobile_name, books=books_val, driver=driver_name)
+            Drivers[driver_name] = Driver(name=driver_name, books=books_val, bookmobile=bookmobile_name)
+            BookCounts[books_val] = BookCount(count=books_val, bookmobile=bookmobile_name, driver=driver_name)
+
+        # Ensure all entities are present (4 of each)
+        if not (len(Bookmobiles) == 4 and len(Drivers) == 4 and len(BookCounts) == 4):
+            return (0.0, list(range(4)))
+
+    except Exception:
+        # Catch any other unexpected errors during parsing
+        return (0.0, list(range(4)))
+
+    # --- Clue Verification ---
+    clue_results = [
+        clue0(Bookmobiles, Drivers, BookCounts),
+        clue1(Bookmobiles, Drivers, BookCounts),
+        clue2(Bookmobiles, Drivers, BookCounts),
+        clue3(Bookmobiles, Drivers, BookCounts),
+    ]
+
+    total_clues = len(clue_results)
+    satisfied_clues = sum(1 for result in clue_results if result)
+    failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
+
+    reward = float(satisfied_clues) / total_clues if total_clues > 0 else 0.0
+    return reward, failed_clues
+
+```",Incorrect verification code
+e865fdab-32ec-4296-a266-34fbc10ff8e0,"from dataclasses import dataclass
+
+# Mappings for consistent ordering and easy access
+HEIGHTS = {
+    ""8 inches"": 8,
+    ""12 inches"": 12,
+    ""16 inches"": 16,
+    ""20 inches"": 20,
+}
+
+# Data classes to hold attributes for each entity type
+@dataclass
+class Height:
+    value: int
+    wood_type: str = None
+    subject: str = None
+
+@dataclass
+class WoodType:
+    name: str
+    height: int = None
+    subject: str = None
+
+@dataclass
+class Subject:
+    name: str
+    height: int = None
+    wood_type: str = None
+
+# Clue functions
+def clue0(Heights_map, WoodTypes_map, Subjects_map):
+    # The four carvings were the wolf piece, the 12 inch carving, the 8 inch piece and the 20 inch sculpture.
+    # This clue primarily defines the categories and implies that these are the distinct items.
+    # It's implicitly checked by the grid structure itself (4 distinct items).
+    # However, we can check if the mentioned subjects/heights are present.
+    # The puzzle implies these are the *only* four carvings, which is handled by the grid size.
+    # We can check if 'wolf' is a subject, and if 8, 12, 20 inches are heights.
+    # This clue is often a setup clue, and its direct verification might be redundant if the grid is well-formed.
+    # For robustness, we can check if these specific items exist in the solution.
+    
+    # Check if 'wolf' is one of the subjects
+    wolf_present = ""wolf"" in Subjects_map
+
+    # Check if 8, 12, 20 inches are among the heights
+    height_8_present = 8 in Heights_map
+    height_12_present = 12 in Heights_map
+    height_20_present = 20 in Heights_map
+
+    # The clue states ""the four carvings were..."", implying these are the specific items.
+    # If the grid has 4 entries, and these specific items are mapped, the clue is satisfied.
+    # The ""wolf piece"" refers to a carving whose subject is a wolf.
+    # The ""12 inch carving"" refers to a carving whose height is 12 inches.
+    # The ""8 inch piece"" refers to a carving whose height is 8 inches.
+    # The ""20 inch sculpture"" refers to a carving whose height is 20 inches.
+    
+    # This clue is more about defining the set of items. If the parsing is successful,
+    # and the grid contains these elements, it's satisfied.
+    # A more direct check would be to ensure that the set of all subjects includes 'wolf'
+    # and the set of all heights includes 8, 12, 20.
+    
+    # Given the structure, we assume the grid contains 4 distinct items.
+    # The clue is satisfied if 'wolf' is a subject and 8, 12, 20 are heights.
+    # The problem statement implies the categories are fixed, so this is more a check
+    # that the solution uses these specific items.
+    
+    # Let's check if the specific items mentioned are present in the solution.
+    # This is a weak check, as the grid structure already implies this.
+    # A stronger interpretation might be to ensure that the *set* of heights and subjects
+    # in the solution matches the items mentioned.
+    
+    # The clue is usually satisfied if the puzzle is set up correctly.
+    # For a verifier, we can check if the specific items mentioned are indeed part of the solution.
+    
+    # Check if 'wolf' is one of the subjects in the solution
+    wolf_is_a_subject = ""wolf"" in Subjects_map
+
+    # Check if 12 inches, 8 inches, and 20 inches are among the heights in the solution
+    height_12_is_a_height = 12 in Heights_map
+    height_8_is_a_height = 8 in Heights_map
+    height_20_is_a_height = 20 in Heights_map
+
+    return wolf_is_a_subject and height_12_is_a_height and height_8_is_a_height and height_20_is_a_height
+
+
+def clue1(Heights_map, WoodTypes_map, Subjects_map):
+    # The 20 inch piece is an eagle.
+    return Heights_map[20].subject == ""eagle""
+
+def clue2(Heights_map, WoodTypes_map, Subjects_map):
+    # The cherry piece is 8 inches taller than the mahogany sculpture.
+    cherry_height = WoodTypes_map[""cherry""].height
+    mahogany_height = WoodTypes_map[""mahogany""].height
+    return cherry_height == mahogany_height + 8
+
+def clue3(Heights_map, WoodTypes_map, Subjects_map):
+    # The butternut piece is 4 inches shorter than the deer carving.
+    butternut_height = WoodTypes_map[""butternut""].height
+    deer_height = Subjects_map[""deer""].height
+    return butternut_height == deer_height - 4
+
+def verify(grid):
+    # Ensure grid is not empty and has consistent row length
+    if not grid or not all(len(row) == 3 for row in grid):
+        return 0.0, list(range(4)) # Assuming 4 clues based on the example
+
+    Heights_map = {}
+    WoodTypes_map = {}
+    Subjects_map = {}
+
+    try:
+        for row in grid:
+            height_str, wood_type_str, subject_str = row
+            height_val = HEIGHTS[height_str]
+
+            # Populate Heights_map
+            Heights_map[height_val] = Height(value=height_val, wood_type=wood_type_str, subject=subject_str)
+
+            # Populate WoodTypes_map
+            WoodTypes_map[wood_type_str] = WoodType(name=wood_type_str, height=height_val, subject=subject_str)
+
+            # Populate Subjects_map
+            Subjects_map[subject_str] = Subject(name=subject_str, height=height_val, wood_type=wood_type_str)
+            
+        # Check for uniqueness across categories if not implicitly handled by map keys
+        # (e.g., if two rows tried to assign the same height to different wood types,
+        # the last one would overwrite, but the problem implies unique assignments).
+        # The use of dictionaries with unique keys (height_val, wood_type_str, subject_str)
+        # implicitly handles the ""no option in any category will ever be used more than once""
+        # constraint for the primary key of each map. We need to ensure that the *values*
+        # are also unique across the other categories.
+        
+        # Example: Check if all wood_types assigned to heights are unique
+        assigned_wood_types = set()
+        assigned_subjects = set()
+        assigned_heights_from_wood = set()
+        assigned_heights_from_subject = set()
+        
+        for h_obj in Heights_map.values():
+            if h_obj.wood_type in assigned_wood_types:
+                return 0.0, list(range(4)) # Duplicate wood type assigned
+            assigned_wood_types.add(h_obj.wood_type)
+            if h_obj.subject in assigned_subjects:
+                return 0.0, list(range(4)) # Duplicate subject assigned
+            assigned_subjects.add(h_obj.subject)
+
+        for w_obj in WoodTypes_map.values():
+            if w_obj.height in assigned_heights_from_wood:
+                return 0.0, list(range(4)) # Duplicate height assigned to wood type
+            assigned_heights_from_wood.add(w_obj.height)
+
+        for s_obj in Subjects_map.values():
+            if s_obj.height in assigned_heights_from_subject:
+                return 0.0, list(range(4)) # Duplicate height assigned to subject
+            assigned_heights_from_subject.add(s_obj.height)
+
+        # Also check that the number of unique items matches the expected number (4)
+        if not (len(Heights_map) == 4 and len(WoodTypes_map) == 4 and len(Subjects_map) == 4):
+             return 0.0, list(range(4))
+
+    except (KeyError, TypeError, AttributeError):
+        # Handle cases where expected keys are missing or types are incorrect
+        return 0.0, list(range(4))
+
+    clue_functions = [
+        clue0,
+        clue1,
+        clue2,
+        clue3,
+    ]
+
+    clue_results = []
+    for i, clue_func in enumerate(clue_functions):
+        try:
+            clue_results.append(clue_func(Heights_map, WoodTypes_map, Subjects_map))
+        except (KeyError, AttributeError):
+            # If a clue function tries to access a non-existent key (e.g., a subject not in the grid)
+            clue_results.append(False)
+
+    total_clues = len(clue_results)
+    satisfied_clues = sum(clue_results)
+    failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
+
+    reward = float(satisfied_clues) / total_clues if total_clues > 0 else 0.0
+    return reward, failed_clues","8 inches  | butternut | fish 
+12 inches | mahogany  | deer 
+16 inches | pine      | wolf 
+20 inches | cherry    | eagle"
+e0ab2cf6-1886-49a9-b06d-696dabfc9db1,"```python
+from dataclasses import dataclass
+
+# Define categories and their possible values
+CALORIES = {
+    ""345"": 345,
+    ""360"": 360,
+    ""375"": 375,
+    ""390"": 390,
+}
+
+DAYS_ORDER = {
+    ""Wednesday"": 0,
+    ""Thursday"": 1,
+    ""Friday"": 2,
+    ""Saturday"": 3,
+}
+
+@dataclass
+class Snack:
+    name: str
+    calories: int = None
+    day: str = None
+
+@dataclass
+class Day:
+    name: str
+    calories: int = None
+    snack: str = None
+
+@dataclass
+class Calorie:
+    value: int
+    snack: str = None
+    day: str = None
+
+# Clue functions
+def clue0(Snacks, Days, Calories):
+    # 1.The almond energy bar contains somewhat fewer calories than the snack given out on Wednesday.
+    almond_bar_calories = Snacks[""almond energy bar""].calories
+    wednesday_snack_calories = Days[""Wednesday""].calories
+    return almond_bar_calories < wednesday_snack_calories
+
+def clue1(Snacks, Days, Calories):
+    # 2.The snack given out on Thursday contains 15 fewer calories than the oatmeal cookie.
+    thursday_snack_calories = Days[""Thursday""].calories
+    oatmeal_cookie_calories = Snacks[""oatmeal cookie""].calories
+    return thursday_snack_calories == oatmeal_cookie_calories - 15
+
+def clue2(Snacks, Days, Calories):
+    # 3.The recipe given out on Friday contains somewhat fewer calories than the granola mix.
+    friday_snack_calories = Days[""Friday""].calories
+    granola_mix_calories = Snacks[""granola mix""].calories
+    return friday_snack_calories < granola_mix_calories
+
+def clue3(Snacks, Days, Calories):
+    # 4.The snack given out on Saturday contains 15 more calories than the snack given out on Thursday.
+    saturday_snack_calories = Days[""Saturday""].calories
+    thursday_snack_calories = Days[""Thursday""].calories
+    return saturday_snack_calories == thursday_snack_calories + 15
+
+def clue4(Snacks, Days, Calories):
+    # 5.The snack with 360 calories was either the one given out on Wednesday or the granola mix.
+    snack_360_name = Calories[360].snack
+    return snack_360_name == Days[""Wednesday""].snack or snack_360_name == ""granola mix""
+
+def verify(grid):
+    # Total number of clues
+    total_clues = 5
+    
+    # Initialize data structures for parsing
+    Snacks = {}
+    Days = {}
+    Calories_map = {} # Renamed to avoid conflict with CALORIES constant
+
+    # Expected entities for validation
+    expected_snacks = {""almond energy bar"", ""oatmeal cookie"", ""granola mix"", ""trail mix""}
+    expected_days = {""Wednesday"", ""Thursday"", ""Friday"", ""Saturday""}
+    expected_calories = {345, 360, 375, 390}
+
+    # Sets to track seen values for uniqueness checks
+    seen_snacks = set()
+    seen_days = set()
+    seen_calories = set()
+
+    # Parse the grid
+    try:
+        if not (isinstance(grid, list) and len(grid) == 4):
+            return 0.0, list(range(total_clues))
+        
+        for row in grid:
+            if not (isinstance(row, list) and len(row) == 3):
+                return 0.0, list(range(total_clues))
+
+            calorie_str, snack_name, day_name = row
+
+            # Validate and convert calorie value
+            if calorie_str not in CALORIES:
+                return 0.0, list(range(total_clues))
+            calorie_value = CALORIES[calorie_str]
+
+            # Check for missing or invalid entities
+            if snack_name not in expected_snacks or day_name not in expected_days:
+                return 0.0, list(range(total_clues))
+
+            # Check for uniqueness within categories
+            if snack_name in seen_snacks or day_name in seen_days or calorie_value in seen_calories:
+                return 0.0, list(range(total_clues))
+            
+            seen_snacks.add(snack_name)
+            seen_days.add(day_name)
+            seen_calories.add(calorie_value)
+
+            # Populate data structures
+            Snacks[snack_name] = Snack(name=snack_name, calories=calorie_value, day=day_name)
+            Days[day_name] = Day(name=day_name, calories=calorie_value, snack=snack_name)
+            Calories_map[calorie_value] = Calorie(value=calorie_value, snack=snack_name, day=day_name)
+
+        # Final check for all entities being present
+        if not (len(seen_snacks) == len(expected_snacks) and
+                len(seen_days) == len(expected_days) and
+                len(seen_calories) == len(expected_calories)):
+            return 0.0, list(range(total_clues))
+
+    except Exception:
+        # Catch any other parsing errors
+        return 0.0, list(range(total_clues))
+
+    # List of clue functions
+    clue_functions = [
+        clue0,
+        clue1,
+        clue2,
+        clue3,
+        clue4,
+    ]
+
+    # Evaluate all clues
+    clue_results = []
+    for i, clue_func in enumerate(clue_functions):
+        try:
+            clue_results.append(clue_func(Snacks, Days, Calories_map))
+        except Exception:
+            # If a clue function fails due to missing data (should be caught by parsing)
+            # or unexpected error, consider it failed.
+            clue_results.append(False)
+
+    # Calculate reward and failed clues
+    satisfied_clues = sum(1 for result in clue_results if result)
+    failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
+
+    reward = float(satisfied_clues) / total_clues
+    return reward, failed_clues
+
+```","345 | almond energy bar | Friday   
+360 | granola mix       | Thursday 
+375 | oatmeal cookie    | Saturday 
+390 | trail mix         | Wednesday"
+255b5850-4c3c-4ca4-866b-f37931d13c8e,"```python
+from dataclasses import dataclass
+
+# Mappings for categories to allow for consistent comparison and retrieval
+SIZES = {
+    ""5 inches"": 5,
+    ""6 inches"": 6,
+    ""7 inches"": 7,
+    ""9 inches"": 9,
+}
+
+# Define dataclasses for each major entity type if they have unique properties
+# In this puzzle, the categories are more like attributes of a single ""Craft"" entity.
+# We'll create a single Craft dataclass and map properties to it.
+
+@dataclass
+class Craft:
+    size_str: str
+    size_val: int
+    style: str
+    material: str
+
+def get_craft_by_property(crafts_map, prop_name, prop_value):
+    """"""Helper to find a craft by a specific property.""""""
+    for craft in crafts_map.values():
+        if getattr(craft, prop_name) == prop_value:
+            return craft
+    return None # Should not happen with valid input, but for safety
+
+def clue0(Crafts_by_Size, Crafts_by_Style, Crafts_by_Material):
+    # 1.The abstract craft is somewhat smaller than the geometric craft.
+    abstract_craft = Crafts_by_Style.get(""abstract"")
+    geometric_craft = Crafts_by_Style.get(""geometric"")
+
+    if not abstract_craft or not geometric_craft:
+        return False
+
+    return abstract_craft.size_val < geometric_craft.size_val
+
+def clue1(Crafts_by_Size, Crafts_by_Style, Crafts_by_Material):
+    # 2.The 8 inch craft was either the floral design or the modern style.
+    # This clue implies an 8 inch craft exists, but 8 inches is not in SIZES.
+    # This is a common puzzle trick where a value is mentioned but not present
+    # in the grid's categories. The clue must be interpreted as:
+    # ""If there were an 8 inch craft, it would be floral or modern.""
+    # Or, more likely, it's a typo in the clue and it should refer to one of the
+    # existing sizes. Given the grid solution, there is no 8 inch craft.
+    # Let's assume this clue is meant to be interpreted as ""The craft that *would be* 8 inches
+    # if it existed, would be floral or modern.""
+    # However, standard logic grid interpretation means if a value isn't in the grid,
+    # it cannot be directly referenced.
+    # Let's re-evaluate: ""The 8 inch craft"" implies a specific craft. If no craft is 8 inches,
+    # then the premise of the statement is false, and thus the statement itself cannot be true.
+    # This is a tricky one. Given the provided solution, there is no 8 inch craft.
+    # If the clue implies a craft *is* 8 inches, and none are, the clue cannot be satisfied.
+    # A common way to handle this in verifiers is to assume the clue is only relevant
+    # if the mentioned entity exists. If it doesn't, the clue can't be true.
+    # Let's assume the clue is malformed or a red herring if 8 inches isn't a size.
+    # However, the example solution does not have an 8 inch craft.
+    # Let's assume this clue is a distractor or a typo and should refer to an existing size.
+    # Given the context of the puzzle, it's highly probable that ""8 inch"" is a typo
+    # and refers to one of the existing sizes, or it's a clue that cannot be satisfied
+    # by any valid grid.
+    # If we strictly interpret ""The 8 inch craft"", and no craft is 8 inches, then the
+    # premise is false, and the clue cannot be true.
+    # Let's assume the clue is meant to be interpreted as ""If a craft were 8 inches, it would be...""
+    # But that's not how these puzzles usually work.
+    # A more robust interpretation for verifiers: if a specific entity (like ""the 8 inch craft"")
+    # is referenced, and no such entity exists in the grid, the clue fails.
+    # However, this would make the clue always fail, which is not helpful for a puzzle.
+    # Let's consider the possibility that ""8 inch"" is a placeholder for one of the sizes
+    # that *could* be 8 inches in a different puzzle instance, but in *this* puzzle,
+    # it's a specific size from the list. This is unlikely.
+
+    # Let's re-read the clue carefully: ""The 8 inch craft was either the floral design or the modern style.""
+    # This implies there *is* an 8 inch craft. Since 8 inches is not in SIZES, this clue cannot be satisfied.
+    # This is a strong indicator of a malformed clue or a trick.
+    # For a verifier, if a specific entity is referenced (""the 8 inch craft"") and it doesn't exist
+    # in the provided categories, the clue cannot be true.
+    # If the puzzle implies that 8 inches is a possible size, but it's not in the grid's categories,
+    # then the grid cannot satisfy this clue.
+    # Given the example solution, there is no 8 inch craft.
+    # Therefore, this clue cannot be satisfied.
+    # This is a tough call for a verifier. A common approach for such ""non-existent entity"" clues
+    # is to mark them as failed if the entity isn't found.
+    # However, if this were a real puzzle, it would be a typo.
+    # Let's assume the clue is valid and refers to an existing craft.
+    # If no craft has size 8, then the premise is false, and the clue cannot be true.
+    # So, if no craft is 8 inches, this clue fails.
+    # Since 8 inches is not in SIZES, no craft can be 8 inches.
+    # Therefore, this clue will always fail for this puzzle setup.
+    # This is a problem with the puzzle's clue, not the verifier.
+    # For the purpose of generating a verifier, we must assume the clues are valid
+    # and refer to entities that *can* exist in a solution.
+    # If ""8 inch"" is not a possible size, then the clue is inherently false.
+    # Let's assume the clue is a typo and meant to refer to one of the *actual* sizes.
+    # This is a dangerous assumption for a verifier.
+    # A safer approach: if a specific value (like ""8 inch"") is mentioned and it's not
+    # in the defined categories, then any clue referencing it cannot be satisfied.
+    # So, this clue should fail.
+
+    # Re-evaluating: The problem statement says ""Determine the size, style, material, and creator of each craft.""
+    # And then lists the available sizes: ""5 inches, 6 inches, 7 inches, 9 inches"".
+    # Since ""8 inches"" is not in the list of available sizes, no craft can ever be 8 inches.
+    # Therefore, ""The 8 inch craft"" refers to a non-existent entity.
+    # A statement about a non-existent entity cannot be true.
+    # So, this clue must always evaluate to False given the puzzle's constraints.
+    return False # No craft can be 8 inches, so the premise is false.
+
+def clue2(Crafts_by_Size, Crafts_by_Style, Crafts_by_Material):
+    # 3.The wooden craft is 3 inches larger than the plastic one.
+    wooden_craft = Crafts_by_Material.get(""wood"")
+    plastic_craft = Crafts_by_Material.get(""plastic"")
+
+    if not wooden_craft or not plastic_craft:
+        return False
+
+    return wooden_craft.size_val == plastic_craft.size_val + 3
+
+def clue3(Crafts_by_Size, Crafts_by_Style, Crafts_by_Material):
+    # 4.The modern style has a 6 inch size.
+    modern_craft = Crafts_by_Style.get(""modern"")
+
+    if not modern_craft:
+        return False
+
+    return modern_craft.size_val == SIZES[""6 inches""]
+
+def clue4(Crafts_by_Size, Crafts_by_Style, Crafts_by_Material):
+    # 5.Of the 6 inch craft and the 8 inch item, one is a geometric design and the other is made of wood.
+    craft_6_inch = Crafts_by_Size.get(SIZES[""6 inches""])
+    # As established in clue1, there is no 8 inch craft.
+    # If ""the 8 inch item"" refers to a non-existent item, then the premise of the ""of X and Y""
+    # statement is problematic.
+    # If one of the items doesn't exist, the statement cannot be fully evaluated as true.
+    # Let's assume ""the 8 inch item"" is a typo and should refer to another existing size,
+    # or that its non-existence makes the clue fail.
+    # Given the strict interpretation of ""no option in any category will ever be used more than once"",
+    # and ""8 inches"" not being an option, this clue is problematic.
+    # If we treat ""the 8 inch item"" as a non-existent entity, then the statement ""one is X and the other is Y""
+    # cannot be true because there aren't two distinct items being referred to.
+    # Therefore, this clue should also fail.
+
+    # However, let's consider a more lenient interpretation for such ""typo"" clues,
+    # which is common in human-generated puzzles:
+    # ""Of the 6 inch craft and [some other craft], one is a geometric design and the other is made of wood.""
+    # This is still very ambiguous.
+
+    # Let's stick to the strict interpretation: if ""the 8 inch item"" doesn't exist, the clue fails.
+    # This is consistent with how clue1 was handled.
+    return False # No craft can be 8 inches, so the premise is false.
+
+
+def verify(grid):
+    # Expected categories: Sizes, Styles, Materials
+    # Grid format: [['5 inches', 'abstract', 'plastic'], ...]
+    
+    # Defensive checks for malformed input
+    if not grid or not isinstance(grid, list):
+        return (0.0, list(range(5))) # Assuming 5 clues
+
+    # Initialize maps for easy lookup
+    Crafts_by_Size = {}
+    Crafts_by_Style = {}
+    Crafts_by_Material = {}
+
+    all_sizes_in_grid = set()
+    all_styles_in_grid = set()
+    all_materials_in_grid = set()
+
+    try:
+        for row in grid:
+            if not isinstance(row, list) or len(row) != 3:
+                return (0.0, list(range(5))) # Malformed row
+
+            size_str, style, material = row[0], row[1], row[2]
+
+            if size_str not in SIZES:
+                return (0.0, list(range(5))) # Invalid size string
+            size_val = SIZES[size_str]
+
+            # Check for duplicates within the grid for each category
+            if size_val in all_sizes_in_grid or \
+               style in all_styles_in_grid or \
+               material in all_materials_in_grid:
+                return (0.0, list(range(5))) # Duplicate entry in a category
+
+            all_sizes_in_grid.add(size_val)
+            all_styles_in_grid.add(style)
+            all_materials_in_grid.add(material)
+
+            craft = Craft(size_str=size_str, size_val=size_val, style=style, material=material)
+            Crafts_by_Size[size_val] = craft
+            Crafts_by_Style[style] = craft
+            Crafts_by_Material[material] = craft
+            
+        # Ensure all expected categories are present and correctly mapped
+        # This puzzle implies 4 crafts, one for each size/style/material.
+        if len(Crafts_by_Size) != len(SIZES) or \
+           len(Crafts_by_Style) != 4 or \
+           len(Crafts_by_Material) != 4:
+            return (0.0, list(range(5))) # Missing or extra crafts
+            
+    except Exception:
+        return (0.0, list(range(5))) # Catch any other parsing errors
+
+    clue_functions = [
+        clue0,
+        clue1,
+        clue2,
+        clue3,
+        clue4,
+    ]
+
+    clue_results = []
+    for i, clue_func in enumerate(clue_functions):
+        try:
+            clue_results.append(clue_func(Crafts_by_Size, Crafts_by_Style, Crafts_by_Material))
+        except Exception:
+            # If a clue function itself raises an error (e.g., due to missing data
+            # that wasn't caught by initial parsing, or unexpected None values),
+            # consider it a failed clue.
+            clue_results.append(False)
+
+    total_clues = len(clue_results)
+    satisfied_clues = sum(1 for result in clue_results if result)
+    failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
+
+    reward = float(satisfied_clues) / total_clues if total_clues > 0 else 0.0
+    return (reward, failed_clues)
+
+```",Incorrect verification code
+3134948d-bfd1-4e1b-beae-8b9a474e6ef0,"from dataclasses import dataclass
+
+BIRTHDAYS = {
+    ""April 3rd"": 3,
+    ""April 7th"": 7,
+    ""April 11th"": 11,
+    ""April 15th"": 15,
+    ""April 19th"": 19,
+}
+
+@dataclass
+class Grandchild:
+    name: str
+    birthday: int = None
+    age: int = None
+
+@dataclass
+class Age:
+    value: int
+    grandchild: str = None
+    birthday: int = None
+
+@dataclass
+class Birthday:
+    day: int
+    grandchild: str = None
+    age: int = None
+
+def clue0(Grandchildren, Ages, Birthdays_map):
+    # Guy isn't 9 years old.
+    return Grandchildren[""Guy""].age != 9
+
+def clue1(Grandchildren, Ages, Birthdays_map):
+    # Johanna was born on April 11th.
+    return Grandchildren[""Johanna""].birthday == BIRTHDAYS[""April 11th""]
+
+def clue2(Grandchildren, Ages, Birthdays_map):
+    # Kerry is 8 years old.
+    return Grandchildren[""Kerry""].age == 8
+
+def clue3(Grandchildren, Ages, Birthdays_map):
+    # The 14-year-old has a birthday 4 days after Nathaniel.
+    return Ages[14].birthday == Grandchildren[""Nathaniel""].birthday + 4
+
+def clue4(Grandchildren, Ages, Birthdays_map):
+    # Nathaniel has a birthday 4 days before Bryan.
+    return Grandchildren[""Nathaniel""].birthday == Grandchildren[""Bryan""].birthday - 4
+
+def clue5(Grandchildren, Ages, Birthdays_map):
+    # The five children are Kerry, the 5-year-old, the grandchild with the April 15th birthday, the grandchild with the April 11th birthday and the child with the April 7th birthday.
+    
+    # Find the grandchild names for the given properties
+    grandchild_5_year_old = Ages[5].grandchild
+    grandchild_april_15th = Birthdays_map[BIRTHDAYS[""April 15th""]].grandchild
+    grandchild_april_11th = Birthdays_map[BIRTHDAYS[""April 11th""]].grandchild
+    grandchild_april_7th = Birthdays_map[BIRTHDAYS[""April 7th""]].grandchild
+
+    values = {
+        ""Kerry"",
+        grandchild_5_year_old,
+        grandchild_april_15th,
+        grandchild_april_11th,
+        grandchild_april_7th,
+    }
+    return len(values) == 5
+
+def verify(grid):
+    grandchild_names = {""Bryan"", ""Guy"", ""Johanna"", ""Kerry"", ""Nathaniel""}
+    ages_values = {5, 8, 9, 14, 18}
+    birthday_days = set(BIRTHDAYS.values())
+
+    if not (isinstance(grid, list) and len(grid) == 5):
+        return 0.0, list(range(6))
+
+    parsed_data = []
+    for row in grid:
+        if not (isinstance(row, list) and len(row) == 3):
+            return 0.0, list(range(6))
+        
+        birthday_str, grandchild_name, age_str = row
+        
+        if birthday_str not in BIRTHDAYS:
+            return 0.0, list(range(6))
+        birthday_day = BIRTHDAYS[birthday_str]
+        
+        if grandchild_name not in grandchild_names:
+            return 0.0, list(range(6))
+            
+        try:
+            age_val = int(age_str)
+        except ValueError:
+            return 0.0, list(range(6))
+        if age_val not in ages_values:
+            return 0.0, list(range(6))
+        
+        parsed_data.append((birthday_day, grandchild_name, age_val))
+
+    # Check for uniqueness within categories
+    if len({d[0] for d in parsed_data}) != 5 or \
+       len({d[1] for d in parsed_data}) != 5 or \
+       len({d[2] for d in parsed_data}) != 5:
+        return 0.0, list(range(6))
+
+    Grandchildren = {}
+    Ages = {}
+    Birthdays_map = {}
+
+    for birthday_day, grandchild_name, age_val in parsed_data:
+        Grandchildren[grandchild_name] = Grandchild(name=grandchild_name, birthday=birthday_day, age=age_val)
+        Ages[age_val] = Age(value=age_val, grandchild=grandchild_name, birthday=birthday_day)
+        Birthdays_map[birthday_day] = Birthday(day=birthday_day, grandchild=grandchild_name, age=age_val)
+
+    # Defensive check for missing keys if parsing was incomplete or incorrect
+    for name in grandchild_names:
+        if name not in Grandchildren:
+            return 0.0, list(range(6))
+    for age_val in ages_values:
+        if age_val not in Ages:
+            return 0.0, list(range(6))
+    for day_val in birthday_days:
+        if day_val not in Birthdays_map:
+            return 0.0, list(range(6))
+
+    clue_results = [
+        clue0(Grandchildren, Ages, Birthdays_map),
+        clue1(Grandchildren, Ages, Birthdays_map),
+        clue2(Grandchildren, Ages, Birthdays_map),
+        clue3(Grandchildren, Ages, Birthdays_map),
+        clue4(Grandchildren, Ages, Birthdays_map),
+        clue5(Grandchildren, Ages, Birthdays_map),
+    ]
+
+    failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
+    return float(sum(clue_results)) / len(clue_results), failed_clues","April 3rd  | Nathaniel | 5 
+April 7th  | Bryan     | 14
+April 11th | Johanna   | 9 
+April 15th | Guy       | 18
+April 19th | Kerry     | 8 "
+4a4c5eb3-6e26-46a2-baed-e1e70fc348b1,"from dataclasses import dataclass
+
+# Constants for mapping string weights to numerical values
+WEIGHTS_MAP = {
+    ""3 pounds"": 3,
+    ""4 pounds"": 4,
+    ""5 pounds"": 5,
+    ""6 pounds"": 6,
+    ""7 pounds"": 7,
+}
+
+# All possible values for each category, used for input validation
+ALL_WEIGHT_STRINGS = list(WEIGHTS_MAP.keys())
+ALL_COLORS = [""bronze"", ""emerald"", ""sapphire"", ""marble"", ""teal""]
+ALL_SHAPES = [""obelisk"", ""vase"", ""pedestal"", ""lion"", ""dolphin""]
+
+@dataclass
+class Statue:
+    weight_str: str
+    weight_val: int
+    color: str
+    shape: str
+
+# Clue 1: The lion sculpture weighs 2 pounds more than the dolphin piece.
+def clue0(Shapes_by_name):
+    return Shapes_by_name[""lion""].weight_val == Shapes_by_name[""dolphin""].weight_val + 2
+
+# Clue 2: The emerald creation was either the piece that weighs 4 pounds or the one that weighs 6 pounds.
+def clue1(Colors_by_name):
+    emerald_weight = Colors_by_name[""emerald""].weight_val
+    return emerald_weight == WEIGHTS_MAP[""4 pounds""] or emerald_weight == WEIGHTS_MAP[""6 pounds""]
+
+# Clue 3: Of the sapphire piece and the vase, one weighs 5 pounds and the other weighs 7 pounds.
+def clue2(Colors_by_name, Shapes_by_name):
+    sapphire_weight = Colors_by_name[""sapphire""].weight_val
+    vase_weight = Shapes_by_name[""vase""].weight_val
+    return (sapphire_weight == WEIGHTS_MAP[""5 pounds""] and vase_weight == WEIGHTS_MAP[""7 pounds""]) or \
+           (sapphire_weight == WEIGHTS_MAP[""7 pounds""] and vase_weight == WEIGHTS_MAP[""5 pounds""])
+
+# Clue 4: The bronze piece weighs somewhat less than the emerald creation.
+def clue3(Colors_by_name):
+    return Colors_by_name[""bronze""].weight_val < Colors_by_name[""emerald""].weight_val
+
+# Clue 5: The piece that weighs 3 pounds is the obelisk.
+def clue4(Weights_by_value):
+    return Weights_by_value[WEIGHTS_MAP[""3 pounds""]].shape == ""obelisk""
+
+# Clue 6: The marble creation doesn't weigh 8 pounds.
+def clue5(Colors_by_name):
+    # Since 8 pounds is not an available weight in this puzzle,
+    # this clue is satisfied as long as the marble piece has a valid weight.
+    # We explicitly check it's not 8, which will always be true given the domain.
+    return Colors_by_name[""marble""].weight_val != 8
+
+# Clue 7: The vase weighs 1 pound more than the pedestal.
+def clue6(Shapes_by_name):
+    return Shapes_by_name[""vase""].weight_val == Shapes_by_name[""pedestal""].weight_val + 1
+
+def verify(grid):
+    total_clues = 7
+    
+    # --- Input Validation ---
+    # Check if grid is a list and has the correct number of rows
+    if not isinstance(grid, list) or len(grid) != 5:
+        return 0.0, list(range(total_clues))
+    
+    # Sets to track seen values for uniqueness validation
+    seen_weights = set()
+    seen_colors = set()
+    seen_shapes = set()
+    
+    # Maps to store parsed data for easy lookup by category item
+    # Key: numerical weight, Value: Statue object
+    Weights_by_value = {} 
+    # Key: color string, Value: Statue object
+    Colors_by_name = {}
+    # Key: shape string, Value: Statue object
+    Shapes_by_name = {}
+
+    for row in grid:
+        # Check if each row is a list and has the correct number of columns
+        if not isinstance(row, list) or len(row) != 3:
+            return 0.0, list(range(total_clues))
+        
+        weight_str, color, shape = row
+        
+        # Validate values against allowed lists and check for uniqueness
+        if weight_str not in ALL_WEIGHT_STRINGS or weight_str in seen_weights:
+            return 0.0, list(range(total_clues))
+        if color not in ALL_COLORS or color in seen_colors:
+            return 0.0, list(range(total_clues))
+        if shape not in ALL_SHAPES or shape in seen_shapes:
+            return 0.0, list(range(total_clues))
+        
+        # Add to seen sets
+        seen_weights.add(weight_str)
+        seen_colors.add(color)
+        seen_shapes.add(shape)
+        
+        # Convert weight string to numerical value
+        weight_val = WEIGHTS_MAP[weight_str]
+        
+        # Create Statue object and populate maps
+        statue = Statue(weight_str=weight_str, weight_val=weight_val, color=color, shape=shape)
+        
+        Weights_by_value[weight_val] = statue
+        Colors_by_name[color] = statue
+        Shapes_by_name[shape] = statue
+
+    # Final check to ensure all required items from each category are present
+    if len(seen_weights) != len(ALL_WEIGHT_STRINGS) or \
+       len(seen_colors) != len(ALL_COLORS) or \
+       len(seen_shapes) != len(ALL_SHAPES):
+        return 0.0, list(range(total_clues))
+
+    # --- Clue Checking ---
+    clue_results = [
+        clue0(Shapes_by_name),
+        clue1(Colors_by_name),
+        clue2(Colors_by_name, Shapes_by_name),
+        clue3(Colors_by_name),
+        clue4(Weights_by_value),
+        clue5(Colors_by_name),
+        clue6(Shapes_by_name),
+    ]
+
+    failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
+    
+    # Calculate reward as a float
+    reward = float(sum(clue_results)) / total_clues
+    
+    return reward, failed_clues",Incorrect verification code
+1704f0df-971b-47c2-91f4-36b5e622cf6d,"import collections
+import math
+
+def verify(grid):
+    # Define categories and their possible values
+    BUSINESS_VALUES = {
+        ""$8 million"": 8,
+        ""$12 million"": 12,
+        ""$15 million"": 15,
+        ""$25 million"": 25,
+        ""$30 million"": 30,
+    }
+    ENTREPRENEURS = [""Clara Chen"", ""Betty Baker"", ""James Lee"", ""Robert Ross"", ""Daniel Kim""]
+    STATES = [""California"", ""Nevada"", ""Arizona"", ""Florida"", ""Texas""]
+
+    # --- Data Structures for easier access ---
+    # Using dictionaries to map each entity to its associated properties.
+    # This allows direct lookup by name/value rather than iterating through rows.
+
+    # Expected structure:
+    # { ""EntrepreneurName"": {""value"": int, ""state"": ""StateName""}, ... }
+    # { ""StateName"": {""value"": int, ""entrepreneur"": ""EntrepreneurName""}, ... }
+    # { int_value: {""entrepreneur"": ""EntrepreneurName"", ""state"": ""StateName""}, ... }
+
+    entrepreneurs_map = {}
+    states_map = {}
+    values_map = {}
+
+    # Validate grid structure and populate maps
+    if not isinstance(grid, list) or not grid:
+        return (0.0, list(range(7))) # Total 7 clues
+
+    # Use sets to check for uniqueness within categories
+    seen_entrepreneurs = set()
+    seen_states = set()
+    seen_values = set()
+
+    for r_idx, row in enumerate(grid):
+        if not isinstance(row, list) or len(row) != 3:
+            return (0.0, list(range(7)))
+
+        value_str, entrepreneur_name, state_name = row
+
+        # Validate and convert business value
+        if value_str not in BUSINESS_VALUES:
+            return (0.0, list(range(7)))
+        value_int = BUSINESS_VALUES[value_str]
+
+        # Validate entrepreneur name
+        if entrepreneur_name not in ENTREPRENEURS:
+            return (0.0, list(range(7)))
+
+        # Validate state name
+        if state_name not in STATES:
+            return (0.0, list(range(7)))
+
+        # Check for uniqueness
+        if entrepreneur_name in seen_entrepreneurs or \
+           state_name in seen_states or \
+           value_int in seen_values:
+            return (0.0, list(range(7))) # Duplicate entry found
+
+        seen_entrepreneurs.add(entrepreneur_name)
+        seen_states.add(state_name)
+        seen_values.add(value_int)
+
+        # Populate maps
+        entrepreneurs_map[entrepreneur_name] = {
+            ""value"": value_int,
+            ""state"": state_name
+        }
+        states_map[state_name] = {
+            ""value"": value_int,
+            ""entrepreneur"": entrepreneur_name
+        }
+        values_map[value_int] = {
+            ""entrepreneur"": entrepreneur_name,
+            ""state"": state_name
+        }
+
+    # Ensure all categories are fully populated (e.g., 5 entrepreneurs, 5 states, 5 values)
+    if len(entrepreneurs_map) != len(ENTREPRENEURS) or \
+       len(states_map) != len(STATES) or \
+       len(values_map) != len(BUSINESS_VALUES):
+        return (0.0, list(range(7)))
+
+    # --- Clue Definitions ---
+    clue_results = [False] * 7 # Initialize with False for all 7 clues
+
+    # 1. The entrepreneur from Texas had a business value somewhat less than Clara Chen.
+    # ""somewhat less"" implies strictly less.
+    if ""Texas"" in states_map and ""Clara Chen"" in entrepreneurs_map:
+        texas_value = states_map[""Texas""][""value""]
+        clara_chen_value = entrepreneurs_map[""Clara Chen""][""value""]
+        clue_results[0] = texas_value < clara_chen_value
+
+    # 2. Robert Ross's business was worth 8 million more than the entrepreneur from Florida.
+    if ""Robert Ross"" in entrepreneurs_map and ""Florida"" in states_map:
+        robert_ross_value = entrepreneurs_map[""Robert Ross""][""value""]
+        florida_value = states_map[""Florida""][""value""]
+        clue_results[1] = robert_ross_value == florida_value + 8
+
+    # 3. The entrepreneur who owned a business valued at $25 million is from Arizona.
+    if 25 in values_map and ""Arizona"" in states_map:
+        clue_results[2] = values_map[25][""state""] == ""Arizona""
+
+    # 4. James Lee wasn't from California.
+    if ""James Lee"" in entrepreneurs_map:
+        clue_results[3] = entrepreneurs_map[""James Lee""][""state""] != ""California""
+
+    # 5. James Lee's business was worth $12 million.
+    if ""James Lee"" in entrepreneurs_map:
+        clue_results[4] = entrepreneurs_map[""James Lee""][""value""] == 12
+
+    # 6. James Lee's business value was somewhat less than the entrepreneur from Florida.
+    # ""somewhat less"" implies strictly less.
+    if ""James Lee"" in entrepreneurs_map and ""Florida"" in states_map:
+        james_lee_value = entrepreneurs_map[""James Lee""][""value""]
+        florida_value = states_map[""Florida""][""value""]
+        clue_results[5] = james_lee_value < florida_value
+
+    # 7. The entrepreneur from Nevada was either the person with a business valued at $8 million or Betty Baker.
+    if ""Nevada"" in states_map and 8 in values_map and ""Betty Baker"" in entrepreneurs_map:
+        nevada_entrepreneur = states_map[""Nevada""][""entrepreneur""]
+        value_8_entrepreneur = values_map[8][""entrepreneur""]
+        clue_results[6] = (nevada_entrepreneur == value_8_entrepreneur) or \
+                          (nevada_entrepreneur == ""Betty Baker"")
+
+    # --- Calculate Reward ---
+    total_clues = len(clue_results)
+    satisfied_clues = sum(1 for result in clue_results if result)
+    failed_clues = [idx for idx, result in enumerate(clue_results) if not result]
+
+    reward = float(satisfied_clues) / total_clues if total_clues > 0 else 0.0
+
+    return (reward, failed_clues)",Incorrect verification code
+44052505-013e-4891-9857-97de8fa438f5,"from dataclasses import dataclass
+
+# Mappings for ordered categories
+LENGTHS = {
+    ""16 meters"": 16,
+    ""14 meters"": 14,
+    ""12 meters"": 12,
+    ""10 meters"": 10,
+    ""8 meters"": 8,
+}
+
+# Data classes for entities
+@dataclass
+class Dinosaur:
+    name: str
+    length: int = None
+    location: str = None
+    weight: int = None # Weight is not a primary category in the grid, so it will remain None
+
+@dataclass
+class Location:
+    name: str
+    dinosaur: str = None
+    length: int = None
+    weight: int = None
+
+# Helper function for safe attribute access, returning None if object or attribute is missing
+def get_attr_safe(obj, attr_name, default_value=None):
+    if obj is None:
+        return default_value
+    return getattr(obj, attr_name, default_value)
+
+# Clue functions
+def clue0(Dinosaurs, Locations): # Clue 1: ""Tyrone"" was either the dinosaur found in Alberta or the one believed to weigh 5,000 kg.
+    tyrone_location_is_alberta = get_attr_safe(Dinosaurs.get(""Tyrone""), ""location"") == ""Alberta""
+    # The weight attribute is not populated from the grid, so this part of the clue will evaluate to False.
+    tyrone_weight_is_5000 = get_attr_safe(Dinosaurs.get(""Tyrone""), ""weight"") == 5000
+    return tyrone_location_is_alberta or tyrone_weight_is_5000
+
+def clue1(Dinosaurs, Locations): # Clue 2: ""Rex"" wasn't discovered in Montana.
+    return get_attr_safe(Dinosaurs.get(""Rex""), ""location"") != ""Montana""
+
+def clue2(Dinosaurs, Locations): # Clue 3: ""Rex"" is thought to be 18 meters long.
+    # Note: 18 meters is not one of the available lengths in the puzzle's categories.
+    return get_attr_safe(Dinosaurs.get(""Rex""), ""length"") == 18
+
+def clue3(Dinosaurs, Locations): # Clue 4: ""Dino"" lived 3,000 kg more than the dinosaur found in Wyoming.
+    dino_weight = get_attr_safe(Dinosaurs.get(""Dino""), ""weight"")
+    
+    wyoming_dino_name = get_attr_safe(Locations.get(""Wyoming""), ""dinosaur"")
+    if wyoming_dino_name is None:
+        return False # Cannot identify the dinosaur found in Wyoming
+    
+    wyoming_dino_weight = get_attr_safe(Dinosaurs.get(wyoming_dino_name), ""weight"")
+    
+    # This clue will evaluate to False because weight attributes are not populated from the grid.
+    return dino_weight is not None and wyoming_dino_weight is not None and dino_weight == wyoming_dino_weight + 3000
+
+def clue4(Dinosaurs, Locations): # Clue 5: ""Leo"" weighed 2,000 kg less than ""Dino"".
+    leo_weight = get_attr_safe(Dinosaurs.get(""Leo""), ""weight"")
+    dino_weight = get_attr_safe(Dinosaurs.get(""Dino""), ""weight"")
+    
+    # This clue will evaluate to False because weight attributes are not populated from the grid.
+    return leo_weight is not None and dino_weight is not None and leo_weight == dino_weight - 2000
+
+def clue5(Dinosaurs, Locations): # Clue 6: The dinosaur found in Alberta lived sometime before ""Terry"".
+    # ""lived sometime before"" is interpreted as having a greater length value.
+    alberta_dino_name = get_attr_safe(Locations.get(""Alberta""), ""dinosaur"")
+    if alberta_dino_name is None:
+        return False
+    
+    alberta_dino_length = get_attr_safe(Dinosaurs.get(alberta_dino_name), ""length"")
+    terry_length = get_attr_safe(Dinosaurs.get(""Terry""), ""length"")
+    
+    return alberta_dino_length is not None and terry_length is not None and alberta_dino_length > terry_length
+
+def clue6(Dinosaurs, Locations): # Clue 7: ""Tyrone"" was unearthed in Texas.
+    return get_attr_safe(Dinosaurs.get(""Tyrone""), ""location"") == ""Texas""
+
+def verify(grid):
+    Dinosaurs = {}
+    Locations = {}
+    all_clues_indices = list(range(7)) # Total number of clues
+
+    try:
+        # Parse the grid into Dinosaur and Location objects
+        for row in grid:
+            if not isinstance(row, list) or len(row) != 3:
+                return 0.0, all_clues_indices # Malformed row (not a list of 3 elements)
+
+            length_str, name_str, location_str = row
+            
+            # Defensive check: ensure all elements are strings
+            if not isinstance(length_str, str) or not isinstance(name_str, str) or not isinstance(location_str, str):
+                return 0.0, all_clues_indices # Malformed row (elements are not strings)
+
+            length_val = LENGTHS.get(length_str)
+            if length_val is None:
+                return 0.0, all_clues_indices # Invalid length string (not in LENGTHS map)
+
+            # Populate Dinosaurs map
+            if name_str in Dinosaurs: # Check for duplicate names (violates ""no option in any category will ever be used more than once"")
+                return 0.0, all_clues_indices
+            Dinosaurs[name_str] = Dinosaur(name=name_str, length=length_val, location=location_str)
+
+            # Populate Locations map
+            if location_str in Locations: # Check for duplicate locations
+                return 0.0, all_clues_indices
+            Locations[location_str] = Location(name=location_str, dinosaur=name_str, length=length_val)
+            
+        # Ensure all expected entities are present in the maps for robust checking
+        # This also implicitly checks if the grid has the correct number of rows (5 in this case)
+        expected_names = {""Tyrone"", ""Rex"", ""Dino"", ""Leo"", ""Terry""}
+        expected_locations = {""Alberta"", ""Texas"", ""Montana"", ""Wyoming"", ""Saskatchewan""}
+        
+        if not (expected_names.issubset(Dinosaurs.keys()) and expected_locations.issubset(Locations.keys())):
+            return 0.0, all_clues_indices # Missing required entities or too many/few rows
+
+    except (TypeError, ValueError, IndexError, AttributeError):
+        # Catch various errors that might occur from malformed grid input not caught by specific checks
+        return 0.0, all_clues_indices
+
+    # Evaluate each clue
+    clue_results = [
+        clue0(Dinosaurs, Locations),
+        clue1(Dinosaurs, Locations),
+        clue2(Dinosaurs, Locations),
+        clue3(Dinosaurs, Locations),
+        clue4(Dinosaurs, Locations),
+        clue5(Dinosaurs, Locations),
+        clue6(Dinosaurs, Locations),
+    ]
+
+    failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
+    
+    total_clues = len(clue_results)
+    satisfied_clues = sum(clue_results)
+    
+    reward = float(satisfied_clues) / total_clues if total_clues > 0 else 0.0
+
+    return reward, failed_clues",Incorrect verification code
+e8e84ef5-a950-4058-9087-6029798a7b65,"from dataclasses import dataclass
+
+# Mappings for consistent ordering and easy lookup
+PRICES = {
+    ""$7.99"": 7.99,
+    ""$8.99"": 8.99,
+    ""$9.99"": 9.99,
+    ""$10.99"": 10.99,
+    ""$11.99"": 11.99,
+}
+
+@dataclass
+class Runner:
+    name: str
+    price: float = None
+    drink: str = None
+
+@dataclass
+class Drink:
+    name: str
+    price: float = None
+    runner: str = None
+
+# Clue functions
+def clue0(Runners, Drinks):
+    # 1. Alex ordered a latte.
+    return Runners[""Alex""].drink == ""latte""
+
+def clue1(Runners, Drinks):
+    # 2. Alex paid 2 dollars more than Chris.
+    return Runners[""Alex""].price == Runners[""Chris""].price + 2.0
+
+def clue2(Runners, Drinks):
+    # 3. Of the competitor who ordered a cappuccino and the competitor who ordered an espresso, one paid $9.99 and the other was Dana.
+    cappuccino_runner = Drinks[""cappuccino""].runner
+    espresso_runner = Drinks[""espresso""].runner
+    
+    # Check if one paid $9.99 and the other was Dana
+    cond1 = (Drinks[""cappuccino""].price == PRICES[""$9.99""] and espresso_runner == ""Dana"")
+    cond2 = (Drinks[""espresso""].price == PRICES[""$9.99""] and cappuccino_runner == ""Dana"")
+    
+    return cond1 or cond2
+
+def clue3(Runners, Drinks):
+    # 4. Dana paid 1 dollar more than Mark.
+    return Runners[""Dana""].price == Runners[""Mark""].price + 1.0
+
+def clue4(Runners, Drinks):
+    # 5. The participant who ordered a mocha paid more than Chris.
+    return Drinks[""mocha""].price > Runners[""Chris""].price
+
+def clue5(Runners, Drinks):
+    # 6. The contestant who paid $9.99 was either the competitor who ordered a cappuccino or the runner who ordered an espresso.
+    runner_at_999 = None
+    for runner_name, runner_obj in Runners.items():
+        if runner_obj.price == PRICES[""$9.99""]:
+            runner_at_999 = runner_name
+            break
+    
+    if runner_at_999 is None:
+        return False # Should not happen with valid input, but defensive
+        
+    return (Runners[runner_at_999].drink == ""cappuccino"" or Runners[runner_at_999].drink == ""espresso"")
+
+def verify(grid):
+    runners_data = {}
+    drinks_data = {}
+    prices_in_grid = set()
+    runners_in_grid = set()
+    drinks_in_grid = set()
+
+    # Expected entities for validation
+    expected_prices = set(PRICES.keys())
+    expected_runners = {""Alex"", ""Chris"", ""Dana"", ""Mark"", ""Sam""}
+    expected_drinks = {""cappuccino"", ""espresso"", ""latte"", ""mocha"", ""tea""}
+
+    # Parse grid into data structures
+    try:
+        for row in grid:
+            if not (isinstance(row, list) and len(row) == 3):
+                return (0.0, list(range(6))) # Malformed row
+
+            price_str, runner_name, drink_name = row
+            
+            if price_str not in PRICES or runner_name not in expected_runners or drink_name not in expected_drinks:
+                return (0.0, list(range(6))) # Unknown category item
+
+            price_val = PRICES[price_str]
+
+            # Check for duplicates within the grid rows
+            if price_str in prices_in_grid or runner_name in runners_in_grid or drink_name in drinks_in_grid:
+                return (0.0, list(range(6))) # Duplicate assignment
+
+            prices_in_grid.add(price_str)
+            runners_in_grid.add(runner_name)
+            drinks_in_grid.add(drink_name)
+
+            runners_data[runner_name] = Runner(name=runner_name, price=price_val, drink=drink_name)
+            drinks_data[drink_name] = Drink(name=drink_name, price=price_val, runner=runner_name)
+            
+    except Exception:
+        return (0.0, list(range(6))) # General parsing error
+
+    # Validate that all expected entities are present and unique
+    if not (prices_in_grid == expected_prices and runners_in_grid == expected_runners and drinks_in_grid == expected_drinks):
+        return (0.0, list(range(6)))
+
+    # Ensure all runners and drinks have been populated
+    if len(runners_data) != len(expected_runners) or len(drinks_data) != len(expected_drinks):
+        return (0.0, list(range(6)))
+
+    # Execute clues
+    clue_functions = [
+        clue0,
+        clue1,
+        clue2,
+        clue3,
+        clue4,
+        clue5,
+    ]
+
+    clue_results = []
+    for i, clue_func in enumerate(clue_functions):
+        try:
+            clue_results.append(clue_func(runners_data, drinks_data))
+        except KeyError:
+            # This can happen if a clue references an entity that wasn't properly mapped,
+            # which should be caught by the initial validation, but as a safeguard.
+            return (0.0, list(range(len(clue_functions))))
+
+    failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
+    
+    total_clues = len(clue_results)
+    satisfied_clues = sum(clue_results)
+    
+    reward = float(satisfied_clues) / total_clues if total_clues > 0 else 0.0
+    
+    return reward, failed_clues","$7.99  | Mark  | tea       
+$8.99  | Dana  | cappuccino
+$9.99  | Chris | espresso  
+$10.99 | Sam   | mocha     
+$11.99 | Alex  | latte     "
+5de0f864-7734-41f6-9b67-e05cfcf0327b,"```python
+from dataclasses import dataclass
+
+PRICES = {
+    ""$6.50"": 6.50,
+    ""$7.50"": 7.50,
+    ""$8.50"": 8.50,
+    ""$9.50"": 9.50,
+    ""$10.50"": 10.50,
+}
+
+@dataclass
+class Customer:
+    name: str
+    price: float = None
+    superfood: str = None
+
+@dataclass
+class Superfood:
+    name: str
+    price: float = None
+    customer: str = None
+
+def clue0(Customers, Superfoods):
+    # 1. James requested quinoa.
+    return Customers[""James""].superfood == ""quinoa""
+
+def clue1(Customers, Superfoods):
+    # 2. The person who paid $7.50, the person who paid $9.50, the customer who ordered kale and the customer who ordered spinach are all different people.
+    
+    # Find the customers associated with these prices and superfoods
+    customer_7_50 = None
+    customer_9_50 = None
+    customer_kale = None
+    customer_spinach = None
+
+    for customer_name, customer_obj in Customers.items():
+        if customer_obj.price == PRICES[""$7.50""]:
+            customer_7_50 = customer_name
+        if customer_obj.price == PRICES[""$9.50""]:
+            customer_9_50 = customer_name
+        if customer_obj.superfood == ""kale"":
+            customer_kale = customer_name
+        if customer_obj.superfood == ""spinach"":
+            customer_spinach = customer_name
+            
+    # Check if all four identified customers are distinct
+    # If any are None, it means the superfood/price wasn't found, which implies an invalid grid
+    if any(c is None for c in [customer_7_50, customer_9_50, customer_kale, customer_spinach]):
+        return False # Malformed grid or missing data
+
+    distinct_customers = {customer_7_50, customer_9_50, customer_kale, customer_spinach}
+    return len(distinct_customers) == 4
+
+def clue2(Customers, Superfoods):
+    # 3. Olivia paid more than Sarah.
+    return Customers[""Olivia""].price > Customers[""Sarah""].price
+
+def clue3(Customers, Superfoods):
+    # 4. The customer who ordered spinach paid 3 dollars less than the person who ordered flax seeds.
+    return Superfoods[""spinach""].price == Superfoods[""flax seeds""].price - 3.0
+
+def clue4(Customers, Superfoods):
+    # 5. Michael paid 2 dollars less than the person who requested chia seeds.
+    return Customers[""Michael""].price == Superfoods[""chia seeds""].price - 2.0
+
+def clue5(Customers, Superfoods):
+    # 6. James paid $8.50.
+    return Customers[""James""].price == PRICES[""$8.50""]
+
+def clue6(Customers, Superfoods):
+    # 7. Of the customer who paid $9.50 and the customer who paid $7.50, one asked for flax seeds and the other is Emily.
+    
+    customer_9_50_name = None
+    customer_7_50_name = None
+    
+    for customer_name, customer_obj in Customers.items():
+        if customer_obj.price == PRICES[""$9.50""]:
+            customer_9_50_name = customer_name
+        if customer_obj.price == PRICES[""$7.50""]:
+            customer_7_50_name = customer_name
+            
+    if customer_9_50_name is None or customer_7_50_name is None:
+        return False # Malformed grid, prices not found
+
+    # Check the conditions:
+    # (customer_9_50_name ordered flax seeds AND customer_7_50_name is Emily)
+    # OR
+    # (customer_7_50_name ordered flax seeds AND customer_9_50_name is Emily)
+    
+    cond1 = (Customers[customer_9_50_name].superfood == ""flax seeds"" and customer_7_50_name == ""Emily"")
+    cond2 = (Customers[customer_7_50_name].superfood == ""flax seeds"" and customer_9_50_name == ""Emily"")
+    
+    return cond1 or cond2
+
+def verify(grid):
+    customers_data = {}
+    superfoods_data = {}
+    prices_to_customer = {}
+    prices_to_superfood = {}
+
+    all_prices = set(PRICES.values())
+    all_customers = {""Emily"", ""Michael"", ""James"", ""Olivia"", ""Sarah""}
+    all_superfoods = {""quinoa"", ""chia seeds"", ""kale"", ""spinach"", ""flax seeds""}
+
+    # Defensive check for grid structure and content
+    if not isinstance(grid, list) or not all(isinstance(row, list) and len(row) == 3 for row in grid):
+        return 0.0, list(range(7)) # Total 7 clues
+
+    if len(grid) != len(all_prices):
+        return 0.0, list(range(7))
+
+    try:
+        for row in grid:
+            price_str, customer_name, superfood_name = row
+            
+            price_val = PRICES.get(price_str)
+            if price_val is None:
+                return 0.0, list(range(7))
+
+            if customer_name not in all_customers or superfood_name not in all_superfoods:
+                return 0.0, list(range(7))
+
+            # Check for uniqueness within the grid
+            if customer_name in customers_data or superfood_name in superfoods_data or \
+               price_val in prices_to_customer or price_val in prices_to_superfood:
+                return 0.0, list(range(7)) # Duplicate assignment
+
+            customers_data[customer_name] = Customer(name=customer_name, price=price_val, superfood=superfood_name)
+            superfoods_data[superfood_name] = Superfood(name=superfood_name, price=price_val, customer=customer_name)
+            prices_to_customer[price_val] = customer_name
+            prices_to_superfood[price_val] = superfood_name
+            
+        # Ensure all entities are present
+        if len(customers_data) != len(all_customers) or \
+           len(superfoods_data) != len(all_superfoods) or \
+           len(prices_to_customer) != len(all_prices):
+            return 0.0, list(range(7))
+
+    except (ValueError, KeyError, TypeError):
+        return 0.0, list(range(7)) # Malformed input
+
+    clue_functions = [
+        clue0,
+        clue1,
+        clue2,
+        clue3,
+        clue4,
+        clue5,
+        clue6,
+    ]
+
+    clue_results = []
+    for i, clue_func in enumerate(clue_functions):
+        try:
+            clue_results.append(clue_func(customers_data, superfoods_data))
+        except (KeyError, AttributeError):
+            # This can happen if a clue tries to access a non-existent entity due to malformed input
+            # or if the parsing logic above missed something.
+            return 0.0, list(range(len(clue_functions)))
+
+    failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
+    total_clues = len(clue_results)
+    satisfied_clues = sum(clue_results)
+
+    return float(satisfied_clues) / total_clues, failed_clues
+
+```",Incorrect verification code
+d54a2063-8b84-4650-ba9e-da50056b1532,"from dataclasses import dataclass
+
+# Mappings for categories that have a natural order or need specific values
+DOLLARS = {
+    ""$120"": 120,
+    ""$150"": 150,
+    ""$180"": 180,
+    ""$210"": 210,
+}
+DOLLAR_STRINGS = list(DOLLARS.keys())
+DOLLAR_VALUES = sorted(list(DOLLARS.values())) # Used for ""large"" and ""small"" interpretation
+
+ARTISANS = [""Adam"", ""Elizabeth"", ""Olivia"", ""William""]
+CLAYS = [""terracotta"", ""porcelain"", ""stoneware"", ""clay""]
+SHAPES = [""round"", ""square"", ""rectangular"", ""oval""]
+
+# Define dataclass for a Planter, which will hold all attributes for a given dollar value.
+@dataclass
+class Planter:
+    dollar_str: str
+    dollar_val: int
+    artisan: str = None
+    clay: str = None
+    shape: str = None
+
+# --- Clue Functions ---
+# These functions will take the parsed data structures as arguments.
+# ""large planter"" is interpreted as the planter with the highest dollar value ($210).
+# ""small planter"" is interpreted as the planter with the lowest dollar value ($120).
+
+def clue0(planters_by_dollar, artisan_map, clay_map, shape_map):
+    # 1.The large planter costs 30 dollars more than the one made of terracotta.
+    large_planter_dollar_val = DOLLAR_VALUES[-1] # $210
+    return planters_by_dollar[large_planter_dollar_val].dollar_val == clay_map[""terracotta""].dollar_val + 30
+
+def clue1(planters_by_dollar, artisan_map, clay_map, shape_map):
+    # 2.Elizabeth's planter isn't the square-shaped one.
+    return artisan_map[""Elizabeth""].shape != ""square""
+
+def clue2(planters_by_dollar, artisan_map, clay_map, shape_map):
+    # 3.The round planter is either the $150 item or the one made of porcelain.
+    round_planter = shape_map[""round""]
+    return round_planter.dollar_val == DOLLARS[""$150""] or round_planter.clay == ""porcelain""
+
+def clue3(planters_by_dollar, artisan_map, clay_map, shape_map):
+    # 4.Adam's planter isn't the large one.
+    large_planter_dollar_val = DOLLAR_VALUES[-1] # $210
+    return artisan_map[""Adam""].dollar_val != large_planter_dollar_val
+
+def clue4(planters_by_dollar, artisan_map, clay_map, shape_map):
+    # 5.The piece made of porcelain costs 50 dollars more than the rectangular planter.
+    return clay_map[""porcelain""].dollar_val == shape_map[""rectangular""].dollar_val + 50
+
+def clue5(planters_by_dollar, artisan_map, clay_map, shape_map):
+    # 6.Of the small and Olivia's planter, one costs $150 and the other was made of stoneware.
+    small_planter_dollar_val = DOLLAR_VALUES[0] # $120
+
+    # The small planter *is* the $120 planter, so it cannot cost $150.
+    # Therefore, Olivia's planter must cost $150, and the small planter must be made of stoneware.
+    olivia_planter = artisan_map[""Olivia""]
+    small_planter = planters_by_dollar[small_planter_dollar_val]
+
+    return olivia_planter.dollar_val == DOLLARS[""$150""] and small_planter.clay == ""stoneware""
+
+def clue6(planters_by_dollar, artisan_map, clay_map, shape_map):
+    # 7.Adam's planter is either the item made of terracotta or the item made of porcelain.
+    adam_planter = artisan_map[""Adam""]
+    return adam_planter.clay == ""terracotta"" or adam_planter.clay == ""porcelain""
+
+def clue7(planters_by_dollar, artisan_map, clay_map, shape_map):
+    # 8.The item made of stoneware costs 50 dollars less than the oval planter.
+    return clay_map[""stoneware""].dollar_val == shape_map[""oval""].dollar_val - 50
+
+# --- Main Verification Function ---
+
+def verify(grid):
+    total_clues = 8
+    clue_functions = [
+        clue0, clue1, clue2, clue3, clue4, clue5, clue6, clue7
+    ]
+
+    # --- Input Validation and Parsing ---
+    # Check if grid has the correct number of rows
+    if not grid or len(grid) != len(DOLLAR_STRINGS):
+        return 0.0, list(range(total_clues))
+
+    planters_by_dollar = {}
+    artisan_map = {}
+    clay_map = {}
+    shape_map = {}
+
+    # Keep track of used values to check for uniqueness within categories
+    used_artisans = set()
+    used_clays = set()
+    used_shapes = set()
+    used_dollars = set()
+
+    for row_idx, row in enumerate(grid):
+        # Check if each row has the correct number of columns
+        if len(row) != 4: # Expected columns: Dollar, Artisan, Clay, Shape
+            return 0.0, list(range(total_clues))
+
+        dollar_str, artisan, clay, shape = row[0], row[1], row[2], row[3]
+
+        # Validate values against predefined sets
+        if dollar_str not in DOLLARS or \
+           artisan not in ARTISANS or \
+           clay not in CLAYS or \
+           shape not in SHAPES:
+            return 0.0, list(range(total_clues))
+
+        dollar_val = DOLLARS[dollar_str]
+
+        # Check for uniqueness across categories
+        if dollar_val in used_dollars or \
+           artisan in used_artisans or \
+           clay in used_clays or \
+           shape in used_shapes:
+            return 0.0, list(range(total_clues))
+
+        used_dollars.add(dollar_val)
+        used_artisans.add(artisan)
+        used_clays.add(clay)
+        used_shapes.add(shape)
+
+        # Create Planter object
+        planter = Planter(
+            dollar_str=dollar_str,
+            dollar_val=dollar_val,
+            artisan=artisan,
+            clay=clay,
+            shape=shape
+        )
+
+        # Populate maps for easy lookup
+        planters_by_dollar[dollar_val] = planter
+        artisan_map[artisan] = planter
+        clay_map[clay] = planter
+        shape_map[shape] = planter
+    
+    # Ensure all categories have been completely filled (e.g., if grid was too short or values missing)
+    if len(used_dollars) != len(DOLLAR_STRINGS) or \
+       len(used_artisans) != len(ARTISANS) or \
+       len(used_clays) != len(CLAYS) or \
+       len(used_shapes) != len(SHAPES):
+        return 0.0, list(range(total_clues))
+
+    # --- Evaluate Clues ---
+    clue_results = []
+    for i, clue_func in enumerate(clue_functions):
+        try:
+            clue_results.append(clue_func(planters_by_dollar, artisan_map, clay_map, shape_map))
+        except KeyError:
+            # This should ideally be prevented by the comprehensive input validation above,
+            # but serves as a defensive measure against unexpected data access issues.
+            return 0.0, list(range(total_clues))
+
+    failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
+    
+    reward = float(sum(clue_results)) / total_clues
+    return reward, failed_clues",Incorrect verification code
+2d427a01-6fd1-468a-bbfa-a0d1f644629d,"import collections
+import itertools
+
+def verify(grid):
+    # Define categories and their possible values
+    YEARS = {""1904"": 0, ""1912"": 1, ""1920"": 2, ""1928"": 3}
+    CITIES = {""Cairo"", ""London"", ""New York"", ""Tokyo""}
+    ADDRESSEES = {""Ada Bell"", ""Fay Morris"", ""Ida Shaw"", ""Roy Grant""}
+    DESTINATIONS = {""Ashton"", ""Dunmore"", ""Elkridge"", ""Fairhaven""}
+
+    # --- Data Structures for easier access ---
+    # We'll create mappings from each entity type to its associated properties.
+    # For example, Years_map[year_str] will give an object with city, addressee, destination.
+    # And Cities_map[city_str] will give an object with year, addressee, destination.
+
+    # Helper class to hold properties of an item (e.g., a postcard)
+    # Using a simple dict-like structure for flexibility without dataclasses
+    # to avoid importing dataclasses.
+    class Item:
+        def __init__(self, year=None, city=None, addressee=None, destination=None):
+            self.year = year
+            self.city = city
+            self.addressee = addressee
+            self.destination = destination
+
+        def __repr__(self):
+            return (f""Item(year={self.year}, city={self.city}, ""
+                    f""addressee={self.addressee}, destination={self.destination})"")
+
+    # Initialize maps
+    Years_map = {}
+    Cities_map = {}
+    Addressees_map = {}
+    Destinations_map = {}
+
+    # Populate maps from the grid
+    # Expected grid format: [['Year', 'City', 'Addressee', 'Destination'], ...]
+    try:
+        if not (isinstance(grid, list) and len(grid) == 4):
+            raise ValueError(""Invalid grid structure: expected 4 rows."")
+
+        for row_idx, row in enumerate(grid):
+            if not (isinstance(row, list) and len(row) == 4):
+                raise ValueError(f""Invalid row structure at index {row_idx}: expected 4 columns."")
+
+            year_str, city_str, addressee_str, destination_str = row
+
+            # Validate values against known sets
+            if year_str not in YEARS:
+                raise ValueError(f""Invalid year '{year_str}' in row {row_idx}."")
+            if city_str not in CITIES:
+                raise ValueError(f""Invalid city '{city_str}' in row {row_idx}."")
+            if addressee_str not in ADDRESSEES:
+                raise ValueError(f""Invalid addressee '{addressee_str}' in row {row_idx}."")
+            if destination_str not in DESTINATIONS:
+                raise ValueError(f""Invalid destination '{destination_str}' in row {row_idx}."")
+
+            # Check for uniqueness within categories (each value should appear exactly once)
+            if year_str in Years_map:
+                raise ValueError(f""Duplicate year '{year_str}' found."")
+            if city_str in Cities_map:
+                raise ValueError(f""Duplicate city '{city_str}' found."")
+            if addressee_str in Addressees_map:
+                raise ValueError(f""Duplicate addressee '{addressee_str}' found."")
+            if destination_str in Destinations_map:
+                raise ValueError(f""Duplicate destination '{destination_str}' found."")
+
+            # Create Item objects and populate maps
+            item = Item(year=year_str, city=city_str, addressee=addressee_str, destination=destination_str)
+            Years_map[year_str] = item
+            Cities_map[city_str] = item
+            Addressees_map[addressee_str] = item
+            Destinations_map[destination_str] = item
+
+    except (ValueError, TypeError):
+        # If any parsing or validation fails, return 0 reward and all clues failed.
+        total_clues = 6
+        return 0.0, list(range(total_clues))
+
+    # --- Clue Definitions ---
+    clue_results = [False] * 6 # Initialize with False for all clues
+
+    # 1. The postcard mailed in 1920 wasn't mailed to Dunmore.
+    clue_results[0] = Years_map[""1920""].destination != ""Dunmore""
+
+    # 2. The postcard mailed in 1912 wasn't addressed to Ida Shaw.
+    clue_results[1] = Years_map[""1912""].addressee != ""Ida Shaw""
+
+    # 3. Of the postcard sent to Fay Morris and the postcard mailed to Fairhaven, one was from New York and the other was posted in 1920.
+    # Let A be the postcard sent to Fay Morris (Addressees_map[""Fay Morris""])
+    # Let B be the postcard mailed to Fairhaven (Destinations_map[""Fairhaven""])
+    # Condition: (A.city == ""New York"" AND B.year == ""1920"") OR (B.city == ""New York"" AND A.year == ""1920"")
+    # And A and B must be different postcards.
+    item_fay_morris = Addressees_map[""Fay Morris""]
+    item_fairhaven = Destinations_map[""Fairhaven""]
+    
+    cond1 = (item_fay_morris.city == ""New York"" and item_fairhaven.year == ""1920"")
+    cond2 = (item_fairhaven.city == ""New York"" and item_fay_morris.year == ""1920"")
+    
+    # Ensure they are distinct items (i.e., not the same postcard)
+    # They are distinct if their years are different, or cities, etc.
+    # Since each item has a unique year, checking year is sufficient.
+    distinct_items = (item_fay_morris.year != item_fairhaven.year)
+
+    clue_results[2] = (cond1 or cond2) and distinct_items
+
+    # 4. The postcard from New York was posted in 1928.
+    clue_results[3] = Cities_map[""New York""].year == ""1928""
+
+    # 5. Of the postcard mailed to Ashton and the postcard from Cairo, one was addressed to Fay Morris and the other was addressed to Roy Grant.
+    # Let A be the postcard mailed to Ashton (Destinations_map[""Ashton""])
+    # Let B be the postcard from Cairo (Cities_map[""Cairo""])
+    # Condition: (A.addressee == ""Fay Morris"" AND B.addressee == ""Roy Grant"") OR (B.addressee == ""Fay Morris"" AND A.addressee == ""Roy Grant"")
+    # And A and B must be different postcards.
+    item_ashton = Destinations_map[""Ashton""]
+    item_cairo = Cities_map[""Cairo""]
+
+    cond1 = (item_ashton.addressee == ""Fay Morris"" and item_cairo.addressee == ""Roy Grant"")
+    cond2 = (item_cairo.addressee == ""Fay Morris"" and item_ashton.addressee == ""Roy Grant"")
+
+    distinct_items = (item_ashton.year != item_cairo.year)
+
+    clue_results[4] = (cond1 or cond2) and distinct_items
+
+    # 6. The postcard from London was mailed sometime after the card mailed to Ashton.
+    # This means the year of the London postcard is numerically greater than the year of the Ashton postcard.
+    # We use the numerical mapping for years defined at the top.
+    london_year_val = YEARS[Cities_map[""London""].year]
+    ashton_year_val = YEARS[Destinations_map[""Ashton""].year]
+    clue_results[5] = london_year_val > ashton_year_val
+
+    # --- Calculate Reward ---
+    total_clues = len(clue_results)
+    satisfied_clues = sum(1 for result in clue_results if result)
+    failed_clues = [idx for idx, result in enumerate(clue_results) if not result]
+
+    reward = float(satisfied_clues) / total_clues
+    return reward, failed_clues","1904 | Tokyo    | Roy Grant  | Ashton   
+1912 | London   | Ada Bell   | Dunmore  
+1920 | Cairo    | Fay Morris | Elkridge 
+1928 | New York | Ida Shaw   | Fairhaven"
+c35f2460-5b2c-48d1-bce5-f39f3bab9dc7,"from dataclasses import dataclass
+
+PRICES = {
+    ""$24.99"": 24.99,
+    ""$25.99"": 25.99,
+    ""$26.99"": 26.99,
+    ""$27.99"": 27.99,
+}
+
+@dataclass
+class Person:
+    name: str
+    price: float = None
+    wine: str = None
+    entree: str = None
+
+@dataclass
+class Wine:
+    name: str
+    person: str = None
+    price: float = None
+    entree: str = None
+
+@dataclass
+class Entree:
+    name: str
+    person: str = None
+    price: float = None
+    wine: str = None
+
+def clue0(People, Wines, Entrees):
+    beef_stir_fry_diner_price = Entrees[""beef stir-fry""].price
+    if beef_stir_fry_diner_price is None:
+        return False
+    return People[""Lynda""].price == beef_stir_fry_diner_price + 2.0
+
+def clue1(People, Wines, Entrees):
+    beef_stir_fry_diner_wine = Entrees[""beef stir-fry""].wine
+    return beef_stir_fry_diner_wine in {""merlot"", ""bordeaux""}
+
+def clue2(People, Wines, Entrees):
+    person_paid_26_99_wine = None
+    for person in People.values():
+        if person.price == PRICES[""$26.99""]:
+            person_paid_26_99_wine = person.wine
+            break
+    return person_paid_26_99_wine != ""zinfandel""
+
+def clue3(People, Wines, Entrees):
+    chianti_diner_price = Wines[""chianti""].price
+    filet_mignon_diner_price = Entrees[""filet mignon""].price
+    if chianti_diner_price is None or filet_mignon_diner_price is None:
+        return False
+    return chianti_diner_price == filet_mignon_diner_price - 2.0
+
+def clue4(People, Wines, Entrees):
+    merlot_diner_price = Wines[""merlot""].price
+    merlot_diner_entree = Wines[""merlot""].entree
+    chianti_diner_price = Wines[""chianti""].price
+    chianti_diner_entree = Wines[""chianti""].entree
+
+    condition1 = (merlot_diner_price == PRICES[""$25.99""] and chianti_diner_entree == ""lobster tail"")
+    condition2 = (chianti_diner_price == PRICES[""$25.99""] and merlot_diner_entree == ""lobster tail"")
+    
+    return condition1 or condition2
+
+def clue5(People, Wines, Entrees):
+    beef_stir_fry_diner_price = Entrees[""beef stir-fry""].price
+    if beef_stir_fry_diner_price is None:
+        return False
+    return beef_stir_fry_diner_price == People[""Frances""].price + 1.0
+
+def clue6(People, Wines, Entrees):
+    beef_stir_fry_diner_price = Entrees[""beef stir-fry""].price
+    
+    willie_paid_27_99 = People[""Willie""].price == PRICES[""$27.99""]
+    beef_stir_fry_diner_paid_27_99 = beef_stir_fry_diner_price == PRICES[""$27.99""]
+
+    return not (willie_paid_27_99 or beef_stir_fry_diner_paid_27_99)
+
+def verify(grid):
+    total_clues = 7
+    
+    expected_categories = [""Prices"", ""Names"", ""Wines"", ""Entrees""]
+    expected_prices = {""$24.99"", ""$25.99"", ""$26.99"", ""$27.99""}
+    expected_names = {""Frances"", ""Genevieve"", ""Lynda"", ""Willie""}
+    expected_wines = {""bordeaux"", ""chianti"", ""merlot"", ""zinfandel""}
+    expected_entrees = {""beef stir-fry"", ""filet mignon"", ""lobster tail"", ""pork chops""}
+
+    if not (isinstance(grid, list) and len(grid) == 4):
+        return (0.0, list(range(total_clues)))
+    
+    all_prices = set()
+    all_names = set()
+    all_wines = set()
+    all_entrees = set()
+
+    parsed_data = []
+    for row in grid:
+        if not (isinstance(row, list) and len(row) == 4):
+            return (0.0, list(range(total_clues)))
+        
+        price_str, name, wine, entree = row
+        
+        if price_str not in PRICES or name not in expected_names or \
+           wine not in expected_wines or entree not in expected_entrees:
+            return (0.0, list(range(total_clues)))
+        
+        all_prices.add(price_str)
+        all_names.add(name)
+        all_wines.add(wine)
+        all_entrees.add(entree)
+        
+        parsed_data.append({
+            ""price_str"": price_str,
+            ""price_val"": PRICES[price_str],
+            ""name"": name,
+            ""wine"": wine,
+            ""entree"": entree
+        })
+
+    if not (len(all_prices) == 4 and len(all_names) == 4 and 
+            len(all_wines) == 4 and len(all_entrees) == 4):
+        return (0.0, list(range(total_clues)))
+
+    People = {}
+    Wines = {}
+    Entrees = {}
+
+    for item in parsed_data:
+        People[item[""name""]] = Person(
+            name=item[""name""],
+            price=item[""price_val""],
+            wine=item[""wine""],
+            entree=item[""entree""]
+        )
+        Wines[item[""wine""]] = Wine(
+            name=item[""wine""],
+            person=item[""name""],
+            price=item[""price_val""],
+            entree=item[""entree""]
+        )
+        Entrees[item[""entree""]] = Entree(
+            name=item[""entree""],
+            person=item[""name""],
+            price=item[""price_val""],
+            wine=item[""wine""]
+        )
+
+    clue_results = [
+        clue0(People, Wines, Entrees),
+        clue1(People, Wines, Entrees),
+        clue2(People, Wines, Entrees),
+        clue3(People, Wines, Entrees),
+        clue4(People, Wines, Entrees),
+        clue5(People, Wines, Entrees),
+        clue6(People, Wines, Entrees),
+    ]
+
+    failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
+    return float(sum(clue_results)) / total_clues, failed_clues",Incorrect verification code
+e78c8405-e44f-4ee0-a389-a6681a974349,"```python
+from dataclasses import dataclass
+
+PRICES = {
+    ""$24.99"": 24.99,
+    ""$25.99"": 25.99,
+    ""$26.99"": 26.99,
+    ""$27.99"": 27.99,
+}
+
+@dataclass
+class Price:
+    value: float
+    name: str = None
+    genre: str = None
+    book: str = None
+
+@dataclass
+class Name:
+    name: str
+    price: float = None
+    genre: str = None
+    book: str = None
+
+@dataclass
+class Genre:
+    genre: str
+    price: float = None
+    name: str = None
+    book: str = None
+
+@dataclass
+class Book:
+    book: str
+    price: float = None
+    name: str = None
+    genre: str = None
+
+def clue0(Prices, Names, Genres, Books):
+    # 1. Margaret spent 3 dollars more than the person who bought the mystery novel.
+    mystery_novel_buyer_price = Books[""mystery novel""].price
+    return Names[""Margaret""].price == mystery_novel_buyer_price + 3
+
+def clue1(Prices, Names, Genres, Books):
+    # 2. The person who bought the mystery novel was either the one who selected fantasy or the one who selected science fiction.
+    mystery_novel_buyer_name = Books[""mystery novel""].name
+    return (
+        Names[mystery_novel_buyer_name].genre == ""fantasy""
+        or Names[mystery_novel_buyer_name].genre == ""science fiction""
+    )
+
+def clue2(Prices, Names, Genres, Books):
+    # 3. The individual who paid $28.99 did not choose the romance genre.
+    # Note: $28.99 is not in the provided PRICES, so this clue implies that
+    # if someone paid $28.99, they didn't choose romance.
+    # Since $28.99 is not an option, this clue is vacuously true if no one paid $28.99.
+    # If the puzzle implies that $28.99 is a possible price, but not in the grid,
+    # then this clue is always true for any valid grid based on the provided prices.
+    # We will assume that if a price is not in the PRICES dict, it cannot be matched.
+    # The clue states ""The individual who paid $28.99"", implying such an individual exists.
+    # However, $28.99 is not in the given price list. This means no one in the grid
+    # could have paid $28.99. Therefore, the condition ""did not choose the romance genre""
+    # is vacuously true for any person who paid $28.99 (because no such person exists in the grid).
+    # This clue is always true given the provided price points.
+    return True
+
+def clue3(Prices, Names, Genres, Books):
+    # 4. The person who selected the sci-fi book spent 1 dollar less than the one who purchased the thriller.
+    sci_fi_price = Genres[""science fiction""].price
+    thriller_price = Books[""thriller""].price
+    return sci_fi_price == thriller_price - 1
+
+def clue4(Prices, Names, Genres, Books):
+    # 5. Of the ones who chose fantasy and science fiction, one spent $27.99 and the other bought the historical fiction novel.
+    fantasy_person = Genres[""fantasy""]
+    sci_fi_person = Genres[""science fiction""]
+
+    condition1 = (fantasy_person.price == PRICES[""$27.99""] and sci_fi_person.book == ""historical fiction"")
+    condition2 = (sci_fi_person.price == PRICES[""$27.99""] and fantasy_person.book == ""historical fiction"")
+    
+    return condition1 or condition2
+
+def clue5(Prices, Names, Genres, Books):
+    # 6. The person who bought the mystery novel paid 2 dollars more than David.
+    mystery_novel_buyer_price = Books[""mystery novel""].price
+    david_price = Names[""David""].price
+    return mystery_novel_buyer_price == david_price + 2
+
+def clue6(Prices, Names, Genres, Books):
+    # 7. Neither Emily nor the person who bought the mystery novel was the one who spent $29.99.
+    # Similar to clue 2, $29.99 is not in the provided PRICES.
+    # This means no one in the grid could have spent $29.99.
+    # Therefore, the condition ""was not the one who spent $29.99"" is vacuously true for Emily
+    # and for the person who bought the mystery novel.
+    # This clue is always true given the provided price points.
+    return True
+
+def verify(grid):
+    # Expected categories: Prices, Names, Genres, Books
+    # Grid columns: Price, Name, Genre, Book
+    
+    # Defensive checks for grid structure and content
+    if not isinstance(grid, list) or not all(isinstance(row, list) for row in grid):
+        return 0.0, list(range(7)) # Total 7 clues
+
+    if len(grid) != len(PRICES):
+        return 0.0, list(range(7))
+
+    # Initialize dictionaries to store parsed data
+    Prices_map = {}
+    Names_map = {}
+    Genres_map = {}
+    Books_map = {}
+
+    # Populate maps from grid
+    try:
+        for row in grid:
+            if len(row) != 4: # Expecting 4 columns
+                return 0.0, list(range(7))
+
+            price_str, name_str, genre_str, book_str = row
+            
+            if price_str not in PRICES:
+                return 0.0, list(range(7))
+            price_val = PRICES[price_str]
+
+            # Check for uniqueness within categories
+            if price_val in Prices_map: return 0.0, list(range(7))
+            if name_str in Names_map: return 0.0, list(range(7))
+            if genre_str in Genres_map: return 0.0, list(range(7))
+            if book_str in Books_map: return 0.0, list(range(7))
+
+            Prices_map[price_val] = Price(value=price_val, name=name_str, genre=genre_str, book=book_str)
+            Names_map[name_str] = Name(name=name_str, price=price_val, genre=genre_str, book=book_str)
+            Genres_map[genre_str] = Genre(genre=genre_str, price=price_val, name=name_str, book=book_str)
+            Books_map[book_str] = Book(book=book_str, price=price_val, name=name_str, genre=genre_str)
+
+    except (KeyError, ValueError, TypeError):
+        # Handle cases where values are not in expected sets or types
+        return 0.0, list(range(7))
+
+    # Ensure all expected entities are present in the maps
+    expected_names = {""David"", ""Emily"", ""Margaret"", ""Nathan""}
+    expected_genres = {""fantasy"", ""mystery"", ""romance"", ""science fiction""}
+    expected_books = {""historical fiction"", ""mystery novel"", ""thriller"", ""western""}
+    expected_prices_values = set(PRICES.values())
+
+    if not (set(Names_map.keys()) == expected_names and
+            set(Genres_map.keys()) == expected_genres and
+            set(Books_map.keys()) == expected_books and
+            set(Prices_map.keys()) == expected_prices_values):
+        return 0.0, list(range(7))
+
+    clue_functions = [
+        clue0,
+        clue1,
+        clue2,
+        clue3,
+        clue4,
+        clue5,
+        clue6,
+    ]
+
+    clue_results = []
+    for i, clue_func in enumerate(clue_functions):
+        try:
+            clue_results.append(clue_func(Prices_map, Names_map, Genres_map, Books_map))
+        except Exception:
+            # If any clue function fails due to missing data (e.g., a key not found
+            # that should have been caught by initial parsing), mark all as failed.
+            return 0.0, list(range(len(clue_functions)))
+
+    failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
+    total_clues = len(clue_results)
+    satisfied_clues = sum(clue_results)
+
+    return float(satisfied_clues) / total_clues, failed_clues
+
+```",Incorrect verification code
+8168dc5e-3497-4588-90e0-93609aec540b,"import collections
+
+def verify(grid):
+    # Define categories and their possible values
+    ALTITUDES = {
+        ""50 feet"": 50,
+        ""60 feet"": 60,
+        ""75 feet"": 75,
+        ""80 feet"": 80,
+    }
+    STUDENTS = {""Adam"", ""Olivia"", ""Sarah"", ""Nathan""}
+    COLORS = {""blue"", ""red"", ""black"", ""white""}
+    ORDER = {
+        ""1st"": 1,
+        ""2nd"": 2,
+        ""3rd"": 3,
+        ""6th"": 6,
+    }
+
+    # --- Data Parsing and Validation ---
+    if not isinstance(grid, list) or not grid:
+        return 0.0, list(range(7)) # Total 7 clues
+
+    parsed_data = collections.defaultdict(dict)
+    
+    # Expected columns: Altitude, Student, Color, Order
+    expected_num_cols = 4
+    
+    # Use a set to track uniqueness for each category
+    seen_altitudes = set()
+    seen_students = set()
+    seen_colors = set()
+    seen_orders = set()
+
+    try:
+        for r_idx, row in enumerate(grid):
+            if not isinstance(row, list) or len(row) != expected_num_cols:
+                return 0.0, list(range(7))
+
+            altitude_str, student, color, order_str = row
+
+            # Validate and convert values
+            if altitude_str not in ALTITUDES: return 0.0, list(range(7))
+            altitude_val = ALTITUDES[altitude_str]
+            if student not in STUDENTS: return 0.0, list(range(7))
+            if color not in COLORS: return 0.0, list(range(7))
+            if order_str not in ORDER: return 0.0, list(range(7))
+            order_val = ORDER[order_str]
+
+            # Check for uniqueness within categories
+            if altitude_val in seen_altitudes: return 0.0, list(range(7))
+            seen_altitudes.add(altitude_val)
+            if student in seen_students: return 0.0, list(range(7))
+            seen_students.add(student)
+            if color in seen_colors: return 0.0, list(range(7))
+            seen_colors.add(color)
+            if order_val in seen_orders: return 0.0, list(range(7))
+            seen_orders.add(order_val)
+
+            # Store data in maps for easy lookup
+            # Each rocket is defined by its altitude, and we can look up its other properties
+            parsed_data[altitude_val][""student""] = student
+            parsed_data[altitude_val][""color""] = color
+            parsed_data[altitude_val][""order""] = order_val
+
+            # Also create reverse lookups for convenience
+            parsed_data[""by_student""][student] = {
+                ""altitude"": altitude_val,
+                ""color"": color,
+                ""order"": order_val,
+            }
+            parsed_data[""by_color""][color] = {
+                ""altitude"": altitude_val,
+                ""student"": student,
+                ""order"": order_val,
+            }
+            parsed_data[""by_order""][order_val] = {
+                ""altitude"": altitude_val,
+                ""student"": student,
+                ""color"": color,
+            }
+        
+        # Ensure all expected entities are present (e.g., 4 rockets)
+        if len(parsed_data) - 3 != len(ALTITUDES): # -3 for the 'by_student', 'by_color', 'by_order' keys
+             return 0.0, list(range(7))
+
+    except (KeyError, ValueError, TypeError):
+        return 0.0, list(range(7))
+
+    # --- Clue Checks ---
+    clue_results = [False] * 7
+
+    # 1. The rocket that reached 50 feet wasn't red.
+    clue_results[0] = parsed_data[50][""color""] != ""red""
+
+    # 2. The rocket that reached 75 feet was black.
+    clue_results[1] = parsed_data[75][""color""] == ""black""
+
+    # 3. Adam's design was black.
+    clue_results[2] = parsed_data[""by_student""][""Adam""][""color""] == ""black""
+
+    # 4. The black rocket reached 15 feet higher than the rocket that was launched first.
+    black_rocket_altitude = parsed_data[""by_color""][""black""][""altitude""]
+    first_rocket_altitude = parsed_data[""by_order""][1][""altitude""]
+    clue_results[3] = black_rocket_altitude == first_rocket_altitude + 15
+
+    # 5. The rocket that was launched 6th reached 10 feet less than Olivia's design.
+    sixth_rocket_altitude = parsed_data[""by_order""][6][""altitude""]
+    olivia_rocket_altitude = parsed_data[""by_student""][""Olivia""][""altitude""]
+    clue_results[4] = sixth_rocket_altitude == olivia_rocket_altitude - 10
+
+    # 6. Of the blue rocket and the red rocket, one was launched 6th and the other was Sarah's.
+    blue_rocket_order = parsed_data[""by_color""][""blue""][""order""]
+    red_rocket_order = parsed_data[""by_color""][""red""][""order""]
+    blue_rocket_student = parsed_data[""by_color""][""blue""][""student""]
+    red_rocket_student = parsed_data[""by_color""][""red""][""student""]
+
+    condition_a = (blue_rocket_order == 6 and red_rocket_student == ""Sarah"")
+    condition_b = (red_rocket_order == 6 and blue_rocket_student == ""Sarah"")
+    clue_results[5] = condition_a or condition_b
+
+    # 7. Adam's design was either the rocket that was launched 1st or the rocket that was launched 2nd.
+    adam_rocket_order = parsed_data[""by_student""][""Adam""][""order""]
+    clue_results[6] = adam_rocket_order == 1 or adam_rocket_order == 2
+
+    # --- Reward Calculation ---
+    total_clues = len(clue_results)
+    satisfied_clues = sum(1 for result in clue_results if result)
+    failed_clues = [idx for idx, result in enumerate(clue_results) if not result]
+
+    reward = float(satisfied_clues) / total_clues
+    return reward, failed_clues","50 feet | Nathan | blue  | 6th
+60 feet | Olivia | white | 1st
+80 feet | Sarah  | red   | 3rd
+75 feet | Adam   | black | 2nd"
+1a90154a-be5c-43bd-ab67-15b3c4d31cde,"```python
+from dataclasses import dataclass
+
+# Mappings for categorical data to allow numerical comparisons where appropriate
+YEAR_SENT_ORDER = {
+    ""1962"": 0,
+    ""1969"": 1,
+    ""1976"": 2,
+    ""1983"": 3,
+}
+
+YEAR_FOUND_ORDER = {
+    ""2010"": 0,
+    ""2011"": 1,
+    ""2013"": 2,
+    ""2015"": 3,
+}
+
+# Define dataclasses for each primary entity type to hold its attributes.
+# This allows easy access to related properties (e.g., a Writer's year_sent).
+
+@dataclass
+class BottleByYearSent:
+    year_sent: str
+    writer: str = None
+    origin: str = None
+    year_found: str = None
+
+@dataclass
+class Writer:
+    name: str
+    year_sent: str = None
+    origin: str = None
+    year_found: str = None
+
+@dataclass
+class Origin:
+    name: str
+    year_sent: str = None
+    writer: str = None
+    year_found: str = None
+
+@dataclass
+class YearFound:
+    year_found: str
+    year_sent: str = None
+    writer: str = None
+    origin: str = None
+
+# Clue functions
+# Each function takes the parsed entity maps and returns True if the clue is satisfied, False otherwise.
+
+def clue0(BottlesByYearSent, Writers, Origins, YearsFound):
+    # Clue 1: Noel's letter, the letter found in 2015 and the message that was sent in 1983 are all different letters.
+    # This means they must correspond to different 'Year Sent' values.
+    noel_year_sent = Writers[""Noel""].year_sent
+    found_2015_year_sent = YearsFound[""2015""].year_sent
+    sent_1983_year_sent = ""1983"" # This is a direct reference to a year sent
+
+    # Check if all three year_sent values are distinct
+    return len({noel_year_sent, found_2015_year_sent, sent_1983_year_sent}) == 3
+
+def clue1(BottlesByYearSent, Writers, Origins, YearsFound):
+    # Clue 2: Victor's letter, the message that was sent in 1983, and the bottle from Bournemouth are three different letters.
+    # This means they must correspond to different 'Year Sent' values.
+    victor_year_sent = Writers[""Victor""].year_sent
+    sent_1983_year_sent = ""1983"" # This is a direct reference to a year sent
+    bournemouth_year_sent = Origins[""Bournemouth""].year_sent
+
+    # Check if all three year_sent values are distinct
+    return len({victor_year_sent, sent_1983_year_sent, bournemouth_year_sent}) == 3
+
+def clue2(BottlesByYearSent, Writers, Origins, YearsFound):
+    # Clue 3: Of the message that was sent in 1976 and the message found in 2011, one is Victor's and the other was from Le Havre.
+    # This implies two possibilities:
+    # 1. The message sent in 1976 is Victor's AND the message found in 2011 is from Le Havre.
+    # 2. The message sent in 1996 is from Le Havre AND the message found in 2011 is Victor's.
+
+    sent_1976_writer = BottlesByYearSent[""1976""].writer
+    sent_1976_origin = BottlesByYearSent[""1976""].origin
+    found_2011_writer = YearsFound[""2011""].writer
+    found_2011_origin = YearsFound[""2011""].origin
+
+    condition1 = (sent_1976_writer == ""Victor"" and found_2011_origin == ""Le Havre"")
+    condition2 = (sent_1976_origin == ""Le Havre"" and found_2011_writer == ""Victor"")
+
+    return condition1 or condition2
+
+def clue3(BottlesByYearSent, Writers, Origins, YearsFound):
+    # Clue 4: The letter that was sent in 1983, the message from Le Havre, and Bernadette's missive are three different letters.
+    # This means they must correspond to different 'Year Sent' values.
+    sent_1983_year_sent = ""1983"" # This is a direct reference to a year sent
+    le_havre_year_sent = Origins[""Le Havre""].year_sent
+    bernadette_year_sent = Writers[""Bernadette""].year_sent
+
+    # Check if all three year_sent values are distinct
+    return len({sent_1983_year_sent, le_havre_year_sent, bernadette_year_sent}) == 3
+
+def clue4(BottlesByYearSent, Writers, Origins, YearsFound):
+    # Clue 5: The message found in 2015 was sent sometime before the message from Brighton.
+    found_2015_year_sent = YearsFound[""2015""].year_sent
+    brighton_year_sent = Origins[""Brighton""].year_sent
+
+    # Compare their 'Year Sent' values using the defined order
+    return YEAR_SENT_ORDER.get(found_2015_year_sent) < YEAR_SENT_ORDER.get(brighton_year_sent)
+
+def clue5(BottlesByYearSent, Writers, Origins, YearsFound):
+    # Clue 6: The bottle from Torquay was sent 14 years after the message found in 2010.
+    torquay_year_sent_str = Origins[""Torquay""].year_sent
+    found_2010_year_sent_str = YearsFound[""2010""].year_sent
+
+    # Convert year strings to integers for arithmetic comparison
+    torquay_year_sent_int = int(torquay_year_sent_str)
+    found_2010_year_sent_int = int(found_2010_year_sent_str)
+
+    return torquay_year_sent_int == found_2010_year_sent_int + 14
+
+def verify(grid):
+    # Define all possible values for each category for validation
+    all_writers = {""Bernadette"", ""Karla"", ""Noel"", ""Victor""}
+    all_origins = {""Bournemouth"", ""Brighton"", ""Le Havre"", ""Torquay""}
+    all_year_founds = {""2010"", ""2011"", ""2013"", ""2015""}
+    all_year_sents = {""1962"", ""1969"", ""1976"", ""1983""}
+
+    # Check grid shape and content validity
+    if not isinstance(grid, list) or len(grid) != 4:
+        return 0.0, list(range(6)) # 6 clues total
+
+    # Use sets to check for uniqueness within categories
+    seen_writers = set()
+    seen_origins = set()
+    seen_year_founds = set()
+    seen_year_sents = set()
+
+    # Initialize dictionaries to store parsed data, mapping entity names to their dataclass objects
+    # This allows looking up related attributes easily (e.g., Writers[""Noel""].year_sent)
+    BottlesByYearSent = {}
+    Writers = {}
+    Origins = {}
+    YearsFound = {}
+
+    try:
+        for row in grid:
+            if not isinstance(row, list) or len(row) != 4:
+                return 0.0, list(range(6))
+
+            year_sent, writer, origin, year_found = row[0], row[1], row[2], row[3]
+
+            # Validate values against predefined sets
+            if (year_sent not in all_year_sents or
+                writer not in all_writers or
+                origin not in all_origins or
+                year_found not in all_year_founds):
+                return 0.0, list(range(6))
+
+            # Check for uniqueness
+            if year_sent in seen_year_sents or \
+               writer in seen_writers or \
+               origin in seen_origins or \
+               year_found in seen_year_founds:
+                return 0.0, list(range(6))
+
+            seen_year_sents.add(year_sent)
+            seen_writers.add(writer)
+            seen_origins.add(origin)
+            seen_year_founds.add(year_found)
+
+            # Populate the lookup dictionaries
+            BottlesByYearSent[year_sent] = BottleByYearSent(year_sent=year_sent, writer=writer, origin=origin, year_found=year_found)
+            Writers[writer] = Writer(name=writer, year_sent=year_sent, origin=origin, year_found=year_found)
+            Origins[origin] = Origin(name=origin, year_sent=year_sent, writer=writer, year_found=year_found)
+            YearsFound[year_found] = YearFound(year_found=year_found, year_sent=year_sent, writer=writer, origin=origin)
+
+    except (ValueError, KeyError, TypeError):
+        # Catch errors from invalid data types or missing keys during parsing
+        return 0.0, list(range(6))
+
+    # Ensure all categories have been fully populated (i.e., all 4 items for each)
+    if not (len(BottlesByYearSent) == 4 and len(Writers) == 4 and len(Origins) == 4 and len(YearsFound) == 4):
+        return 0.0, list(range(6))
+
+    # List of all clue functions
+    clue_functions = [
+        clue0,
+        clue1,
+        clue2,
+        clue3,
+        clue4,
+        clue5,
+    ]
+
+    clue_results = []
+    for i, clue_func in enumerate(clue_functions):
+        try:
+            clue_results.append(clue_func(BottlesByYearSent, Writers, Origins, YearsFound))
+        except (KeyError, AttributeError, TypeError):
+            # If a clue function fails due to missing data (e.g., a key not found),
+            # it means the grid is malformed or incomplete for that clue.
+            # Treat this as a failed clue and prevent further execution of this clue.
+            clue_results.append(False)
+
+    failed_clues = [idx for idx, ok in enumerate(clue_results) if not ok]
+    total_clues = len(clue_results)
+    satisfied_clues = sum(1 for ok in clue_results if ok)
+
+    reward = float(satisfied_clues) / total_clues if total_clues > 0 else 0.0
+    return reward, failed_clues
+
+```","1962 | Bernadette | Bournemouth | 2015
+1969 | Noel       | Brighton    | 2010
+1976 | Victor     | Le Havre    | 2011
+1983 | Karla      | Torquay     | 2013"

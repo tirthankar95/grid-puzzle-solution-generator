@@ -1,34 +1,22 @@
+input_file: data/grid-puzzles-sample.csv
+output_file: data/run1/grid-puzzles-sample-verifier(asp).csv
+save_results: true
+
 llm:
   provider: openai
   model_name: local
   api_key: X
 
-
 llm_verifier_py:
-  input_file: data/old/grid-puzzles-sample.csv
-  output_file: data/old/grid-puzzles-sample-verifier(py)B.csv
   enable: true
-  save_results: true
-
 
 llm_verifier_asp:
-  input_file: data/grid-puzzles-sample.csv
-  output_file: data/run1/grid-puzzles-sample-verifier(asp).csv
   enable: false
-  save_results: true
-
 
 llm_direct:
-  input_file: data/old/grid-puzzles-sample.csv
-  output_file: data/old/grid-puzzles-sample-direct.csv
   enable: false
-  save_results: true
-
 
 run_llm_verifier:
   type: py
   main_file: data/grid-puzzles-sample.csv
-  input_file: data/run1/grid-puzzles-sample-verifier(py).csv
-  output_file: data/run1/grid-puzzles-sample-verifier(py).csv
   enable: false
-  save_results: true
