@@ -3851,7 +3851,43 @@ Solve the grid puzzle by filling the table:
 
 Use the clues to fill the table with the following categories:
 People: Gil Gallegos, Ida Ingram, Joseph Jakes, Nadine Newton
-Countries: Ireland, France, Germany, Mexico",d88eb6de00edae63bd0bd637dbe2addc,,
+Countries: Ireland, France, Germany, Mexico",d88eb6de00edae63bd0bd637dbe2addc,"% ---- Domains ----
+wealths(25; 26; 27; 28).
+peoples(gil; ida; joseph; nadine).
+countries(ireland; france; germany; mexico).
+
+% ---- Assignment ----
+1 {people(P, W): peoples(P)} 1 :- wealths(W).
+1 {people(P, W): wealths(W)} 1 :- peoples(P).
+
+1 {country(C, W): countries(C)} 1 :- wealths(W).
+1 {country(C, W): wealths(W)} 1 :- countries(C).
+
+% ---- Clues ----
+%Clue 1: Gil Gallegos is worth 2 billion less than Nadine Newton.
+o1 :- people(gil, W1), people(nadine, W2), W1 + 2 == W2.
+:- not o1.
+
+%Clue 2: Of the tycoon worth $25 billion and Gil Gallegos, one is from France and the other is from Mexico.
+o2_1 :- people(gil, W2), W1 = 25, W1 != W2, country(france, W1), country(mexico, W2).
+o2_2 :- people(gil, W2), W1 = 25, W1 != W2, country(mexico, W1), country(france, W2).
+:- not 1 {o2_1; o2_2} 1.
+
+%Clue 3: Ida Ingram is from Germany.
+o3 :- people(ida, W), country(germany, W).
+:- not o3.
+
+%Clue 4: Joseph Jakes is from Mexico.
+o4 :- people(joseph, W), country(mexico, W).
+:- not o4.
+
+%Clue 5: The person in Germany has more wealth than the person in Mexico.
+o5 :- country(germany, W1), country(mexico, W2), W1 > W2.
+:- not o5.
+
+% ---- Output ----
+#show people/2.
+#show country/2.",
 "Story:
 Story:
 Lila is compiling a report on some of the most successful entrepreneurs in the world. Using only the clues that follow, match each person to their country of origin, and determine their total wealth (in dollars) and the type of business they're involved in. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once. If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.
@@ -47412,7 +47448,70 @@ Solve the grid puzzle by filling the table:
 Use the clues to fill the table with the following categories:
 Paper Types: recycled, hemp, handmade, kraft, washi
 Subjects: butterfly, giraffe, flower, cat, whale
-People: Daniel, Elena, James, Olivia, Lucas",6a08f0ee280c53a5c466cc7eef996b55,,
+People: Daniel, Elena, James, Olivia, Lucas",6a08f0ee280c53a5c466cc7eef996b55,"% ---- Domains ----
+fold_counts(25; 30; 35; 40; 45).
+paper_types(recycled; hemp; handmade; kraft; washi).
+subjects(butterfly; giraffe; flower; cat; whale).
+peoples(daniel; elena; james; olivia; lucas).
+
+% ---- Assignment ----
+1 {paper_type(P, Y): paper_types(P)} 1 :- fold_counts(Y).
+1 {paper_type(P, Y): fold_counts(Y)} 1 :- paper_types(P).
+
+1 {subject(S, Y): subjects(S)} 1 :- fold_counts(Y).
+1 {subject(S, Y): fold_counts(Y)} 1 :- subjects(S).
+
+1 {people(P, Y): peoples(P)} 1 :- fold_counts(Y).
+1 {people(P, Y): fold_counts(Y)} 1 :- peoples(P).
+
+% ---- Clues ----
+%Clues 1: The sculpture made from recycled paper has 25 folds.
+o1 :- paper_type(recycled, F), F = 25.
+:- not o1.
+
+%Clues 2: Of the sculptures depicting a giraffe and the piece with 35 folds, one is crafted from hemp and the other belongs to Elena.
+o2_1 :- subject(giraffe, F1), fold_counts(F2), paper_type(hemp, F1), people(elena, F2), F1 != F2, F2 = 35.
+o2_2 :- subject(giraffe, F1), fold_counts(F2), paper_type(hemp, F2), people(elena, F1), F1 != F2, F1 = 35.
+:- not 1 {o2_1; o2_2} 1.
+
+%Clues 3: Elena's sculpture has 5 more folds than Daniel's artwork.
+o3 :- people(elena, F1), people(daniel, F2), F1 = F2 + 5.
+:- not o3.
+
+
+%Clues 4: The sculpture representing a butterfly has 15 fewer folds than Olivia's piece.
+o4 :- subject(butterfly, F1), people(olivia, F2), F1 = F2 - 15.
+:- not o4.
+
+%Clues 5: The sculpture made from handmade paper has 20 more folds than the creation made from recycled paper.
+o5 :- paper_type(handmade, F1), paper_type(recycled, F2), F1 = F2 + 20.
+:- not o5.
+
+%Clues 6: Daniel's piece has 5 less folds than the sculpture depicting a cat.
+o6 :- people(daniel, F1), subject(cat, F2), F1 = F2 - 5.
+:- not o6.
+
+
+%Clues 7: The sculpture with 40 folds, the one made from hemp, Elena's artwork and James's sculpture are all distinct pieces.
+o7 :- fold_counts(40), paper_type(hemp, F1), people(elena, F2), people(james, F3), F1 != 40, F2 != 40, F3 != 40, F1 != F2, F1 != F3, F2 != F3.
+:- not o7.
+
+%Clues 8: Olivia's creation depicts a whale.
+o8 :- people(olivia, F), subject(whale, F).
+:- not o8.
+
+%Clues 9: The sculpture made from kraft paper isn't James's.
+o9 :- paper_type(kraft, F1), people(olivia, F2), F1 != F2.
+:- not o9.
+
+%Clues 10: Lucas's sculpture has more than James's.
+o10 :- people(lucas, F1), people(james, F2), F1 > F2.
+:- not o10.
+
+% ---- Output ----
+#show paper_type/2.
+#show subject/2.
+#show people/2.",
 "At the annual Greenfield Antiques Fair, a unique collection of vintage pocket watches was on display, each with its own distinct ticking rhythm as visitors admired them. Determine each watch's price, ticking pattern, case material, and country of origin. Remember, as with all grid-based logic puzzles, no option in any category will ever be used more than once. If you get stuck or run into problems, try the ""Clear Errors"" button to remove any mistakes that might be present on the grid, or the ""Hint"" button to see the next logical step in the puzzle.
 
 Clues:
